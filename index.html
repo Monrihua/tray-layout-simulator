@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V5.44 Beta 穩定版・量測與磁吸目標統一</title>
+<title>智慧載盤規劃系統｜V1.0 正式版</title>
 
 <style>
 :root{
@@ -885,10 +885,43 @@ body{padding:16px}
 .measureLabel{
   fill:#0b4aa2;
   font-size:12px;
-  font-weight:900;
+  font-weight:800;
   text-anchor:middle;
-  dominant-baseline:middle;
   pointer-events:none;
+}
+.measureLabelPrimary{
+  font-size:13px;
+  font-weight:900;
+}
+.measureLabelSecondary{
+  font-size:11px;
+  font-weight:800;
+}
+.measurementAnnotation{
+  cursor:grab;
+}
+.measurementAnnotation:active{
+  cursor:grabbing;
+}
+.measurementAnnotation .measureLabelBg{
+  pointer-events:all;
+}
+.measurementAnnotation.selected .measureLabelBg{
+  stroke:#ff8a00;
+  stroke-width:2;
+  filter:drop-shadow(0 0 3px rgba(255,138,0,.35));
+}
+.measurementAnnotation.selected .measureLabel{
+  fill:#a84d00;
+}
+.measurementAnnotation .measureDragHandle{
+  fill:#fff;
+  stroke:#0d6efd;
+  stroke-width:1.5;
+  pointer-events:none;
+}
+.measurementAnnotation.selected .measureDragHandle{
+  stroke:#ff8a00;
 }
 .measureModeCursor{
   cursor:crosshair!important;
@@ -1393,6 +1426,32 @@ body{padding:16px}
 .primaryShapeSelector .shapeComingSoon{opacity:.52;cursor:not-allowed}
 .primaryShapeSelector small{position:absolute;right:5px;bottom:4px;font-size:8px;font-weight:800}
 .primaryDimensionGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;margin-top:9px}
+.dimensionSwapRow{
+  display:flex;
+  justify-content:center;
+  margin-top:8px;
+}
+.dimensionSwapButton{
+  width:100%;
+  min-height:34px;
+  margin:0;
+  border:1px solid #b8c7db;
+  border-radius:8px;
+  background:linear-gradient(180deg,#ffffff 0%,#f2f6fb 100%);
+  color:#29415f;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.03em;
+}
+.dimensionSwapButton:hover{
+  border-color:#6f9eea;
+  background:#edf4ff;
+  color:#174ea6;
+}
+.dimensionSwapButton:active{
+  transform:translateY(1px);
+}
+
 .primaryDimensionField{min-width:0;min-height:auto!important;margin:0}
 .primaryDimensionField input{width:100%;height:38px;margin-top:6px!important;box-sizing:border-box}
 .primaryDimensionGrid:has(#partWidthField.hiddenByShape){grid-template-columns:1fr}
@@ -1961,7 +2020,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V5.44 Beta · 穩定版・量測與磁吸目標統一</div>
+    <div class="headerBadge">V1.0 · 正式版</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -2047,22 +2106,25 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <div class="primaryDimensionGrid">
         <label id="partLengthField" class="dimensionField primaryDimensionField">
           <span id="partLengthLabel" class="dimensionLabel">長度（mm）</span>
-          <input id="partLength" type="number" min="1" value="50">
+          <input id="partLength" type="number" min="1" value="200">
         </label>
         <label id="partWidthField" class="dimensionField primaryDimensionField">
           <span class="dimensionLabel">寬度（mm）</span>
-          <input id="partWidth" type="number" min="1" value="30">
+          <input id="partWidth" type="number" min="1" value="200">
         </label>
+      </div>
+      <div class="dimensionSwapRow">
+        <button id="swapPrimaryDimensions" class="dimensionSwapButton" type="button">↔ 互換長度與寬度</button>
       </div>
 
       <div class="primaryDimensionGrid">
         <label class="dimensionField primaryDimensionField">
           <span class="dimensionLabel">X 方向間隔（mm）</span>
-          <input id="gapX" type="number" min="0" value="5">
+          <input id="gapX" type="number" min="0" value="40">
         </label>
         <label class="dimensionField primaryDimensionField">
           <span class="dimensionLabel">Y 方向間隔（mm）</span>
-          <input id="gapY" type="number" min="0" value="5">
+          <input id="gapY" type="number" min="0" value="20">
         </label>
       </div>
     </div>
@@ -2073,11 +2135,11 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <div class="sectionStepControl" data-step-section="secondarySettingsSection">
         <span>上下鍵微調量</span>
         <div class="stepPresetGroup">
-          <button type="button" data-step-value="1" class="">1</button>
-          <button type="button" data-step-value="0.1" class="active">0.1</button>
+          <button type="button" data-step-value="1" class="active">1</button>
+          <button type="button" data-step-value="0.1" class="">0.1</button>
           <button type="button" data-step-value="custom">自訂</button>
         </div>
-        <input class="customStepInput" type="number" min="0.0001" step="0.0001" value="0.1" aria-label="自訂微調量" hidden>
+        <input class="customStepInput" type="number" min="0.0001" step="0.0001" value="1" aria-label="自訂微調量" hidden>
       </div>
 
 
@@ -2110,13 +2172,16 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <div class="secondaryDimensionGrid">
         <label id="secondaryLengthField" class="secondaryFieldCard">
           <span id="secondaryLengthLabel" class="fieldCaption">長度（mm）</span>
-          <input id="secondaryLength" type="number" value="152.4" step="0.1">
+          <input id="secondaryLength" type="number" value="26" step="1">
         </label>
 
         <label id="secondaryWidthField" class="secondaryFieldCard">
           <span class="fieldCaption">寬度（mm）</span>
-          <input id="secondaryWidth" type="number" value="100" step="0.1">
+          <input id="secondaryWidth" type="number" value="76" step="1">
         </label>
+      </div>
+      <div class="dimensionSwapRow">
+        <button id="swapSecondaryDimensions" class="dimensionSwapButton" type="button">↔ 互換長度與寬度</button>
       </div>
     </div>
 
@@ -2181,11 +2246,11 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <div class="sectionStepControl" data-step-section="editSettingsSection">
         <span>上下鍵微調量</span>
         <div class="stepPresetGroup">
-          <button type="button" data-step-value="1" class="">1</button>
-          <button type="button" data-step-value="0.1" class="active">0.1</button>
+          <button type="button" data-step-value="1" class="active">1</button>
+          <button type="button" data-step-value="0.1" class="">0.1</button>
           <button type="button" data-step-value="custom">自訂</button>
         </div>
-        <input class="customStepInput" type="number" min="0.0001" step="0.0001" value="0.1" aria-label="自訂微調量" hidden>
+        <input class="customStepInput" type="number" min="0.0001" step="0.0001" value="1" aria-label="自訂微調量" hidden>
       </div>
 
   <div class="editToolsPanel">
@@ -2202,7 +2267,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
         啟用磁力吸附
       </label>
       <label>吸力半徑（mm）
-        <input id="snapStep" type="number" value="5" min="0" step="0.1">
+        <input id="snapStep" type="number" value="15" min="0" step="1">
       </label>
 
       <div class="snapTypePanel">
@@ -2410,7 +2475,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
           <p><span class="helpKey">S</span>切換磁吸。啟用後左鍵拖曳工件，靠近候選位置時只顯示虛線預覽，放開才真正吸附。</p>
           <ul>
             <li>吸力半徑代表候選位置的偵測範圍</li>
-            <li>拖曳磁吸與量測共用相同開關及吸力半徑；可依安全邊界、矩形四角／邊中點／邊緣相切、圓心／四分點，以及各類相切方式分別控制</li>
+            <li>量測完成後可選取並拖曳標註位置，標註顯示 X、Y、角度與距離；拖曳磁吸與量測共用相同開關及吸力半徑；可依安全邊界、矩形四角／邊中點／邊緣相切、圓心／四分點，以及各類相切方式分別控制</li>
 <li>每一類吸附點都可獨立開關；只保留雙圓相切可減少其他候選干擾</li>
             <li>按住右鍵拖曳工件可暫時忽略吸力，靠近障礙後仍可沿邊平滑滑動</li>
           </ul>
@@ -2540,6 +2605,8 @@ const secondaryLength=document.getElementById("secondaryLength");
 const secondaryWidth=document.getElementById("secondaryWidth");
 const secondaryGapX=document.getElementById("secondaryGapX");
 const secondaryGapY=document.getElementById("secondaryGapY");
+const swapPrimaryDimensions=document.getElementById("swapPrimaryDimensions");
+const swapSecondaryDimensions=document.getElementById("swapSecondaryDimensions");
 const secondaryVertical=document.getElementById("secondaryVertical");
 const secondaryHorizontal=document.getElementById("secondaryHorizontal");
 const secondaryCircleGrid=document.getElementById("secondaryCircleGrid");
@@ -2569,6 +2636,8 @@ let pendingMeasurePoint=null;
 let liveMeasurePoint=null;
 let liveMeasureSnap=null;
 let measurements=[];
+let selectedMeasurementIndex=null;
+let measurementDragState=null;
 let moveHistory=[];
 
 const CONFIG_DEFAULTS=Object.freeze({
@@ -2579,23 +2648,23 @@ const CONFIG_DEFAULTS=Object.freeze({
   InchFactor:"25",
   PrimaryShape:"Rectangle",
   PartInches:"",
-  PartLength:"50",
-  PartWidth:"30",
-  GapX:"5",
-  GapY:"5",
+  PartLength:"200",
+  PartWidth:"200",
+  GapX:"40",
+  GapY:"20",
   PrimaryMode:"Array",
   PrimaryDirection:"Vertical",
   AutoCompare:"true",
   SecondaryShape:"Rectangle",
   SecondaryInches:"",
-  SecondaryLength:"152.4",
-  SecondaryWidth:"100",
+  SecondaryLength:"26",
+  SecondaryWidth:"76",
   SecondaryGapX:"5",
   SecondaryGapY:"5",
   SecondaryDirection:"Vertical",
   SecondaryCircleArrange:"Grid",
   SnapEnabled:"true",
-  SnapStep:"5",
+  SnapStep:"15",
   SnapTypeBoundary:"true",
   SnapRectCorners:"true",
   SnapRectMidpoints:"true",
@@ -2608,8 +2677,8 @@ const CONFIG_DEFAULTS=Object.freeze({
   ShowSpaceLabels:"true",
   TrayStep:"1",
   PrimaryStep:"1",
-  SecondaryStep:"0.1",
-  EditStep:"0.1"
+  SecondaryStep:"1",
+  EditStep:"1"
 });
 
 const CONFIG_SECTION_KEYS=[
@@ -2950,9 +3019,11 @@ function reapplyAllInchHelpers(){
 
 function create(tag,attrs={},value=""){
   const node=document.createElementNS(NS,tag);
+  const parent=attrs.parent||svg;
+  if("parent" in attrs)delete attrs.parent;
   Object.entries(attrs).forEach(([k,v])=>node.setAttribute(k,v));
   if(value)node.textContent=value;
-  svg.appendChild(node);
+  parent.appendChild(node);
   return node;
 }
 function line(x1,y1,x2,y2,cls="dimensionLine"){return create("line",{x1,y1,x2,y2,class:cls})}
@@ -5006,7 +5077,7 @@ function drawLiveMeasurement(){
 
 function addMeasurementPoint(event){
   if(!measureMode)return false;
-  if(event.target.closest("button,input,label"))return false;
+  if(event.target.closest("button,input,label,.measurementAnnotation"))return false;
 
   const snapped=resolveMeasurePoint(event);
   const point=snapped.point;
@@ -5030,8 +5101,11 @@ function addMeasurementPoint(event){
     measurements.push({
       start,
       end:point,
-      dx,dy,distance,angle
+      dx,dy,distance,angle,
+      labelOffsetX:0,
+      labelOffsetY:-24
     });
+    selectedMeasurementIndex=measurements.length-1;
 
     pendingMeasurePoint=null;
     liveMeasurePoint=null;
@@ -5047,19 +5121,21 @@ function addMeasurementPoint(event){
 }
 
 function drawMeasurements(){
-  for(const measurement of measurements){
+  for(let index=0;index<measurements.length;index++){
+    const measurement=measurements[index];
     const {start,end,dx,dy,distance}=measurement;
+    const angle=Number.isFinite(measurement.angle)
+      ? measurement.angle
+      : Math.atan2(-dy,dx)*180/Math.PI;
 
     create("line",{
       x1:start.x,y1:start.y,x2:end.x,y2:end.y,
       class:"measureLine"
     });
-
     create("line",{
       x1:start.x,y1:start.y,x2:end.x,y2:start.y,
       class:"measureGuide"
     });
-
     create("line",{
       x1:end.x,y1:start.y,x2:end.x,y2:end.y,
       class:"measureGuide"
@@ -5068,25 +5144,181 @@ function drawMeasurements(){
     create("circle",{cx:start.x,cy:start.y,r:3.5,class:"measurePoint"});
     create("circle",{cx:end.x,cy:end.y,r:3.5,class:"measurePoint"});
 
-    const cx=(start.x+end.x)/2;
-    const cy=(start.y+end.y)/2;
-    const label=`${fmt(distance)} mm｜X ${fmt(Math.abs(dx))}｜Y ${fmt(Math.abs(dy))}`;
-    const width=Math.max(120,label.length*6.4);
+    const baseX=(start.x+end.x)/2;
+    const baseY=(start.y+end.y)/2;
+    const labelX=baseX+(measurement.labelOffsetX||0);
+    const labelY=baseY+(measurement.labelOffsetY||0);
 
-    create("rect",{
-      x:cx-width/2,y:cy-13,width,height:26,rx:5,
-      class:"measureLabelBg"
+    const signedX=`${dx>=0?"+":""}${fmt(dx)}`;
+    const signedY=`${dy>=0?"+":""}${fmt(dy)}`;
+    const primaryText=`距離 ${fmt(distance)} mm`;
+    const secondaryText=`X ${signedX}｜Y ${signedY}｜角度 ${fmt(angle)}°`;
+
+    const group=create("g",{
+      class:`measurementAnnotation${selectedMeasurementIndex===index?" selected":""}`,
+      "data-measurement-index":index
     });
 
-    create("text",{x:cx,y:cy,class:"measureLabel"},label);
+    create("line",{
+      x1:baseX,y1:baseY,x2:labelX,y2:labelY,
+      class:"measureGuide",
+      parent:group
+    });
+
+    const bg=create("rect",{
+      x:labelX-120,
+      y:labelY-24,
+      width:240,
+      height:48,
+      rx:7,
+      class:"measureLabelBg",
+      parent:group
+    });
+
+    const labelNode=create("text",{
+      x:labelX,
+      y:labelY-6,
+      class:"measureLabel",
+      parent:group
+    });
+
+    const primary=document.createElementNS(NS,"tspan");
+    primary.setAttribute("x",labelX);
+    primary.setAttribute("class","measureLabelPrimary");
+    primary.textContent=primaryText;
+    labelNode.appendChild(primary);
+
+    const secondary=document.createElementNS(NS,"tspan");
+    secondary.setAttribute("x",labelX);
+    secondary.setAttribute("dy","17");
+    secondary.setAttribute("class","measureLabelSecondary");
+    secondary.textContent=secondaryText;
+    labelNode.appendChild(secondary);
+
+    // 依實際文字尺寸設定框寬，避免文字超出或貼住邊框。
+    const textBox=labelNode.getBBox();
+    const paddingX=16;
+    const paddingY=8;
+    const boxWidth=Math.max(180,textBox.width+paddingX*2);
+    const boxHeight=Math.max(46,textBox.height+paddingY*2);
+
+    bg.setAttribute("x",labelX-boxWidth/2);
+    bg.setAttribute("y",labelY-boxHeight/2);
+    bg.setAttribute("width",boxWidth);
+    bg.setAttribute("height",boxHeight);
+
+    create("circle",{
+      cx:labelX-boxWidth/2+11,
+      cy:labelY,
+      r:3.5,
+      class:"measureDragHandle",
+      parent:group
+    });
   }
 
   drawFirstMeasurePointPreview();
   drawLiveMeasurement();
 }
+function selectMeasurement(index){
+  if(!Number.isInteger(index)||!measurements[index])return false;
+  selectedMeasurementIndex=index;
+  renderCurrent();
+  setToolStatus(
+    `已選取量測標註 ${index+1}；可拖曳標註位置，按 Delete 刪除。`,
+    "success"
+  );
+  return true;
+}
+
+function deleteSelectedMeasurement(){
+  if(
+    selectedMeasurementIndex===null ||
+    !measurements[selectedMeasurementIndex]
+  )return false;
+
+  measurements.splice(selectedMeasurementIndex,1);
+  selectedMeasurementIndex=null;
+  measurementDragState=null;
+  renderCurrent();
+  setToolStatus("已刪除選取的量測標註。","success");
+  return true;
+}
+
+function startMeasurementDrag(event){
+  if(event.button!==0)return;
+  const group=event.target.closest(".measurementAnnotation");
+  if(!group)return;
+
+  const index=Number(group.dataset.measurementIndex);
+  const measurement=measurements[index];
+  if(!measurement)return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  selectedMeasurementIndex=index;
+  const point=svgPointFromClient(event.clientX,event.clientY);
+
+  measurementDragState={
+    pointerId:event.pointerId,
+    index,
+    startPoint:point,
+    originalOffsetX:measurement.labelOffsetX||0,
+    originalOffsetY:measurement.labelOffsetY||0,
+    moved:false
+  };
+
+  svg.setPointerCapture?.(event.pointerId);
+  renderCurrent();
+}
+
+function moveMeasurementDrag(event){
+  const state=measurementDragState;
+  if(!state||event.pointerId!==state.pointerId)return;
+
+  const measurement=measurements[state.index];
+  if(!measurement)return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  const point=svgPointFromClient(event.clientX,event.clientY);
+  const dx=point.x-state.startPoint.x;
+  const dy=point.y-state.startPoint.y;
+
+  if(Math.hypot(dx,dy)>.25)state.moved=true;
+  measurement.labelOffsetX=state.originalOffsetX+dx;
+  measurement.labelOffsetY=state.originalOffsetY+dy;
+  renderCurrent();
+}
+
+function finishMeasurementDrag(event){
+  const state=measurementDragState;
+  if(!state||event.pointerId!==state.pointerId)return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  svg.releasePointerCapture?.(event.pointerId);
+  measurementDragState=null;
+
+  setToolStatus(
+    state.moved
+      ?"已調整量測標註位置；端點與量測數值保持不變。"
+      :`已選取量測標註 ${state.index+1}；可拖曳或按 Delete 刪除。`,
+    "success"
+  );
+}
+
+svg.addEventListener("pointerdown",startMeasurementDrag,true);
+svg.addEventListener("pointermove",moveMeasurementDrag,true);
+svg.addEventListener("pointerup",finishMeasurementDrag,true);
+svg.addEventListener("pointercancel",finishMeasurementDrag,true);
 
 function clearMeasurements(){
   measurements=[];
+  selectedMeasurementIndex=null;
+  measurementDragState=null;
   pendingMeasurePoint=null;
   liveMeasurePoint=null;
   liveMeasureSnap=null;
@@ -5992,6 +6224,7 @@ function rectFullyContains(outer,inner){
 function startMarquee(event){
   if(event.detail>1)return;
   if(event.button!==0)return;
+  if(event.target.closest(".measurementAnnotation"))return;
   if(measureMode){
     addMeasurementPoint(event);
     event.preventDefault();
@@ -6508,6 +6741,14 @@ document.addEventListener("keydown",event=>{
     return;
   }
 
+  // 選取量測標註時，Delete 優先刪除該標註。
+  if(event.key==="Delete"&&selectedMeasurementIndex!==null){
+    event.preventDefault();
+    if(editing&&typeof active.blur==="function")active.blur();
+    deleteSelectedMeasurement();
+    return;
+  }
+
   // 即使游標仍停在數值輸入框，只要畫布上已有選取工件，
   // Delete 仍優先刪除工件。沒有選取工件時，輸入框保留原生 Delete 行為。
   if(event.key==="Delete"&&(selectedItems.length||selectedIndex!==null)){
@@ -6547,6 +6788,12 @@ document.addEventListener("keydown",event=>{
 
   if(event.key==="Escape"){
     if(cancelPendingMeasurement("已取消目前量測"))return;
+    if(selectedMeasurementIndex!==null){
+      selectedMeasurementIndex=null;
+      renderCurrent();
+      setToolStatus("已取消量測標註選取。","");
+      return;
+    }
     clearSelection();
   }
 });
@@ -7066,6 +7313,38 @@ document.querySelectorAll("input").forEach(input=>{
   input.addEventListener("input",draw);
   input.addEventListener("change",draw);
 });
+
+function swapDimensionValues(lengthInput,widthInput,options={}){
+  const lengthValue=lengthInput.value;
+  lengthInput.value=widthInput.value;
+  widthInput.value=lengthValue;
+
+  lengthInput.dispatchEvent(new Event("input",{bubbles:true}));
+  widthInput.dispatchEvent(new Event("input",{bubbles:true}));
+  lengthInput.dispatchEvent(new Event("change",{bubbles:true}));
+  widthInput.dispatchEvent(new Event("change",{bubbles:true}));
+
+  if(options.secondary){
+    setAdaptiveFillStatus(
+      `已互換追加工件尺寸：${lengthInput.value} × ${widthInput.value} mm。`,
+      "success"
+    );
+  }else{
+    setToolStatus(
+      `已互換主要工件尺寸：${lengthInput.value} × ${widthInput.value} mm。`,
+      "success"
+    );
+  }
+}
+
+swapPrimaryDimensions.addEventListener("click",()=>{
+  swapDimensionValues(el.partLength,el.partWidth);
+});
+
+swapSecondaryDimensions.addEventListener("click",()=>{
+  swapDimensionValues(secondaryLength,secondaryWidth,{secondary:true});
+});
+
 document.getElementById("resetBtn").addEventListener("click",()=>{
   secondaryAutoRefreshSuspended=true;
   clearTimeout(secondaryAutoRefreshTimer);
@@ -7073,24 +7352,43 @@ document.getElementById("resetBtn").addEventListener("click",()=>{
 
   el.trayLength.value=700;el.trayWidth.value=415;
   el.safeX.value=10;el.safeY.value=10;
-  el.partLength.value=50;el.partWidth.value=30;
+  el.partLength.value=200;el.partWidth.value=200;
   partInches.value="";
   partInchPreview.classList.remove("converted");
   partInchPreview.textContent="輸入後會同步設定長度與寬度";
   inchFactor25.checked=true;
-  el.gapX.value=5;el.gapY.value=5;
+  el.gapX.value=40;el.gapY.value=20;
   el.arrayMode.checked=true;primaryRectShape.checked=true;el.vertical.checked=true;
   el.autoCompare.checked=true;
   secondaryArrayMode.checked=true;
   secondaryVertical.checked=true;
   secondaryCircleGrid.checked=true;
-  secondaryLength.value=152.4;
-  secondaryWidth.value=100;
+  secondaryLength.value=26;
+  secondaryWidth.value=76;
   secondaryInches.value="";
   secondaryInchPreview.classList.remove("converted");
   secondaryInchPreview.textContent="不直接列入擺盤計算";
   secondaryGapX.value=5;
   secondaryGapY.value=5;
+  snapStep.value=15;
+
+  applySectionStep("traySettingsSection",1);
+  applySectionStep("primarySettingsSection",1);
+  applySectionStep("secondarySettingsSection",1);
+  applySectionStep("editSettingsSection",1);
+
+  document.querySelectorAll(".sectionStepControl").forEach(control=>{
+    const buttons=[...control.querySelectorAll("[data-step-value]")];
+    buttons.forEach(button=>{
+      button.classList.toggle("active",button.dataset.stepValue==="1");
+    });
+    const customInput=control.querySelector(".customStepInput");
+    if(customInput){
+      customInput.value="1";
+      customInput.hidden=true;
+    }
+  });
+
   updatePrimaryModeUI();
   updateSecondaryModeUI();
   draw();
@@ -7417,20 +7715,29 @@ document.querySelectorAll("[data-align]").forEach(button=>{
 
 document.addEventListener("keydown",event=>{
   const active=document.activeElement;
-  const editing=active&&(
-    active.tagName==="INPUT"||
-    active.tagName==="TEXTAREA"||
-    active.isContentEditable
+  const inputType=active?.tagName==="INPUT"
+    ? String(active.type||"text").toLowerCase()
+    : "";
+  const textEditing=active&&(
+    active.tagName==="TEXTAREA" ||
+    active.isContentEditable ||
+    (
+      active.tagName==="INPUT" &&
+      ["text","search","email","tel","url","password"].includes(inputType)
+    )
   );
-  if(editing)return;
 
   if(event.key==="m"||event.key==="M"){
+    if(textEditing)return;
+    if(active?.tagName==="INPUT"&&typeof active.blur==="function")active.blur();
     event.preventDefault();
     toggleMeasureMode();
     return;
   }
 
   if(event.key==="s"||event.key==="S"){
+    if(textEditing)return;
+    if(active?.tagName==="INPUT"&&typeof active.blur==="function")active.blur();
     event.preventDefault();
     snapEnabled.checked=!snapEnabled.checked;
     snapEnabled.dispatchEvent(new Event("change",{bubbles:true}));
@@ -7443,6 +7750,8 @@ document.addEventListener("keydown",event=>{
     );
     return;
   }
+
+  if(textEditing||active?.tagName==="INPUT"||active?.tagName==="TEXTAREA")return;
 
   if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown"].includes(event.key)){
     const refs=currentSelectedRefs();

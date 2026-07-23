@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤規劃系統｜V2.4 Beta 共用折疊元件與首屏防閃</title>
+<title>智慧載盤規劃系統｜V2.5 Beta 手機首頁四方案置頂</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -3387,6 +3387,46 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V2.5 手機首頁：隱藏載盤設定，四方案固定置頂 ===== */
+@media (pointer:coarse), (max-width:820px){
+  /*
+    手機剛進入四方案總覽時，左側參數區不再佔據首屏。
+    載盤設定仍保留在 DOM 中，桌面版與後續功能可繼續共用。
+  */
+  body.touchUiEnabled:not(.mobileDetailMode):has(.canvasArea.overviewMode)
+  .app > aside.controlPanel{
+    display:none!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode):has(.canvasArea.overviewMode)
+  .app{
+    display:block!important;
+    margin:0!important;
+    padding:0!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode):has(.canvasArea.overviewMode)
+  .canvasArea.overviewMode{
+    margin-top:0!important;
+    border-top-left-radius:0!important;
+    border-top-right-radius:0!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode):has(.canvasArea.overviewMode)
+  .canvasArea.overviewMode .planOverview{
+    top:8px!important;
+  }
+
+  /*
+    若由詳細畫面返回四方案總覽，也自動回到頁首，
+    確保四方案仍從最上方開始。
+  */
+  body.touchUiEnabled:not(.mobileDetailMode):has(.canvasArea.overviewMode){
+    scroll-padding-top:0!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3418,7 +3458,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V2.4 Beta · 共用折疊元件與首屏防閃</div>
+<div class="headerBadge">V2.5 Beta · 手機首頁四方案置頂</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -10845,6 +10885,45 @@ setMobileFineTuneOpen=function(open,panel=mobileActivePanel){
   if(drawing){
     new MutationObserver(()=>requestAnimationFrame(updateAll))
       .observe(drawing,{childList:true,subtree:true,attributes:true});
+  }
+})();
+
+
+/* ===== V2.5 手機四方案總覽自動置頂 ===== */
+(function keepMobileOverviewAtTop(){
+  const canvasArea=document.querySelector(".canvasArea");
+  if(!canvasArea)return;
+
+  let wasOverview=canvasArea.classList.contains("overviewMode");
+
+  const syncOverviewTop=()=>{
+    const isMobile=document.body.classList.contains("touchUiEnabled");
+    const isOverview=canvasArea.classList.contains("overviewMode");
+    const isDetail=document.body.classList.contains("mobileDetailMode");
+
+    if(isMobile && isOverview && !isDetail && !wasOverview){
+      requestAnimationFrame(()=>{
+        window.scrollTo({top:0,left:0,behavior:"auto"});
+      });
+    }
+    wasOverview=isOverview;
+  };
+
+  new MutationObserver(syncOverviewTop).observe(canvasArea,{
+    attributes:true,
+    attributeFilter:["class"]
+  });
+
+  new MutationObserver(syncOverviewTop).observe(document.body,{
+    attributes:true,
+    attributeFilter:["class"]
+  });
+
+  if(document.body.classList.contains("touchUiEnabled") &&
+     canvasArea.classList.contains("overviewMode")){
+    requestAnimationFrame(()=>{
+      window.scrollTo({top:0,left:0,behavior:"auto"});
+    });
   }
 })();
 

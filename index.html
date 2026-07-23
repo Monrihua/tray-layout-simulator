@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤規劃系統｜V3.3 Beta 修正手機方案卡滿版標題與底欄</title>
+<title>智慧載盤規劃系統｜V3.4 Beta 精簡手機操作列與復原操作</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -3617,6 +3617,41 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V3.4 精簡手機第一排工具列與固定狀態提示 ===== */
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled .mobileTouchToolbar{
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;
+  }
+
+  /*
+    雙指負責平移與縮放，單指維持選取；
+    因此不再顯示選取模式與移動畫面按鈕。
+  */
+  body.touchUiEnabled .mobileModeBadge{
+    display:block!important;
+    position:fixed!important;
+    z-index:10002!important;
+    left:44px!important;
+    bottom:max(148px,calc(env(safe-area-inset-bottom) + 148px))!important;
+    max-width:calc(100vw - 88px)!important;
+    padding:8px 12px!important;
+    border-radius:999px!important;
+    background:rgba(24,48,78,.92)!important;
+    color:#fff!important;
+    font-size:11px!important;
+    font-weight:900!important;
+    line-height:1.2!important;
+    white-space:nowrap!important;
+    pointer-events:none!important;
+    box-shadow:0 6px 18px rgba(15,34,58,.22)!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode) .mobileModeBadge{
+    display:none!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3648,7 +3683,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V3.3 Beta · 修正手機方案卡滿版標題與底欄</div>
+<div class="headerBadge">V3.4 Beta · 精簡手機操作列與復原操作</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -4085,13 +4120,12 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 </div>
 <div aria-label="手機觸控工具列" class="mobileTouchToolbar" id="mobileTouchToolbar">
-<button id="mobileSelectBtn" type="button">選取<br/>模式</button>
-<button id="mobilePanBtn" type="button">移動<br/>畫面</button>
 <button id="mobileSnapBtn" type="button">磁吸<br/>模式</button>
 <button disabled="" id="mobileFreeDragBtn" type="button">自由<br/>拖曳</button>
 <button id="mobileMeasureBtn" type="button">量測<br/>模式</button>
 <button id="mobileClearMeasurementsBtn" type="button">清除<br/>量測</button>
-<button id="mobileDeleteBtn" type="button">刪除</button>
+<button id="mobileUndoBtn" type="button">復原<br/>操作</button>
+<button id="mobileDeleteBtn" type="button">刪除<br/>物件</button>
 <button id="mobileSystemSettingsBtn" type="button">設定<br/>工具</button>
 </div>
 <button aria-label="離開全螢幕畫布" class="mobileCanvasExit" id="mobileCanvasExit" type="button">×</button>
@@ -9805,20 +9839,18 @@ const coarsePointerQuery=window.matchMedia("(pointer: coarse)");
 const narrowScreenQuery=window.matchMedia("(max-width: 820px)");
 
 const mobileToolbar=document.getElementById("mobileTouchToolbar");
-const mobileSelectBtn=document.getElementById("mobileSelectBtn");
 const mobileSnapBtn=document.getElementById("mobileSnapBtn");
 const mobileMeasureBtn=document.getElementById("mobileMeasureBtn");
-const mobilePanBtn=document.getElementById("mobilePanBtn");
+const mobileUndoBtn=document.getElementById("mobileUndoBtn");
 const mobileDeleteBtn=document.getElementById("mobileDeleteBtn");
 const mobileFitBtn=document.getElementById("mobileFitBtn");
 const mobileCanvasExit=document.getElementById("mobileCanvasExit");
 const mobileModeBadge=document.getElementById("mobileModeBadge");
 
 [
-  mobileSelectBtn,
   mobileSnapBtn,
   mobileMeasureBtn,
-  mobilePanBtn,
+  mobileUndoBtn,
   mobileDeleteBtn,
   mobileFitBtn,
   mobileCanvasExit
@@ -9845,19 +9877,13 @@ function shouldEnableTouchUi(){
 function syncMobileModeUi(){
   if(!document.body.classList.contains("touchUiEnabled"))return;
 
-  mobileSelectBtn?.classList.toggle("active",mobileInteractionMode==="select");
-  mobilePanBtn?.classList.toggle("active",mobileInteractionMode==="pan");
   mobileMeasureBtn?.classList.toggle("active",measureMode);
   mobileSnapBtn?.classList.toggle("active",snapEnabled.checked);
 
-  document.body.classList.toggle("mobilePanMode",mobileInteractionMode==="pan");
+  document.body.classList.remove("mobilePanMode");
 
   if(mobileModeBadge){
-    const modeText=measureMode
-      ?"量測"
-      :mobileInteractionMode==="pan"
-        ?"平移"
-        :"選取";
+    const modeText=measureMode?"量測":"選取";
     const snapText=snapEnabled.checked?"｜磁吸開":"｜磁吸關";
     mobileModeBadge.textContent=`手機：${modeText}${snapText}`;
   }
@@ -10002,11 +10028,6 @@ function finishMobileTouchPan(event){
   document.body.classList.remove("mobileTouchPanning");
 }
 
-mobileSelectBtn?.addEventListener("click",()=>{
-  if(measureMode)toggleMeasureMode();
-  setMobileInteractionMode("select");
-});
-
 mobileSnapBtn?.addEventListener("click",()=>{
   snapEnabled.checked=!snapEnabled.checked;
   snapEnabled.dispatchEvent(new Event("change",{bubbles:true}));
@@ -10018,17 +10039,19 @@ mobileSnapBtn?.addEventListener("click",()=>{
 });
 
 mobileMeasureBtn?.addEventListener("click",()=>{
-  if(mobileInteractionMode==="pan")mobileInteractionMode="select";
+  mobileInteractionMode="select";
   toggleMeasureMode();
   syncMobileModeUi();
 });
 
-mobilePanBtn?.addEventListener("click",()=>{
-  setMobileInteractionMode(
-    mobileInteractionMode==="pan"?"select":"pan"
-  );
+mobileUndoBtn?.addEventListener("click",()=>{
+  if(!undoStack.length){
+    setToolStatus("目前沒有可復原的刪除操作。","warning");
+    return;
+  }
+  undoDelete();
+  setToolStatus("已復原上一個刪除操作。","success");
 });
-
 mobileDeleteBtn?.addEventListener("click",mobileDeleteSelection);
 mobileFitBtn?.addEventListener("click",()=>{
   const canvasArea=document.querySelector(".canvasArea");

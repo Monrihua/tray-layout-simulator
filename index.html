@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V1.5 Beta 手機工作區啟動流程</title>
+<title>智慧載盤規劃系統｜V1.5.1 Beta 手機方案總覽與工具列流程修正</title>
 
 <style>
 :root{
@@ -2647,6 +2647,81 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V1.5.1 手機方案總覽高度與工具列顯示流程 ===== */
+@media (pointer:coarse), (max-width:820px){
+  /* 手機方案總覽加高，盡量同屏看見四個方案 */
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .overviewArea,
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .plansArea,
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .planGrid,
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .planCards{
+    min-height:auto!important;
+  }
+
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .plansGrid,
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .方案網格{
+    grid-template-columns:1fr 1fr!important;
+    gap:10px!important;
+  }
+
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .planCard{
+    min-height:285px!important;
+    padding:10px!important;
+  }
+
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .planCard svg{
+    max-height:205px!important;
+    height:205px!important;
+  }
+
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .plansSection,
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .overviewSection{
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  /* 一開始就顯示下排工具列 */
+  body.touchUiEnabled .mobileQuickToolbar{
+    display:grid!important;
+  }
+
+  /* 尚未進入詳細工作區時，只隱藏上排工具列 */
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .mobileTouchToolbar{
+    display:none!important;
+  }
+
+  /* 尚未進入詳細工作區時，下排固定在底部 */
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .mobileQuickToolbar{
+    bottom:max(8px,env(safe-area-inset-bottom))!important;
+  }
+
+  /* 進入詳細工作區後，下排上移，讓上排出現在最底部上方 */
+  body.touchUiEnabled.mobileCanvasFullscreen .mobileQuickToolbar{
+    bottom:max(68px,calc(env(safe-area-inset-bottom) + 68px))!important;
+  }
+
+  /* 上排只在詳細工作區顯示 */
+  body.touchUiEnabled.mobileCanvasFullscreen .mobileTouchToolbar{
+    display:grid!important;
+    bottom:max(8px,env(safe-area-inset-bottom))!important;
+  }
+
+  /* 初始頁面為下排工具列預留空間 */
+  body.touchUiEnabled:not(.mobileCanvasFullscreen){
+    padding-bottom:76px!important;
+  }
+
+  /* 詳細工作區為雙排工具列預留空間 */
+  body.touchUiEnabled.mobileCanvasFullscreen{
+    padding-bottom:138px!important;
+  }
+
+  /* 不再顯示額外獨立的適合畫面浮動按鈕 */
+  body.touchUiEnabled .mobileEnterWorkspaceBtn{
+    display:none!important;
+  }
+}
+
 </style>
 
 </head>
@@ -2682,7 +2757,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V1.5 Beta · 手機工作區啟動流程</div>
+    <div class="headerBadge">V1.5.1 Beta · 手機方案總覽與工具列流程修正</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -9577,6 +9652,37 @@ toggleMobileFullscreen=function(force){
 };
 
 syncMobileWorkspaceEntry();
+
+
+/* ===== V1.5.1 下排適合畫面兼作工作區入口 ===== */
+mobileFitBtn?.addEventListener("click",event=>{
+  if(
+    document.body.classList.contains("touchUiEnabled") &&
+    !document.body.classList.contains("mobileCanvasFullscreen")
+  ){
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    toggleMobileFullscreen(true);
+    requestAnimationFrame(()=>{
+      resetCanvasZoom();
+      syncMobileWorkspaceEntry();
+    });
+  }
+},true);
+
+function syncMobileToolbarFlow(){
+  const inWorkspace=document.body.classList.contains("mobileCanvasFullscreen");
+  document.body.classList.toggle("mobileOverviewWithQuickTools",!inWorkspace);
+}
+
+const oldToggleMobileFullscreenV151=toggleMobileFullscreen;
+toggleMobileFullscreen=function(force){
+  oldToggleMobileFullscreenV151(force);
+  requestAnimationFrame(syncMobileToolbarFlow);
+};
+
+window.addEventListener("resize",syncMobileToolbarFlow);
+syncMobileToolbarFlow();
 
 </script>
 

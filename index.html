@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V1.4 Beta 手機完整分類工作區</title>
+<title>智慧載盤規劃系統｜V1.4.1 Beta 手機工具列版面修正</title>
 
 <style>
 :root{
@@ -2533,6 +2533,36 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V1.4.1 手機工具列與桌面欄位隱藏修正 ===== */
+@media (pointer:coarse), (max-width:820px){
+  /* 第二列改回與第一列相同的 8 等分寬度，不再橫向滑動 */
+  body.touchUiEnabled .mobileQuickToolbar{
+    display:grid!important;
+    grid-template-columns:repeat(8,minmax(0,1fr))!important;
+    overflow:visible!important;
+    gap:5px!important;
+  }
+
+  body.touchUiEnabled .mobileQuickToolbar button{
+    flex:initial!important;
+    min-width:0!important;
+    width:auto!important;
+    min-height:46px;
+    padding:5px 2px!important;
+    font-size:10px!important;
+    line-height:1.15!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere;
+  }
+
+  /* 手機版桌面區底部的恢復預設值與匯出 SVG 隱藏 */
+  body.touchUiEnabled #resetBtn,
+  body.touchUiEnabled #exportBtn{
+    display:none!important;
+  }
+}
+
 </style>
 
 </head>
@@ -2568,7 +2598,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V1.4 Beta · 手機完整分類工作區</div>
+    <div class="headerBadge">V1.4.1 Beta · 手機工具列版面修正</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -3051,12 +3081,12 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 
 <div id="mobileTouchToolbar" class="mobileTouchToolbar" aria-label="手機觸控工具列">
   <button id="mobileSelectBtn" type="button">選取<br>模式</button>
-  <button id="mobileSnapBtn" type="button">磁吸<br>模式</button>
-  <button id="mobileMeasureBtn" type="button">量測<br>模式</button>
   <button id="mobilePanBtn" type="button">移動<br>畫面</button>
-  <button id="mobileDeleteBtn" type="button">刪除</button>
+  <button id="mobileSnapBtn" type="button">磁吸<br>模式</button>
   <button id="mobileFreeDragBtn" type="button" disabled>自由<br>拖曳</button>
+  <button id="mobileMeasureBtn" type="button">量測<br>模式</button>
   <button id="mobileClearMeasurementsBtn" type="button">清除<br>量測</button>
+  <button id="mobileDeleteBtn" type="button">刪除</button>
   <button id="mobileFitBtn" type="button">適合<br>畫面</button>
 </div>
 <button id="mobileCanvasExit" class="mobileCanvasExit" type="button" aria-label="離開全螢幕畫布">×</button>

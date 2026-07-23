@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V2.0 Beta 手機載盤折疊與四方案壓縮</title>
+<title>智慧載盤規劃系統｜V2.1 Beta 手機完整載盤折疊與四方案再壓縮</title>
 
 <style>
 :root{
@@ -3227,6 +3227,95 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V2.1 手機完整載盤折疊與四方案再壓縮 ===== */
+@media (pointer:coarse), (max-width:820px){
+  /* 吋數換算併入載盤設定折疊內容後，改為內部分隔區 */
+  body.touchUiEnabled #traySettingsSection .inchConversionSection{
+    margin:12px 0 0!important;
+    padding:14px 0 0!important;
+    border:0!important;
+    border-top:1px solid #d9e3f0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+
+  body.touchUiEnabled #traySettingsSection .inchConversionSection h2{
+    margin:0 0 10px!important;
+  }
+
+  /*
+    四方案總覽固定成較矮的 2×2 區塊。
+    不再讓卡片依整個工作區高度拉長，避免設定抽屜開啟後只看見上排。
+  */
+  body.touchUiEnabled:not(.mobileDetailMode) .canvasArea.overviewMode{
+    min-height:458px!important;
+    height:458px!important;
+    max-height:458px!important;
+    overflow:hidden!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode) .canvasArea.overviewMode .planOverview{
+    position:absolute!important;
+    inset:8px 10px auto!important;
+    width:auto!important;
+    height:438px!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-rows:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+    overflow:hidden!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode) .canvasArea.overviewMode .planCard{
+    width:100%!important;
+    height:215px!important;
+    min-height:0!important;
+    max-height:215px!important;
+    padding:0!important;
+    border-radius:11px!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode) .canvasArea.overviewMode .planCardHeader{
+    min-height:34px!important;
+    padding:6px 7px!important;
+    gap:4px!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode) .canvasArea.overviewMode .planCardHeader strong{
+    font-size:10px!important;
+    line-height:1.15!important;
+    white-space:nowrap!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode) .canvasArea.overviewMode .planCount{
+    padding:2px 5px!important;
+    font-size:8px!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode) .canvasArea.overviewMode .planPreview{
+    flex:1 1 auto!important;
+    display:block!important;
+    width:100%!important;
+    height:150px!important;
+    min-height:0!important;
+    max-height:150px!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode) .canvasArea.overviewMode .planCardFooter{
+    min-height:22px!important;
+    padding:4px 6px!important;
+    font-size:8px!important;
+    line-height:1.1!important;
+  }
+
+  /* 設定抽屜稍微再降低，讓背景四方案完整露出 */
+  body.touchUiEnabled:not(.mobileDetailMode) .mobilePanelSheet,
+  body.touchUiEnabled:not(.mobileDetailMode) .mobileBottomSheet{
+    max-height:39svh!important;
+  }
+}
+
 </style>
 
 </head>
@@ -3262,7 +3351,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V2.0 Beta · 手機載盤折疊與四方案壓縮</div>
+    <div class="headerBadge">V2.1 Beta · 手機完整載盤折疊與四方案再壓縮</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -3623,7 +3712,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 
 <button id="resetBtn" type="button">↻ 恢復預設值</button>
     <button id="exportBtn" type="button" class="secondaryBtn">↓ 匯出 SVG 工程圖</button>
-    <div class="hint">輸入數值後會即時重繪。紅色為尺寸標註，虛線框為安全範圍。</div>
+    
   </aside>
 
   <main class="canvasArea overviewMode">
@@ -10835,6 +10924,12 @@ renderCurrent=function(){
 
   const traySection=document.getElementById("traySettingsSection");
   if(!traySection || traySection.dataset.mobileTrayCollapsibleReady==="true")return;
+
+  /* 手機版也將原本獨立的吋數換算卡片併入載盤設定，才能一起收合。 */
+  const inchSection=document.querySelector(".inchConversionSection");
+  if(inchSection && inchSection.parentElement!==traySection){
+    traySection.appendChild(inchSection);
+  }
 
   traySection.dataset.mobileTrayCollapsibleReady="true";
   traySection.classList.add("mobileTrayCollapsible");

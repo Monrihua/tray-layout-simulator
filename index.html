@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤規劃系統｜V3.2 Beta 修正手機追加工件重建主要工件</title>
+<title>智慧載盤規劃系統｜V3.3 Beta 重畫開關位置與雙指提示</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -3553,6 +3553,76 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   .mobileGlobalStepCustom[hidden]{display:none!important}
 }
 
+
+/* ===== V3.3 即時重畫開關版面與手機雙指提示 ===== */
+
+/* 電腦版：勾選框固定在文字左側，文字位於右側 */
+.secondaryAutoRedrawToggle{
+  display:grid!important;
+  grid-template-columns:22px minmax(0,1fr)!important;
+  align-items:start!important;
+  column-gap:9px!important;
+}
+
+.secondaryAutoRedrawToggle input{
+  grid-column:1!important;
+  grid-row:1!important;
+  margin:1px 0 0!important;
+}
+
+.secondaryAutoRedrawToggle > span{
+  grid-column:2!important;
+  grid-row:1!important;
+  min-width:0;
+}
+
+/* 手機版 */
+@media (pointer:coarse), (max-width:820px){
+  /* 第一排由 8 個按鈕改為 7 個按鈕 */
+  body.touchUiEnabled .mobileTouchToolbar{
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;
+  }
+
+  .mobileSecondaryAutoRedrawRow{
+    display:grid;
+    grid-template-columns:24px minmax(0,1fr);
+    align-items:start;
+    gap:9px;
+    margin:0 0 10px;
+    padding:10px 11px;
+    border:1px solid #d5dfec;
+    border-radius:10px;
+    background:#f7faff;
+  }
+
+  .mobileSecondaryAutoRedrawRow input{
+    width:22px;
+    height:22px;
+    margin:1px 0 0;
+  }
+
+  .mobileSecondaryAutoRedrawRow span{
+    display:block;
+    min-width:0;
+    color:#33465f;
+    line-height:1.4;
+  }
+
+  .mobileSecondaryAutoRedrawRow b{
+    display:block;
+    font-size:12px;
+    font-weight:900;
+  }
+
+  .mobileSecondaryAutoRedrawRow small{
+    display:block;
+    margin-top:3px;
+    color:#6a788b;
+    font-size:10px;
+    line-height:1.45;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3584,7 +3654,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V3.2 Beta · 修正手機追加工件重建主要工件</div>
+<div class="headerBadge">V3.3 Beta · 重畫開關位置與雙指提示</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -4022,7 +4092,6 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 <div aria-label="手機觸控工具列" class="mobileTouchToolbar" id="mobileTouchToolbar">
 <button id="mobileSelectBtn" type="button">選取<br/>模式</button>
-<button id="mobilePanBtn" type="button">移動<br/>畫面</button>
 <button id="mobileSnapBtn" type="button">磁吸<br/>模式</button>
 <button disabled="" id="mobileFreeDragBtn" type="button">自由<br/>拖曳</button>
 <button id="mobileMeasureBtn" type="button">量測<br/>模式</button>
@@ -4192,17 +4261,6 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 
 <div class="mobileSectionCard">
-<div class="mobileSectionTitle">更新方式</div>
-<label class="mobileSwitchRow">
-<input checked="" id="mobileSecondaryAutoRedraw" type="checkbox"/>
-<span>設定變更後立即重畫</span>
-</label>
-<div class="mobilePanelHint">
-        關閉後，修改形狀、尺寸、間距或排列方式不會清除既有追加工件；
-        可使用「生成 1 個」混合加入不同尺寸與形狀。
-      </div>
-</div>
-<div class="mobileSectionCard">
 <div class="mobileSectionTitle">追加工件形狀</div>
 <div class="mobileShapeButtons">
 <button id="mobileSecondaryRectBtn" type="button">▭ 矩形</button>
@@ -4272,6 +4330,13 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 <div class="mobileSectionCard">
 <div class="mobileSectionTitle">追加工件操作</div>
+<label class="mobileSecondaryAutoRedrawRow">
+<input checked="" id="mobileSecondaryAutoRedraw" type="checkbox"/>
+<span>
+<b>設定變更後立即重畫</b>
+<small>關閉後可保留既有追加工件，切換尺寸或形狀後再逐個生成。</small>
+</span>
+</label>
 <div class="mobileActionGridThree">
 <button id="mobileAddOneSecondaryBtn" type="button">生成 1 個</button>
 <button id="mobileClearSecondaryBtn" type="button">清除追加工件</button>
@@ -9744,7 +9809,6 @@ const mobileToolbar=document.getElementById("mobileTouchToolbar");
 const mobileSelectBtn=document.getElementById("mobileSelectBtn");
 const mobileSnapBtn=document.getElementById("mobileSnapBtn");
 const mobileMeasureBtn=document.getElementById("mobileMeasureBtn");
-const mobilePanBtn=document.getElementById("mobilePanBtn");
 const mobileDeleteBtn=document.getElementById("mobileDeleteBtn");
 const mobileFitBtn=document.getElementById("mobileFitBtn");
 const mobileCanvasExit=document.getElementById("mobileCanvasExit");
@@ -9754,7 +9818,6 @@ const mobileModeBadge=document.getElementById("mobileModeBadge");
   mobileSelectBtn,
   mobileSnapBtn,
   mobileMeasureBtn,
-  mobilePanBtn,
   mobileDeleteBtn,
   mobileFitBtn,
   mobileCanvasExit
@@ -9782,7 +9845,6 @@ function syncMobileModeUi(){
   if(!document.body.classList.contains("touchUiEnabled"))return;
 
   mobileSelectBtn?.classList.toggle("active",mobileInteractionMode==="select");
-  mobilePanBtn?.classList.toggle("active",mobileInteractionMode==="pan");
   mobileMeasureBtn?.classList.toggle("active",measureMode);
   mobileSnapBtn?.classList.toggle("active",snapEnabled.checked);
 
@@ -9795,7 +9857,7 @@ function syncMobileModeUi(){
         ?"平移"
         :"選取";
     const snapText=snapEnabled.checked?"｜磁吸開":"｜磁吸關";
-    mobileModeBadge.textContent=`手機：${modeText}${snapText}`;
+    mobileModeBadge.textContent=`手機：${modeText}${snapText}｜雙指縮放及移動工程圖`;
   }
 }
 
@@ -9954,15 +10016,8 @@ mobileSnapBtn?.addEventListener("click",()=>{
 });
 
 mobileMeasureBtn?.addEventListener("click",()=>{
-  if(mobileInteractionMode==="pan")mobileInteractionMode="select";
   toggleMeasureMode();
   syncMobileModeUi();
-});
-
-mobilePanBtn?.addEventListener("click",()=>{
-  setMobileInteractionMode(
-    mobileInteractionMode==="pan"?"select":"pan"
-  );
 });
 
 mobileDeleteBtn?.addEventListener("click",mobileDeleteSelection);

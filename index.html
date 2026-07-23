@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤規劃系統｜V2.8 Beta 修正適合畫面需點兩次</title>
+<title>智慧載盤規劃系統｜V2.9 Beta 真正修正適合畫面第一次生效</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -3517,7 +3517,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V2.8 Beta · 修正適合畫面需點兩次</div>
+<div class="headerBadge">V2.9 Beta · 真正修正適合畫面第一次生效</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -10383,12 +10383,44 @@ toggleMobileFullscreen=function(force){
 syncMobileWorkspaceEntry();
 
 
-/* ===== V1.5.1 下排適合畫面兼作工作區入口 ===== */
+/* ===== V2.9 下排適合畫面：第一次點擊同步完成 ===== */
 mobileFitBtn?.addEventListener("click",event=>{
-  if(
-    document.body.classList.contains("touchUiEnabled") &&
-    !document.body.classList.contains("mobileCanvasFullscreen")
-  ){
+  const touchUi=document.body.classList.contains("touchUiEnabled");
+  const canvasArea=document.querySelector(".canvasArea");
+  const isOverview=canvasArea?.classList.contains("overviewMode");
+
+  if(!touchUi)return;
+
+  /*
+    這是最早註冊的 capture 監聽器，而且原本會立即中止後續監聽器。
+    因此四方案專用布局必須直接在這裡同步套用，不能再交給後面的監聽器。
+  */
+  if(isOverview){
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    document.body.classList.add("mobileOverviewFitMode");
+
+    if(!document.body.classList.contains("mobileCanvasFullscreen")){
+      toggleMobileFullscreen(true);
+    }else{
+      resetCanvasZoom();
+    }
+
+    requestAnimationFrame(()=>{
+      document.body.classList.add("mobileOverviewFitMode");
+      resetCanvasZoom();
+      syncMobileWorkspaceEntry();
+      syncMobileModeUi();
+      window.scrollTo({top:0,left:0,behavior:"auto"});
+    });
+
+    setToolStatus("已進入四方案適合畫面。","success");
+    return;
+  }
+
+  /* 詳細工程圖仍維持原本的工作區入口行為。 */
+  if(!document.body.classList.contains("mobileCanvasFullscreen")){
     event.preventDefault();
     event.stopImmediatePropagation();
     toggleMobileFullscreen(true);
@@ -10955,46 +10987,7 @@ setMobileFineTuneOpen=function(open,panel=mobileActivePanel){
 document.body.classList.remove("mobileOverviewFitMode");
 
 
-/* ===== V2.8 適合畫面第一次點擊即完成 ===== */
-(function fixMobileOverviewFitFirstClick(){
-  if(!mobileFitBtn)return;
 
-  /*
-    舊流程同一顆按鈕同時綁了：
-    1. 進入全螢幕
-    2. 套用四方案專用布局
-    兩個處理器執行時序不同，因此第一次只進全螢幕，
-    第二次才完成四方案置頂。
-
-    改用 capture 階段攔截四方案總覽的點擊，
-    一次同步完成兩個狀態，並阻止舊的重複處理器。
-  */
-  mobileFitBtn.addEventListener("click",event=>{
-    const canvasArea=document.querySelector(".canvasArea");
-    const isOverview=canvasArea?.classList.contains("overviewMode");
-
-    if(!isOverview)return; // 詳細工程圖仍沿用原本適合畫面功能
-
-    event.preventDefault();
-    event.stopImmediatePropagation();
-
-    document.body.classList.add("mobileOverviewFitMode");
-
-    if(!document.body.classList.contains("mobileCanvasFullscreen")){
-      toggleMobileFullscreen(true);
-    }else{
-      resetCanvasZoom();
-    }
-
-    requestAnimationFrame(()=>{
-      document.body.classList.add("mobileOverviewFitMode");
-      window.scrollTo({top:0,left:0,behavior:"auto"});
-      syncMobileModeUi?.();
-    });
-
-    setToolStatus("已進入四方案適合畫面。","success");
-  },true);
-})();
 
 </script>
 </body>

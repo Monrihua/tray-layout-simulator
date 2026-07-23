@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V1.5.2 Beta 四方案與工具列顯示修正</title>
+<title>智慧載盤規劃系統｜V1.5.3 Beta 手機雙指縮放拖動</title>
 
 <style>
 :root{
@@ -2811,6 +2811,23 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V1.5.3 手機雙指手勢 ===== */
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled #drawing{
+    touch-action:none!important;
+    overscroll-behavior:none;
+  }
+
+  body.touchUiEnabled.mobilePinching #drawing{
+    cursor:grabbing;
+  }
+
+  body.touchUiEnabled.mobilePinching .mobileModeBadge{
+    display:block;
+  }
+}
+
 </style>
 
 </head>
@@ -2846,7 +2863,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V1.5.2 Beta · 四方案與工具列顯示修正</div>
+    <div class="headerBadge">V1.5.3 Beta · 手機雙指縮放拖動</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -9803,6 +9820,189 @@ if(mobileCanvasArea){
 
 /* 適合畫面恢復單純視角功能，不再作為工具列顯示條件 */
 syncMobileDetailToolbar();
+
+
+/* ===== V1.5.3 手機雙指縮放＋雙指拖動畫面 ===== */
+const mobileGesturePointers=new Map();
+let mobilePinchState=null;
+
+function mobilePointerDistance(a,b){
+  return Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY);
+}
+
+function mobilePointerCenter(a,b){
+  return {
+    clientX:(a.clientX+b.clientX)/2,
+    clientY:(a.clientY+b.clientY)/2
+  };
+}
+
+function cancelMobileSingleTouchOperations(){
+  if(typeof marqueeState!=="undefined"&&marqueeState){
+    marqueeState.rect?.remove?.();
+    marqueeState=null;
+    canvasArea?.classList.remove("marqueeActive");
+  }
+
+  if(typeof itemDragState!=="undefined")itemDragState=null;
+  if(typeof measurementDragState!=="undefined")measurementDragState=null;
+  if(typeof mobileTouchPanState!=="undefined")mobileTouchPanState=null;
+
+  document.body.classList.remove("mobileTouchPanning");
+}
+
+function startMobilePinch(){
+  if(
+    !document.body.classList.contains("touchUiEnabled") ||
+    mobileGesturePointers.size<2 ||
+    !currentViewBox ||
+    !baseViewBox
+  )return;
+
+  const [a,b]=Array.from(mobileGesturePointers.values()).slice(0,2);
+  const distance=mobilePointerDistance(a,b);
+  if(distance<8)return;
+
+  cancelMobileSingleTouchOperations();
+
+  const center=mobilePointerCenter(a,b);
+  const anchor=svgPointFromClient(center.clientX,center.clientY);
+
+  mobilePinchState={
+    pointerIds:[a.pointerId,b.pointerId],
+    startDistance:distance,
+    startViewBox:{...currentViewBox},
+    startScale:baseViewBox.width/currentViewBox.width,
+    anchor
+  };
+
+  document.body.classList.add("mobilePinching");
+
+  if(mobileModeBadge){
+    mobileModeBadge.textContent="手機：雙指縮放／拖動畫面";
+  }
+}
+
+function updateMobilePinch(event){
+  if(!mobilePinchState)return false;
+
+  const [idA,idB]=mobilePinchState.pointerIds;
+  const a=mobileGesturePointers.get(idA);
+  const b=mobileGesturePointers.get(idB);
+  if(!a||!b)return false;
+
+  event.preventDefault();
+  event.stopImmediatePropagation();
+
+  const distance=mobilePointerDistance(a,b);
+  const center=mobilePointerCenter(a,b);
+  const rect=svg.getBoundingClientRect();
+  if(!rect.width||!rect.height||distance<4)return true;
+
+  const rawScale=
+    mobilePinchState.startScale *
+    (distance/mobilePinchState.startDistance);
+
+  const nextScale=Math.max(MIN_ZOOM,Math.min(MAX_ZOOM,rawScale));
+  const nextWidth=baseViewBox.width/nextScale;
+  const nextHeight=baseViewBox.height/nextScale;
+
+  /*
+    讓起始雙指中心所對應的 SVG 點持續留在目前雙指中心下方。
+    因此兩指距離控制縮放，兩指中心移動則同時平移畫布。
+  */
+  const ratioX=(center.clientX-rect.left)/rect.width;
+  const ratioY=(center.clientY-rect.top)/rect.height;
+
+  currentViewBox={
+    x:mobilePinchState.anchor.x-ratioX*nextWidth,
+    y:mobilePinchState.anchor.y-ratioY*nextHeight,
+    width:nextWidth,
+    height:nextHeight
+  };
+
+  applyCurrentViewBox();
+  return true;
+}
+
+function finishMobilePinchPointer(event){
+  mobileGesturePointers.delete(event.pointerId);
+
+  if(!mobilePinchState)return false;
+
+  event.preventDefault();
+  event.stopImmediatePropagation();
+
+  if(
+    mobilePinchState.pointerIds.includes(event.pointerId) ||
+    mobileGesturePointers.size<2
+  ){
+    mobilePinchState=null;
+    document.body.classList.remove("mobilePinching");
+    requestAnimationFrame(syncMobileModeUi);
+  }
+
+  return true;
+}
+
+svg.addEventListener("pointerdown",event=>{
+  if(
+    event.pointerType!=="touch" ||
+    !document.body.classList.contains("touchUiEnabled")
+  )return;
+
+  mobileGesturePointers.set(event.pointerId,{
+    pointerId:event.pointerId,
+    clientX:event.clientX,
+    clientY:event.clientY
+  });
+
+  try{svg.setPointerCapture?.(event.pointerId)}catch{}
+
+  if(mobileGesturePointers.size===2){
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    startMobilePinch();
+  }else if(mobileGesturePointers.size>2){
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
+},true);
+
+svg.addEventListener("pointermove",event=>{
+  if(
+    event.pointerType!=="touch" ||
+    !mobileGesturePointers.has(event.pointerId)
+  )return;
+
+  mobileGesturePointers.set(event.pointerId,{
+    pointerId:event.pointerId,
+    clientX:event.clientX,
+    clientY:event.clientY
+  });
+
+  updateMobilePinch(event);
+},true);
+
+svg.addEventListener("pointerup",event=>{
+  if(event.pointerType!=="touch")return;
+  finishMobilePinchPointer(event);
+  try{svg.releasePointerCapture?.(event.pointerId)}catch{}
+},true);
+
+svg.addEventListener("pointercancel",event=>{
+  if(event.pointerType!=="touch")return;
+  finishMobilePinchPointer(event);
+},true);
+
+svg.addEventListener("lostpointercapture",event=>{
+  mobileGesturePointers.delete(event.pointerId);
+  if(mobileGesturePointers.size<2&&mobilePinchState){
+    mobilePinchState=null;
+    document.body.classList.remove("mobilePinching");
+    requestAnimationFrame(syncMobileModeUi);
+  }
+},true);
 
 </script>
 

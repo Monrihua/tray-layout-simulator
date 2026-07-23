@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V2.2 Beta 適合畫面顯示計算結果</title>
+<title>智慧載盤規劃系統｜V2.3 Beta 四方案專用適合畫面</title>
 
 <style>
 :root{
@@ -3383,6 +3383,97 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V2.3 四方案專用「適合畫面」 ===== */
+@media (pointer:coarse), (max-width:820px){
+  /*
+    只有按下「適合畫面」後才啟用這個專用布局。
+    一般四方案頁維持原樣，兩者不再看起來完全相同。
+  */
+  body.touchUiEnabled.mobileOverviewFitMode{
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    padding:0 0 88px!important;
+    background:#eef3f9!important;
+  }
+
+  body.touchUiEnabled.mobileOverviewFitMode .app{
+    display:block!important;
+    width:100%!important;
+    min-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+  }
+
+  body.touchUiEnabled.mobileOverviewFitMode .app > aside.controlPanel,
+  body.touchUiEnabled.mobileOverviewFitMode .app > header,
+  body.touchUiEnabled.mobileOverviewFitMode .topHeader,
+  body.touchUiEnabled.mobileOverviewFitMode .headerShell,
+  body.touchUiEnabled.mobileOverviewFitMode .overviewToolbar,
+  body.touchUiEnabled.mobileOverviewFitMode .v5StatusBar,
+  body.touchUiEnabled.mobileOverviewFitMode .canvasZoomHint{
+    display:none!important;
+  }
+
+  /* 四方案固定在畫面最上方，尺寸剛好可在設定抽屜上方完整顯示。 */
+  body.touchUiEnabled.mobileOverviewFitMode .canvasArea.overviewMode{
+    position:relative!important;
+    z-index:auto!important;
+    inset:auto!important;
+    width:100%!important;
+    height:458px!important;
+    min-height:458px!important;
+    max-height:458px!important;
+    margin:0!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    box-shadow:none!important;
+    background:#f3f7fc!important;
+    overflow:hidden!important;
+  }
+
+  body.touchUiEnabled.mobileOverviewFitMode .canvasArea.overviewMode .planOverview{
+    position:absolute!important;
+    inset:8px 10px!important;
+    width:auto!important;
+    height:auto!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-rows:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+    overflow:hidden!important;
+  }
+
+  body.touchUiEnabled.mobileOverviewFitMode .canvasArea.overviewMode .planCard{
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+  }
+
+  /* 計算結果緊接四方案下方，只有這兩個主要區塊。 */
+  body.touchUiEnabled.mobileOverviewFitMode .app > aside.infoPanel{
+    display:block!important;
+    position:relative!important;
+    top:auto!important;
+    width:auto!important;
+    max-height:none!important;
+    margin:14px 12px 18px!important;
+    padding:14px!important;
+    overflow:visible!important;
+    border-radius:14px!important;
+  }
+
+  /* 微調抽屜開啟時，四方案仍固定從頁面頂端開始，不被自動捲走。 */
+  body.touchUiEnabled.mobileOverviewFitMode.mobileFineTuneOpen{
+    scroll-behavior:auto!important;
+  }
+
+  body.touchUiEnabled.mobileOverviewFitMode .mobileCanvasExit{
+    position:fixed!important;
+  }
+}
+
 </style>
 
 </head>
@@ -3418,7 +3509,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V2.2 Beta · 適合畫面顯示計算結果</div>
+    <div class="headerBadge">V2.3 Beta · 四方案專用適合畫面</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -11093,6 +11184,58 @@ renderCurrent=function(){
 
   setCollapsed(initialCollapsed,false);
 })();
+
+
+/* ===== V2.3 四方案專用適合畫面狀態 ===== */
+function activateMobileOverviewFitMode(){
+  const canvasArea=document.querySelector(".canvasArea");
+  if(!canvasArea?.classList.contains("overviewMode"))return;
+
+  document.body.classList.add("mobileOverviewFitMode");
+
+  requestAnimationFrame(()=>{
+    window.scrollTo({top:0,left:0,behavior:"auto"});
+  });
+}
+
+function deactivateMobileOverviewFitMode(){
+  document.body.classList.remove("mobileOverviewFitMode");
+}
+
+/*
+  原本在已進入全螢幕時，「適合畫面」只會重設縮放，
+  因而看起來與一般四方案頁完全相同。
+  現在無論目前是否已全螢幕，都會進入四方案專用布局。
+*/
+mobileFitBtn?.addEventListener("click",()=>{
+  requestAnimationFrame(activateMobileOverviewFitMode);
+});
+
+mobileCanvasExit?.addEventListener("click",()=>{
+  deactivateMobileOverviewFitMode();
+});
+
+/* 其他流程離開全螢幕時，也同步清除專用布局。 */
+const previousToggleMobileFullscreenV23=toggleMobileFullscreen;
+toggleMobileFullscreen=function(force){
+  previousToggleMobileFullscreenV23(force);
+
+  if(!document.body.classList.contains("mobileCanvasFullscreen")){
+    deactivateMobileOverviewFitMode();
+  }
+};
+
+/* 開啟任何微調設定時，自動回到四方案最上方。 */
+const previousSetMobileFineTuneOpenV23=setMobileFineTuneOpen;
+setMobileFineTuneOpen=function(open,panel=mobileActivePanel){
+  previousSetMobileFineTuneOpenV23(open,panel);
+
+  if(open && document.body.classList.contains("mobileOverviewFitMode")){
+    requestAnimationFrame(()=>{
+      window.scrollTo({top:0,left:0,behavior:"auto"});
+    });
+  }
+};
 
 </script>
 

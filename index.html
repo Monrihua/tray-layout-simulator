@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V1.4.1 Beta 手機工具列版面修正</title>
+<title>智慧載盤規劃系統｜V1.5 Beta 手機工作區啟動流程</title>
 
 <style>
 :root{
@@ -2563,6 +2563,90 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V1.5 手機工作區啟動流程與工具列統一 ===== */
+.mobileEnterWorkspaceBtn,
+.mobileWorkspaceHint{
+  display:none;
+}
+
+@media (pointer:coarse), (max-width:820px){
+  /* 手機版隱藏頁首參數設定與原提示框 */
+  body.touchUiEnabled .pageHeader{
+    display:none!important;
+  }
+
+  /* 尚未進入工作區時不顯示兩排工具列 */
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .mobileTouchToolbar,
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .mobileQuickToolbar{
+    display:none!important;
+  }
+
+  /* 選擇方案後，只顯示一顆進入工作區的適合畫面按鈕 */
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .canvasArea:not(.overviewMode) ~ .mobileEnterWorkspaceBtn,
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .mobileEnterWorkspaceBtn.ready{
+    display:block;
+  }
+
+  body.touchUiEnabled .mobileEnterWorkspaceBtn{
+    position:fixed;
+    z-index:9997;
+    right:14px;
+    bottom:max(14px,env(safe-area-inset-bottom));
+    min-width:116px;
+    min-height:48px;
+    margin:0;
+    border-radius:14px;
+    font-size:13px;
+    font-weight:900;
+    box-shadow:0 8px 24px rgba(25,45,75,.22);
+  }
+
+  /* 進入工作區後才為工具列預留空間 */
+  body.touchUiEnabled:not(.mobileCanvasFullscreen){
+    padding-bottom:0!important;
+  }
+
+  body.touchUiEnabled.mobileCanvasFullscreen{
+    padding-bottom:138px!important;
+  }
+
+  /* 第二列字體、尺寸、換行方式與第一列完全一致 */
+  body.touchUiEnabled .mobileQuickToolbar button{
+    min-width:0!important;
+    min-height:46px!important;
+    margin:0!important;
+    padding:5px 2px!important;
+    border-radius:9px!important;
+    font-size:10px!important;
+    line-height:1.18!important;
+    font-weight:900!important;
+    white-space:normal!important;
+    overflow-wrap:normal!important;
+    word-break:keep-all!important;
+  }
+
+  /* 詳細工作區狀態提示，放在主要工件與排列矩陣下方 */
+  body.touchUiEnabled.mobileCanvasFullscreen .mobileWorkspaceHint{
+    display:block;
+    grid-column:1 / -1;
+    width:100%;
+    margin-top:7px;
+    padding:8px 10px;
+    border:1px solid #d7e2ef;
+    border-radius:11px;
+    background:rgba(245,249,255,.92);
+    color:#52647b;
+    font-size:10px;
+    line-height:1.45;
+    text-align:left;
+  }
+
+  body.touchUiEnabled.mobileCanvasFullscreen .overviewToolbar{
+    align-content:start;
+  }
+}
+
 </style>
 
 </head>
@@ -2598,7 +2682,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V1.4.1 Beta · 手機工具列版面修正</div>
+    <div class="headerBadge">V1.5 Beta · 手機工作區啟動流程</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -2964,6 +3048,10 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
           <span class="v5StatusChip" id="statusSecondary">追加工件：0</span>
           <span class="v5StatusChip" id="statusZones">空白區：未分析</span>
         </div>
+        <div id="mobileWorkspaceHint" class="mobileWorkspaceHint">
+          設定載盤長寬、安全範圍、工件尺寸與 XY 間距後，系統會即時比較排列方案。
+          選擇方案後可選取或框選工件、磁吸或自由拖曳、量測、追加工件、對齊、平移及縮放圖面。
+        </div>
         <div class="canvasZoomHint">滾輪縮放 · 以滑鼠位置為中心 · 雙擊空白處還原</div>
       </div>
 
@@ -3087,27 +3175,31 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   <button id="mobileMeasureBtn" type="button">量測<br>模式</button>
   <button id="mobileClearMeasurementsBtn" type="button">清除<br>量測</button>
   <button id="mobileDeleteBtn" type="button">刪除</button>
-  <button id="mobileFitBtn" type="button">適合<br>畫面</button>
+  <button id="mobileSystemSettingsBtn" type="button">設定<br>工具</button>
 </div>
 <button id="mobileCanvasExit" class="mobileCanvasExit" type="button" aria-label="離開全螢幕畫布">×</button>
 
 <div id="mobileQuickToolbar" class="mobileQuickToolbar" aria-label="手機分類工具列">
-  <button id="mobileZoomOutBtn" type="button">縮小畫面</button>
-  <button id="mobileZoomInBtn" type="button">放大畫面</button>
-  <button id="mobileInsetBtn" type="button">微調內縮</button>
-  <button id="mobilePrimarySettingsBtn" type="button">工件設定</button>
-  <button id="mobileSecondarySettingsBtn" type="button">追加工件</button>
-  <button id="mobileSnapSettingsBtn" type="button">吸附點</button>
-  <button id="mobileAlignSettingsBtn" type="button">對齊工件</button>
-  <button id="mobileSystemSettingsBtn" type="button">設定工具</button>
+  <button id="mobileInsetBtn" type="button">安全<br>設定</button>
+  <button id="mobilePrimarySettingsBtn" type="button">工件<br>設定</button>
+  <button id="mobileSecondarySettingsBtn" type="button">追加<br>工件</button>
+  <button id="mobileSnapSettingsBtn" type="button">吸附<br>點</button>
+  <button id="mobileAlignSettingsBtn" type="button">對齊<br>工件</button>
+  <button id="mobileZoomOutBtn" type="button">縮小<br>畫面</button>
+  <button id="mobileZoomInBtn" type="button">放大<br>畫面</button>
+  <button id="mobileFitBtn" type="button">適合<br>畫面</button>
 </div>
+
+<button id="mobileEnterWorkspaceBtn" class="mobileEnterWorkspaceBtn" type="button">
+  適合畫面
+</button>
 
 <div id="mobileFineTuneBackdrop" class="mobileFineTuneBackdrop" hidden></div>
 <section id="mobileFineTuneSheet" class="mobileFineTuneSheet" aria-label="手機分類設定" hidden>
   <div class="mobileFineTuneHandle"></div>
   <div class="mobileFineTuneHeader">
     <div>
-      <strong id="mobileFineTuneTitle">微調內縮</strong>
+      <strong id="mobileFineTuneTitle">安全設定</strong>
       <small id="mobileFineTuneSubtitle">修改後即時更新圖面</small>
     </div>
     <button id="mobileFineTuneCloseBtn" type="button" aria-label="關閉設定面板">×</button>
@@ -9074,7 +9166,7 @@ function showMobilePanel(panel){
   mobileSecondaryPanel.hidden=panel!=="secondary";
 
   const meta={
-    inset:["微調內縮","安全範圍 X／Y 方向內縮"],
+    inset:["安全設定","安全範圍 X／Y 方向內縮"],
     primary:["工件設定","主要工件形狀、尺寸、間距與交換"],
     secondary:["追加工件","追加工件形狀、尺寸、間距與排列"]
   }[panel];
@@ -9321,7 +9413,7 @@ showMobilePanel=function(panel){
   if(panelMap[panel])panelMap[panel].hidden=false;
 
   const meta={
-    inset:["微調內縮","安全範圍 X／Y 方向內縮"],
+    inset:["安全設定","安全範圍 X／Y 方向內縮"],
     primary:["工件設定","主要工件形狀、尺寸、間距與交換"],
     secondary:["追加工件","追加工件形狀、尺寸、間距與排列"],
     snap:["吸附點設定","拖曳與量測共用吸附目標"],
@@ -9449,6 +9541,42 @@ setMobileFineTuneOpen=function(open,panel=mobileActivePanel){
 };
 
 syncExtendedMobilePanels();
+
+
+/* ===== V1.5 手機工作區進入按鈕 ===== */
+const mobileEnterWorkspaceBtn=document.getElementById("mobileEnterWorkspaceBtn");
+
+function syncMobileWorkspaceEntry(){
+  if(!mobileEnterWorkspaceBtn)return;
+  const detailReady=!document.querySelector(".canvasArea")?.classList.contains("overviewMode");
+  mobileEnterWorkspaceBtn.classList.toggle("ready",detailReady);
+}
+
+mobileEnterWorkspaceBtn?.addEventListener("click",()=>{
+  toggleMobileFullscreen(true);
+  requestAnimationFrame(()=>{
+    resetCanvasZoom();
+    syncMobileWorkspaceEntry();
+  });
+});
+
+backToOverviewBtn?.addEventListener("click",()=>{
+  requestAnimationFrame(syncMobileWorkspaceEntry);
+});
+
+document.querySelectorAll(".planCard").forEach(card=>{
+  card.addEventListener("click",()=>{
+    requestAnimationFrame(syncMobileWorkspaceEntry);
+  });
+});
+
+const oldToggleMobileFullscreenV15=toggleMobileFullscreen;
+toggleMobileFullscreen=function(force){
+  oldToggleMobileFullscreenV15(force);
+  requestAnimationFrame(syncMobileWorkspaceEntry);
+};
+
+syncMobileWorkspaceEntry();
 
 </script>
 

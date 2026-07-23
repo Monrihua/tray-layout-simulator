@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤規劃系統｜V3.8 Beta 重整手機詳細資訊列</title>
+<title>智慧載盤規劃系統｜V3.9 Beta 精簡資訊寬度與推薦方案</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -3962,6 +3962,113 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V3.9 手機詳細資訊列：自然寬度＋推薦方案 ===== */
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled.mobileDetailMode #overviewToolbar{
+    display:grid!important;
+    grid-template-columns:auto auto auto!important;
+    grid-template-areas:
+      "back active recommended"
+      "status status status"!important;
+    justify-content:start!important;
+    align-items:center!important;
+    column-gap:8px!important;
+    row-gap:8px!important;
+    width:100%!important;
+    max-width:100%!important;
+    padding:10px 62px 8px 12px!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #backToOverviewBtn{
+    grid-area:back!important;
+    width:auto!important;
+    max-width:none!important;
+    min-width:0!important;
+    padding:8px 12px!important;
+    white-space:nowrap!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #activePlanLabel,
+  body.touchUiEnabled.mobileDetailMode #recommendedPlanLabel{
+    display:inline-flex!important;
+    align-items:center!important;
+    width:auto!important;
+    max-width:30vw!important;
+    min-width:0!important;
+    margin:0!important;
+    padding:8px 12px!important;
+    border:1px solid #d8e1ef!important;
+    border-radius:999px!important;
+    background:#fff!important;
+    color:#34445d!important;
+    font-size:10px!important;
+    font-weight:800!important;
+    line-height:1.15!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    box-sizing:border-box!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #activePlanLabel{
+    grid-area:active!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #recommendedPlanLabel{
+    grid-area:recommended!important;
+    border-color:#b8dfc9!important;
+    background:#eefaf3!important;
+    color:#0b6b3d!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #v5StatusBar{
+    grid-area:status!important;
+  }
+
+  /* 一般詳細畫面與全螢幕使用同一套頂部間距，圖面不再忽高忽低。 */
+  body.touchUiEnabled.mobileDetailMode #drawing{
+    flex:1 1 auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:0!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode:not(.mobileCanvasFullscreen) .canvasArea{
+    min-height:calc(100dvh - 196px)!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode) #recommendedPlanLabel{
+    display:none!important;
+  }
+}
+
+@media (pointer:coarse) and (max-width:520px){
+  body.touchUiEnabled.mobileDetailMode #overviewToolbar{
+    grid-template-columns:auto minmax(0,1fr) minmax(0,1fr)!important;
+    column-gap:6px!important;
+    padding-left:8px!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #backToOverviewBtn{
+    padding-left:9px!important;
+    padding-right:9px!important;
+    font-size:9.5px!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #activePlanLabel,
+  body.touchUiEnabled.mobileDetailMode #recommendedPlanLabel{
+    max-width:none!important;
+    width:100%!important;
+    padding-left:9px!important;
+    padding-right:9px!important;
+    font-size:9.5px!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3993,7 +4100,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V3.8 Beta · 重整手機詳細資訊列</div>
+<div class="headerBadge">V3.9 Beta · 精簡資訊寬度與推薦方案</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -4316,6 +4423,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 <div class="overviewToolbar" id="overviewToolbar">
 <button id="backToOverviewBtn" style="display:none" type="button">返回四方案總覽</button>
 <span id="activePlanLabel">目前：四方案總覽</span>
+<span id="recommendedPlanLabel">推薦：—</span>
 <div class="v5StatusBar" id="v5StatusBar">
 <span class="v5StatusChip" id="statusPrimary">主要工件：0</span>
 <span class="v5StatusChip" id="statusMatrix">排列矩陣：—</span>
@@ -4903,6 +5011,7 @@ const adaptiveFillStatus=document.getElementById("adaptiveFillStatus");
 const EPS=1e-9;
 
 let currentPlan=null;
+let overviewBestKey=null;
 let currentContext=null;
 let selectedIndex=null;
 let deletedPrimary=new Set();
@@ -9293,6 +9402,19 @@ function renderOverview(TL,TW,SX,SY,UL,UW,PL,PW,GX,GY){
 
   const entries=Object.entries(overviewPlans);
   const bestPlan=chooseBest(entries.map(([,plan])=>plan));
+  const bestEntry=entries.find(([,plan])=>plan===bestPlan);
+  overviewBestKey=bestEntry?.[0]||null;
+
+  const labelMap={
+    "array-vertical":"方形陣列＋直擺",
+    "array-horizontal":"方形陣列＋橫擺",
+    "honey-vertical":"蜂巢排列＋直擺",
+    "honey-horizontal":"蜂巢排列＋橫擺"
+  };
+  const recommendedPlanLabel=document.getElementById("recommendedPlanLabel");
+  if(recommendedPlanLabel){
+    recommendedPlanLabel.textContent=`推薦：${labelMap[overviewBestKey]||"—"}`;
+  }
 
   for(const [key,plan] of entries){
     const miniSvg=document.getElementById(`preview-${key}`);
@@ -9324,6 +9446,16 @@ function showPlanOverview(){
   planOverview.classList.remove("hidden");
   backToOverviewBtn.style.display="none";
   activePlanLabel.textContent="目前：四方案總覽";
+  const recommendedPlanLabel=document.getElementById("recommendedPlanLabel");
+  if(recommendedPlanLabel){
+    const labelMap={
+      "array-vertical":"方形陣列＋直擺",
+      "array-horizontal":"方形陣列＋橫擺",
+      "honey-vertical":"蜂巢排列＋直擺",
+      "honey-horizontal":"蜂巢排列＋橫擺"
+    };
+    recommendedPlanLabel.textContent=`推薦：${labelMap[overviewBestKey]||"—"}`;
+  }
   currentPlan=null;
   secondaryItems=[];
   emptyZones=[];
@@ -9381,6 +9513,10 @@ function activateOverviewPlan(key){
   selectedItems=[];
   selectionInfo.innerHTML="";
   activePlanLabel.textContent=`目前：${labelMap[key]}`;
+  const recommendedPlanLabel=document.getElementById("recommendedPlanLabel");
+  if(recommendedPlanLabel){
+    recommendedPlanLabel.textContent=`推薦：${labelMap[overviewBestKey]||"—"}`;
+  }
 
   renderCurrent();
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V1.5.3 Beta 手機雙指縮放拖動</title>
+<title>智慧載盤規劃系統｜V1.6 Beta 雙指手勢管理器</title>
 
 <style>
 :root{
@@ -2863,7 +2863,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V1.5.3 Beta · 手機雙指縮放拖動</div>
+    <div class="headerBadge">V1.6 Beta · 雙指手勢管理器</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -9822,101 +9822,112 @@ if(mobileCanvasArea){
 syncMobileDetailToolbar();
 
 
-/* ===== V1.5.3 手機雙指縮放＋雙指拖動畫面 ===== */
-const mobileGesturePointers=new Map();
-let mobilePinchState=null;
 
-function mobilePointerDistance(a,b){
+/* ===== V1.6 雙指手勢管理器：單指完全交還原本 V5 ===== */
+const touchGesturePointers=new Map();
+let touchGestureMode="single";
+let touchPinchState=null;
+
+function getTouchDistance(a,b){
   return Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY);
 }
 
-function mobilePointerCenter(a,b){
+function getTouchCenter(a,b){
   return {
     clientX:(a.clientX+b.clientX)/2,
     clientY:(a.clientY+b.clientY)/2
   };
 }
 
-function cancelMobileSingleTouchOperations(){
-  if(typeof marqueeState!=="undefined"&&marqueeState){
+function cancelExistingSingleFingerGesture(){
+  /*
+    第二根手指加入時，才取消原本可能正在進行的單指操作。
+    第一根手指本身不做 preventDefault、不 stopPropagation，
+    因此框選、工件拖曳、量測、單指平移仍由既有 V5 程式處理。
+  */
+  if(typeof marqueeState!=="undefined" && marqueeState){
     marqueeState.rect?.remove?.();
     marqueeState=null;
     canvasArea?.classList.remove("marqueeActive");
   }
 
-  if(typeof itemDragState!=="undefined")itemDragState=null;
-  if(typeof measurementDragState!=="undefined")measurementDragState=null;
-  if(typeof mobileTouchPanState!=="undefined")mobileTouchPanState=null;
+  if(typeof itemDragState!=="undefined" && itemDragState){
+    itemDragState=null;
+  }
+
+  if(typeof measurementDragState!=="undefined" && measurementDragState){
+    measurementDragState=null;
+  }
+
+  if(typeof mobileTouchPanState!=="undefined" && mobileTouchPanState){
+    mobileTouchPanState=null;
+  }
 
   document.body.classList.remove("mobileTouchPanning");
 }
 
-function startMobilePinch(){
+function beginTwoFingerGesture(){
   if(
     !document.body.classList.contains("touchUiEnabled") ||
-    mobileGesturePointers.size<2 ||
+    touchGesturePointers.size<2 ||
     !currentViewBox ||
     !baseViewBox
   )return;
 
-  const [a,b]=Array.from(mobileGesturePointers.values()).slice(0,2);
-  const distance=mobilePointerDistance(a,b);
+  const [a,b]=Array.from(touchGesturePointers.values()).slice(0,2);
+  const distance=getTouchDistance(a,b);
   if(distance<8)return;
 
-  cancelMobileSingleTouchOperations();
+  cancelExistingSingleFingerGesture();
 
-  const center=mobilePointerCenter(a,b);
+  const center=getTouchCenter(a,b);
   const anchor=svgPointFromClient(center.clientX,center.clientY);
 
-  mobilePinchState={
+  touchGestureMode="pinch";
+  touchPinchState={
     pointerIds:[a.pointerId,b.pointerId],
     startDistance:distance,
-    startViewBox:{...currentViewBox},
     startScale:baseViewBox.width/currentViewBox.width,
     anchor
   };
 
   document.body.classList.add("mobilePinching");
-
   if(mobileModeBadge){
     mobileModeBadge.textContent="手機：雙指縮放／拖動畫面";
   }
 }
 
-function updateMobilePinch(event){
-  if(!mobilePinchState)return false;
+function updateTwoFingerGesture(event){
+  if(touchGestureMode!=="pinch" || !touchPinchState)return false;
 
-  const [idA,idB]=mobilePinchState.pointerIds;
-  const a=mobileGesturePointers.get(idA);
-  const b=mobileGesturePointers.get(idB);
+  const [idA,idB]=touchPinchState.pointerIds;
+  const a=touchGesturePointers.get(idA);
+  const b=touchGesturePointers.get(idB);
   if(!a||!b)return false;
 
   event.preventDefault();
   event.stopImmediatePropagation();
 
-  const distance=mobilePointerDistance(a,b);
-  const center=mobilePointerCenter(a,b);
+  const distance=getTouchDistance(a,b);
+  const center=getTouchCenter(a,b);
   const rect=svg.getBoundingClientRect();
-  if(!rect.width||!rect.height||distance<4)return true;
+
+  if(distance<4 || !rect.width || !rect.height)return true;
 
   const rawScale=
-    mobilePinchState.startScale *
-    (distance/mobilePinchState.startDistance);
+    touchPinchState.startScale *
+    (distance/touchPinchState.startDistance);
 
   const nextScale=Math.max(MIN_ZOOM,Math.min(MAX_ZOOM,rawScale));
   const nextWidth=baseViewBox.width/nextScale;
   const nextHeight=baseViewBox.height/nextScale;
 
-  /*
-    讓起始雙指中心所對應的 SVG 點持續留在目前雙指中心下方。
-    因此兩指距離控制縮放，兩指中心移動則同時平移畫布。
-  */
   const ratioX=(center.clientX-rect.left)/rect.width;
   const ratioY=(center.clientY-rect.top)/rect.height;
 
   currentViewBox={
-    x:mobilePinchState.anchor.x-ratioX*nextWidth,
-    y:mobilePinchState.anchor.y-ratioY*nextHeight,
+    x:touchPinchState.anchor.x-ratioX*nextWidth,
+    y:touchPinchState.anchor.y-ratioY*nextHeight,
     width:nextWidth,
     height:nextHeight
   };
@@ -9925,24 +9936,33 @@ function updateMobilePinch(event){
   return true;
 }
 
-function finishMobilePinchPointer(event){
-  mobileGesturePointers.delete(event.pointerId);
+function endTwoFingerGesture(event){
+  const wasPinch=touchGestureMode==="pinch";
 
-  if(!mobilePinchState)return false;
-
-  event.preventDefault();
-  event.stopImmediatePropagation();
+  touchGesturePointers.delete(event.pointerId);
 
   if(
-    mobilePinchState.pointerIds.includes(event.pointerId) ||
-    mobileGesturePointers.size<2
+    wasPinch &&
+    (
+      touchGesturePointers.size<2 ||
+      touchPinchState?.pointerIds.includes(event.pointerId)
+    )
   ){
-    mobilePinchState=null;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    touchGestureMode="single";
+    touchPinchState=null;
     document.body.classList.remove("mobilePinching");
+
+    /*
+      剩下一根手指時不接續舊拖曳。
+      必須全部放開後重新按下，避免從縮放突然跳回框選或拖曳。
+    */
     requestAnimationFrame(syncMobileModeUi);
   }
 
-  return true;
+  return wasPinch;
 }
 
 svg.addEventListener("pointerdown",event=>{
@@ -9951,19 +9971,23 @@ svg.addEventListener("pointerdown",event=>{
     !document.body.classList.contains("touchUiEnabled")
   )return;
 
-  mobileGesturePointers.set(event.pointerId,{
+  touchGesturePointers.set(event.pointerId,{
     pointerId:event.pointerId,
     clientX:event.clientX,
     clientY:event.clientY
   });
 
-  try{svg.setPointerCapture?.(event.pointerId)}catch{}
-
-  if(mobileGesturePointers.size===2){
+  /*
+    只有第二根手指加入時才攔截。
+    第一根手指完全放行給原本的選取、框選、拖曳、量測程式。
+  */
+  if(touchGesturePointers.size===2){
     event.preventDefault();
     event.stopImmediatePropagation();
-    startMobilePinch();
-  }else if(mobileGesturePointers.size>2){
+
+    try{svg.setPointerCapture?.(event.pointerId)}catch{}
+    beginTwoFingerGesture();
+  }else if(touchGesturePointers.size>2){
     event.preventDefault();
     event.stopImmediatePropagation();
   }
@@ -9972,37 +9996,65 @@ svg.addEventListener("pointerdown",event=>{
 svg.addEventListener("pointermove",event=>{
   if(
     event.pointerType!=="touch" ||
-    !mobileGesturePointers.has(event.pointerId)
+    !touchGesturePointers.has(event.pointerId)
   )return;
 
-  mobileGesturePointers.set(event.pointerId,{
+  touchGesturePointers.set(event.pointerId,{
     pointerId:event.pointerId,
     clientX:event.clientX,
     clientY:event.clientY
   });
 
-  updateMobilePinch(event);
+  /*
+    非雙指模式完全不攔截，原本單指邏輯照常執行。
+  */
+  if(touchGestureMode==="pinch"){
+    updateTwoFingerGesture(event);
+  }
 },true);
 
 svg.addEventListener("pointerup",event=>{
   if(event.pointerType!=="touch")return;
-  finishMobilePinchPointer(event);
-  try{svg.releasePointerCapture?.(event.pointerId)}catch{}
+  const wasPinch=endTwoFingerGesture(event);
+  if(wasPinch){
+    try{svg.releasePointerCapture?.(event.pointerId)}catch{}
+  }
 },true);
 
 svg.addEventListener("pointercancel",event=>{
   if(event.pointerType!=="touch")return;
-  finishMobilePinchPointer(event);
+  endTwoFingerGesture(event);
 },true);
 
 svg.addEventListener("lostpointercapture",event=>{
-  mobileGesturePointers.delete(event.pointerId);
-  if(mobileGesturePointers.size<2&&mobilePinchState){
-    mobilePinchState=null;
+  touchGesturePointers.delete(event.pointerId);
+
+  if(touchGestureMode==="pinch" && touchGesturePointers.size<2){
+    touchGestureMode="single";
+    touchPinchState=null;
     document.body.classList.remove("mobilePinching");
     requestAnimationFrame(syncMobileModeUi);
   }
 },true);
+
+/* 防止 iOS Safari 將雙指手勢交給頁面縮放 */
+svg.addEventListener("gesturestart",event=>{
+  if(document.body.classList.contains("touchUiEnabled")){
+    event.preventDefault();
+  }
+},{passive:false});
+
+svg.addEventListener("gesturechange",event=>{
+  if(document.body.classList.contains("touchUiEnabled")){
+    event.preventDefault();
+  }
+},{passive:false});
+
+svg.addEventListener("gestureend",event=>{
+  if(document.body.classList.contains("touchUiEnabled")){
+    event.preventDefault();
+  }
+},{passive:false});
 
 </script>
 

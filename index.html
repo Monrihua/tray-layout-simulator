@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V2.1 Beta 手機完整載盤折疊與四方案再壓縮</title>
+<title>智慧載盤規劃系統｜V2.2 Beta 手機計算結果快捷鍵</title>
 
 <style>
 :root{
@@ -2139,6 +2139,33 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 }
 
 
+
+/* ===== V2.2 計算結果快捷鍵 ===== */
+mobileResultsBtn?.addEventListener("click",()=>{
+  /* 若設定抽屜開著，先關閉，避免遮住計算結果。 */
+  if(typeof closeMobileFineTune==="function"){
+    closeMobileFineTune();
+  }else{
+    const sheet=document.getElementById("mobileFineTuneSheet");
+    const backdrop=document.getElementById("mobileFineTuneBackdrop");
+    if(sheet)sheet.hidden=true;
+    if(backdrop)backdrop.hidden=true;
+  }
+
+  const infoPanel=document.querySelector(".infoPanel");
+  if(!infoPanel)return;
+
+  mobileResultsBtn.classList.add("active");
+  infoPanel.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+
+  setTimeout(()=>{
+    mobileResultsBtn.classList.remove("active");
+  },900);
+});
+
 /* ===== V1.2 手機第二排工具列與微調面板 ===== */
 .mobileQuickToolbar,
 .mobileFineTuneSheet,
@@ -3316,6 +3343,30 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V2.2 手機「計算結果」快捷鍵 ===== */
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled .mobileQuickToolbar{
+    grid-template-columns:repeat(9,minmax(0,1fr))!important;
+  }
+
+  body.touchUiEnabled .mobileQuickToolbar button{
+    padding-left:1px!important;
+    padding-right:1px!important;
+    font-size:9.5px!important;
+  }
+
+  body.touchUiEnabled .mobileQuickToolbar #mobileResultsBtn{
+    color:#0d6fe8;
+  }
+
+  body.touchUiEnabled .mobileQuickToolbar #mobileResultsBtn.active{
+    border-color:#2f6fe4;
+    background:#eaf2ff;
+    color:#174ea6;
+  }
+}
+
 </style>
 
 </head>
@@ -3351,7 +3402,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V2.1 Beta · 手機完整載盤折疊與四方案再壓縮</div>
+    <div class="headerBadge">V2.2 Beta · 手機計算結果快捷鍵</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -3865,6 +3916,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   <button id="mobileZoomOutBtn" type="button">縮小<br>畫面</button>
   <button id="mobileZoomInBtn" type="button">放大<br>畫面</button>
   <button id="mobileFitBtn" type="button">適合<br>畫面</button>
+  <button id="mobileResultsBtn" type="button">計算<br>結果</button>
 </div>
 
 <button id="mobileEnterWorkspaceBtn" class="mobileEnterWorkspaceBtn" type="button">
@@ -9513,6 +9565,7 @@ const mobileDeleteBtn=document.getElementById("mobileDeleteBtn");
 const mobileZoomOutBtn=document.getElementById("mobileZoomOutBtn");
 const mobileZoomInBtn=document.getElementById("mobileZoomInBtn");
 const mobileFitBtn=document.getElementById("mobileFitBtn");
+const mobileResultsBtn=document.getElementById("mobileResultsBtn");
 const mobileCanvasExit=document.getElementById("mobileCanvasExit");
 const mobileModeBadge=document.getElementById("mobileModeBadge");
 
@@ -9525,6 +9578,7 @@ const mobileModeBadge=document.getElementById("mobileModeBadge");
   mobileZoomOutBtn,
   mobileZoomInBtn,
   mobileFitBtn,
+  mobileResultsBtn,
   mobileCanvasExit
 ].forEach(button=>{
   if(!button)return;

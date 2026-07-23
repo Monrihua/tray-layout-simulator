@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤規劃系統｜V3.0 Beta 手機單一工作流程</title>
+<title>智慧載盤規劃系統｜V3.1 Beta 全域微調量與利用率資訊</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -3517,6 +3517,42 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V3.1 手機全域微調量 ===== */
+@media (pointer:coarse), (max-width:820px){
+  .mobileGlobalStepCard{padding-bottom:12px!important}
+  .mobileGlobalStepRow{
+    display:grid;
+    grid-template-columns:72px 72px 72px minmax(90px,1fr);
+    gap:8px;
+    align-items:center;
+  }
+  .mobileGlobalStepRow button{
+    min-height:42px;
+    margin:0;
+    border-radius:9px;
+    font-weight:900;
+  }
+  .mobileGlobalStepRow button.active{
+    border-color:#2f6fe4;
+    background:#eaf2ff;
+    color:#174ea6;
+    box-shadow:0 0 0 2px rgba(47,111,228,.14);
+  }
+  .mobileGlobalStepCustom{
+    width:100%!important;
+    height:42px!important;
+    margin:0!important;
+    padding:8px 10px!important;
+    border:1px solid #c8d4e5!important;
+    border-radius:9px!important;
+    background:#fff!important;
+    font-size:15px!important;
+    font-weight:800!important;
+  }
+  .mobileGlobalStepCustom[hidden]{display:none!important}
+}
+
 </style>
 </head>
 <body>
@@ -3548,7 +3584,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V3.0 Beta · 手機單一工作流程</div>
+<div class="headerBadge">V3.1 Beta · 全域微調量與利用率資訊</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -3874,6 +3910,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 <div class="v5StatusBar" id="v5StatusBar">
 <span class="v5StatusChip" id="statusPrimary">主要工件：0</span>
 <span class="v5StatusChip" id="statusMatrix">排列矩陣：—</span>
+<span class="v5StatusChip" id="statusUtilization">利用率：0.00%</span>
 <span class="v5StatusChip" id="statusSecondary">追加工件：0</span>
 <span class="v5StatusChip" id="statusZones">空白區：未分析</span>
 </div>
@@ -3999,7 +4036,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 <button id="mobileInsetBtn" type="button">安全<br/>設定</button>
 <button id="mobilePrimarySettingsBtn" type="button">工件<br/>設定</button>
 <button id="mobileSecondarySettingsBtn" type="button">追加<br/>工件</button>
-<button id="mobileSnapSettingsBtn" type="button">吸附<br/>點</button>
+<button id="mobileSnapSettingsBtn" type="button">吸附<br/>設定</button>
 <button id="mobileAlignSettingsBtn" type="button">對齊<br/>工件</button>
 <button id="mobileFitBtn" type="button">適合<br/>畫面</button>
 </div>
@@ -4017,6 +4054,17 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 <button aria-label="關閉設定面板" id="mobileFineTuneCloseBtn" type="button">×</button>
 </div>
 <div class="mobilePanelSection" hidden="" id="mobileTrayPanel">
+<div class="mobileSectionCard mobileGlobalStepCard" data-global-step-control>
+<div class="mobileSectionTitle">上下鍵微調量</div>
+<div class="mobileGlobalStepRow">
+<button class="active" data-global-step-value="1" type="button">1</button>
+<button data-global-step-value="0.1" type="button">0.1</button>
+<button data-global-step-value="custom" type="button">自訂</button>
+<input aria-label="自訂全域微調量" class="mobileGlobalStepCustom" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
+</div>
+<div class="mobilePanelHint">此數值為全域設定，在其他設定頁也會同步。</div>
+</div>
+
 <div class="mobileSectionCard">
 <div class="mobileSectionTitle">載盤尺寸</div>
 <div class="mobileFineTuneGrid">
@@ -4065,6 +4113,17 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 </div>
 <div class="mobilePanelSection" hidden="" id="mobilePrimaryPanel">
+<div class="mobileSectionCard mobileGlobalStepCard" data-global-step-control>
+<div class="mobileSectionTitle">上下鍵微調量</div>
+<div class="mobileGlobalStepRow">
+<button class="active" data-global-step-value="1" type="button">1</button>
+<button data-global-step-value="0.1" type="button">0.1</button>
+<button data-global-step-value="custom" type="button">自訂</button>
+<input aria-label="自訂全域微調量" class="mobileGlobalStepCustom" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
+</div>
+<div class="mobilePanelHint">此數值為全域設定，在其他設定頁也會同步。</div>
+</div>
+
 <div class="mobileSectionCard">
 <div class="mobileSectionTitle">工件形狀</div>
 <div class="mobileShapeButtons">
@@ -4121,6 +4180,17 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 </div>
 <div class="mobilePanelSection" hidden="" id="mobileSecondaryPanel">
+<div class="mobileSectionCard mobileGlobalStepCard" data-global-step-control>
+<div class="mobileSectionTitle">上下鍵微調量</div>
+<div class="mobileGlobalStepRow">
+<button class="active" data-global-step-value="1" type="button">1</button>
+<button data-global-step-value="0.1" type="button">0.1</button>
+<button data-global-step-value="custom" type="button">自訂</button>
+<input aria-label="自訂全域微調量" class="mobileGlobalStepCustom" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
+</div>
+<div class="mobilePanelHint">此數值為全域設定，在其他設定頁也會同步。</div>
+</div>
+
 <div class="mobileSectionCard">
 <div class="mobileSectionTitle">更新方式</div>
 <label class="mobileSwitchRow">
@@ -4210,6 +4280,17 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 </div>
 <div class="mobilePanelSection" hidden="" id="mobileSnapPanel">
+<div class="mobileSectionCard mobileGlobalStepCard" data-global-step-control>
+<div class="mobileSectionTitle">上下鍵微調量</div>
+<div class="mobileGlobalStepRow">
+<button class="active" data-global-step-value="1" type="button">1</button>
+<button data-global-step-value="0.1" type="button">0.1</button>
+<button data-global-step-value="custom" type="button">自訂</button>
+<input aria-label="自訂全域微調量" class="mobileGlobalStepCustom" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
+</div>
+<div class="mobilePanelHint">此數值為全域設定，在其他設定頁也會同步。</div>
+</div>
+
 <div class="mobileSectionCard">
 <div class="mobileSectionTitle">吸附模式</div>
 <label class="mobileSwitchRow">
@@ -7906,8 +7987,14 @@ function updateCurrentUtilization(){
     ? (primaryArea+secondaryArea)/areaSafe*100
     : 0;
 
+  const formatted=`${utilization.toFixed(2)}%`;
+
   const value=document.getElementById("utilizationValue");
-  if(value)value.textContent=`${utilization.toFixed(2)}%`;
+  if(value)value.textContent=formatted;
+
+  const statusUtilization=document.getElementById("statusUtilization");
+  if(statusUtilization)statusUtilization.textContent=`利用率：${formatted}`;
+
   return utilization;
 }
 
@@ -10311,7 +10398,7 @@ showMobilePanel=function(panel){
     inset:["安全設定","安全範圍 X／Y 方向內縮"],
     primary:["工件設定","主要工件形狀、尺寸、間距與交換"],
     secondary:["追加工件","追加工件形狀、尺寸、間距與排列"],
-    snap:["吸附點設定","拖曳與量測共用吸附目標"],
+    snap:["吸附設定","拖曳與量測共用吸附目標"],
     align:["對齊工件","選取後進行對齊與位置操作"],
     system:["設定工具","設定檔、V5 空間分析與輸出"]
   }[panel];
@@ -11051,6 +11138,133 @@ document.body.classList.remove("mobileOverviewFitMode");
   });
   update();
 })();
+
+
+/* ===== V3.1 全域微調量：桌面與手機共用 ===== */
+(function initializeGlobalStepControls(){
+  const managedSectionIds=[
+    "traySettingsSection",
+    "primarySettingsSection",
+    "secondarySettingsSection",
+    "editSettingsSection"
+  ];
+  const desktopControls=[...document.querySelectorAll(".sectionStepControl")];
+  const mobileControls=[...document.querySelectorAll("[data-global-step-control]")];
+  let syncing=false;
+
+  const parseStep=value=>{
+    const step=Number(value);
+    return Number.isFinite(step)&&step>0?step:null;
+  };
+
+  function applyGlobalStep(value){
+    const step=parseStep(value);
+    if(step===null)return;
+
+    managedSectionIds.forEach(sectionId=>applySectionStep(sectionId,step));
+
+    document.querySelectorAll(
+      ".mobilePanelSection input[type='number']:not(.mobileGlobalStepCustom)"
+    ).forEach(input=>{
+      input.step=String(step);
+      input.dataset.activeStep=String(step);
+    });
+
+    syncing=true;
+
+    desktopControls.forEach(control=>{
+      const buttons=[...control.querySelectorAll("[data-step-value]")];
+      const custom=control.querySelector(".customStepInput");
+      const preset=buttons.find(button=>{
+        const n=Number(button.dataset.stepValue);
+        return Number.isFinite(n)&&Math.abs(n-step)<1e-12;
+      });
+      const active=preset||buttons.find(button=>button.dataset.stepValue==="custom");
+
+      buttons.forEach(button=>button.classList.toggle("active",button===active));
+      if(custom){
+        custom.value=String(step);
+        custom.hidden=Boolean(preset);
+      }
+    });
+
+    mobileControls.forEach(control=>{
+      const buttons=[...control.querySelectorAll("[data-global-step-value]")];
+      const custom=control.querySelector(".mobileGlobalStepCustom");
+      const preset=buttons.find(button=>{
+        const n=Number(button.dataset.globalStepValue);
+        return Number.isFinite(n)&&Math.abs(n-step)<1e-12;
+      });
+      const active=preset||buttons.find(button=>button.dataset.globalStepValue==="custom");
+
+      buttons.forEach(button=>button.classList.toggle("active",button===active));
+      if(custom){
+        custom.value=String(step);
+        custom.hidden=Boolean(preset);
+      }
+    });
+
+    syncing=false;
+
+    try{
+      localStorage.setItem("traySimulator.globalStep",String(step));
+    }catch(_error){}
+  }
+
+  desktopControls.forEach(control=>{
+    control.querySelectorAll("[data-step-value]").forEach(button=>{
+      button.addEventListener("click",()=>{
+        if(syncing)return;
+        const custom=control.querySelector(".customStepInput");
+        const value=button.dataset.stepValue==="custom"
+          ?custom?.value
+          :button.dataset.stepValue;
+        requestAnimationFrame(()=>applyGlobalStep(value));
+      });
+    });
+
+    const custom=control.querySelector(".customStepInput");
+    custom?.addEventListener("input",()=>{
+      if(!syncing)applyGlobalStep(custom.value);
+    });
+    custom?.addEventListener("change",()=>{
+      if(!syncing)applyGlobalStep(custom.value);
+    });
+  });
+
+  mobileControls.forEach(control=>{
+    const buttons=[...control.querySelectorAll("[data-global-step-value]")];
+    const custom=control.querySelector(".mobileGlobalStepCustom");
+
+    buttons.forEach(button=>{
+      button.addEventListener("click",()=>{
+        const value=button.dataset.globalStepValue;
+        if(value==="custom"){
+          custom.hidden=false;
+          custom.focus();
+          custom.select();
+          applyGlobalStep(custom.value);
+        }else{
+          custom.hidden=true;
+          applyGlobalStep(value);
+        }
+      });
+    });
+
+    custom?.addEventListener("input",()=>applyGlobalStep(custom.value));
+    custom?.addEventListener("change",()=>applyGlobalStep(custom.value));
+  });
+
+  let initial=1;
+  try{
+    initial=parseStep(localStorage.getItem("traySimulator.globalStep"))||1;
+  }catch(_error){}
+  applyGlobalStep(initial);
+})();
+
+requestAnimationFrame(()=>{
+  if(typeof updateCurrentUtilization==="function")updateCurrentUtilization();
+});
 
 </script>
 </body>

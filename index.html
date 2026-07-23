@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤規劃系統｜V2.5 Beta 手機首頁四方案置頂</title>
+<title>智慧載盤規劃系統｜V2.6 Beta 修正適合畫面隱藏載盤設定</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -3427,6 +3427,65 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V2.6 修正：實際主容器是 .container，不是 .app ===== */
+@media (pointer:coarse), (max-width:820px){
+  /* 一般手機四方案首頁：隱藏左側參數面板。 */
+  body.touchUiEnabled:not(.mobileDetailMode):has(.canvasArea.overviewMode)
+  .container > aside.controlPanel{
+    display:none!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode):has(.canvasArea.overviewMode)
+  .container{
+    display:block!important;
+    width:100%!important;
+    margin:0!important;
+    padding:0!important;
+  }
+
+  /* 按下適合畫面後：只保留四方案與計算結果。 */
+  body.touchUiEnabled.mobileOverviewFitMode
+  .container > aside.controlPanel{
+    display:none!important;
+  }
+
+  body.touchUiEnabled.mobileOverviewFitMode
+  .container{
+    display:block!important;
+    width:100%!important;
+    min-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+  }
+
+  body.touchUiEnabled.mobileOverviewFitMode
+  .container > aside.infoPanel{
+    display:block!important;
+    position:relative!important;
+    top:auto!important;
+    width:auto!important;
+    max-height:none!important;
+    margin:14px 12px 18px!important;
+    padding:14px!important;
+    overflow:visible!important;
+  }
+
+  /*
+    舊全螢幕規則原本也使用錯誤的 .app 選擇器；
+    補上正確容器，避免載盤設定在適合畫面繼續出現。
+  */
+  body.touchUiEnabled.mobileCanvasFullscreen
+  .container > aside.controlPanel{
+    display:none!important;
+  }
+
+  body.touchUiEnabled.mobileCanvasFullscreen:has(.canvasArea.overviewMode)
+  .container > aside.infoPanel{
+    display:block!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3458,7 +3517,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V2.5 Beta · 手機首頁四方案置頂</div>
+<div class="headerBadge">V2.6 Beta · 修正適合畫面隱藏載盤設定</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。

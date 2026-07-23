@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤規劃系統｜V3.1 Beta 全域微調量與利用率資訊</title>
+<title>智慧載盤規劃系統｜V3.2 Beta 修正手機追加工件重建主要工件</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -3584,7 +3584,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V3.1 Beta · 全域微調量與利用率資訊</div>
+<div class="headerBadge">V3.2 Beta · 修正手機追加工件重建主要工件</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -9214,7 +9214,17 @@ const editOnlyControlIds=new Set([
 ]);
 
 document.querySelectorAll("input").forEach(input=>{
+  /*
+    手機微調面板中的欄位只是桌面主控制項的鏡像。
+    它們必須先同步到對應主控制項，再由主控制項決定：
+    - 主要設定：完整 draw()
+    - 追加工件設定：只 scheduleSecondaryAutoRefresh()
+
+    若手機鏡像欄位也直接綁 draw()，調整追加工件尺寸或間距時
+    就會重建主要方案，讓已刪除的主要工件重新出現。
+  */
   if(
+    input.closest(".mobileFineTuneSheet")||
     input.classList.contains("customStepInput")||
     secondaryControlIds.has(input.id)||
     inchHelperControlIds.has(input.id)||
@@ -11264,6 +11274,21 @@ document.body.classList.remove("mobileOverviewFitMode");
 
 requestAnimationFrame(()=>{
   if(typeof updateCurrentUtilization==="function")updateCurrentUtilization();
+});
+
+
+/* ===== V3.2 手機追加工件鏡像欄位防止完整重畫 ===== */
+[
+  "mobileSecondaryInches",
+  "mobileSecondaryLength",
+  "mobileSecondaryWidth",
+  "mobileSecondaryGapX",
+  "mobileSecondaryGapY"
+].forEach(id=>{
+  const control=document.getElementById(id);
+  if(!control)return;
+
+  control.dataset.secondaryMirrorOnly="true";
 });
 
 </script>

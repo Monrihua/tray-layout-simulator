@@ -1,10 +1,10 @@
 <!DOCTYPE html>
+
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V2.3 Beta 四方案專用適合畫面</title>
-
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>智慧載盤規劃系統｜V2.4 Beta 共用折疊元件與首屏防閃</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -2938,249 +2938,8 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 }
 
 
-/* ===== V1.8 桌面版設定區折疊 ===== */
-@media (pointer:fine) and (min-width:821px){
-  .desktopCollapsibleSection{
-    padding:0!important;
-    overflow:hidden;
-  }
-
-  .desktopCollapseHeader{
-    width:100%;
-    display:flex;
-    align-items:flex-start;
-    gap:8px;
-    margin:0;
-    padding:12px 12px;
-    border:0;
-    border-radius:0;
-    background:transparent;
-    color:#173d72;
-    text-align:left;
-    cursor:pointer;
-    box-shadow:none;
-  }
-
-  .desktopCollapseHeader:hover{
-    background:#f5f9ff;
-  }
-
-  .desktopCollapseArrow{
-    flex:0 0 auto;
-    width:13px;
-    padding-top:1px;
-    color:#166ee8;
-    font-size:12px;
-    font-weight:900;
-    line-height:1.25;
-  }
-
-  .desktopCollapseText{
-    min-width:0;
-    flex:1;
-  }
-
-  .desktopCollapseTitle{
-    display:block;
-    font-size:13px;
-    font-weight:900;
-    line-height:1.35;
-  }
-
-  .desktopCollapseSummary{
-    display:none;
-    margin-top:5px;
-    color:#586b84;
-    font-size:11px;
-    font-weight:700;
-    line-height:1.5;
-    white-space:normal;
-  }
-
-  .desktopCollapsibleSection.isCollapsed .desktopCollapseSummary{
-    display:block;
-  }
-
-  .desktopCollapseBody{
-    padding:0 12px 12px;
-  }
-
-  .desktopCollapsibleSection.isCollapsed .desktopCollapseBody{
-    display:none;
-  }
-
-  /* 原本標題改由折疊標題列取代 */
-  .desktopCollapsibleSection > h2,
-  .desktopCollapseBody > h2{
-    display:none!important;
-  }
-
-  /* 吋數換算併入載盤設定，不再顯示第二張獨立卡片 */
-  #traySettingsSection .inchConversionSection{
-    margin:12px 0 0!important;
-    padding:12px 0 0!important;
-    border:0!important;
-    border-top:1px solid #dbe4f1!important;
-    border-radius:0!important;
-    background:transparent!important;
-    box-shadow:none!important;
-  }
-
-  #traySettingsSection .inchConversionSection > h2{
-    display:block!important;
-    margin:0 0 9px!important;
-    font-size:12px!important;
-  }
-}
-
-
-/* ===== V1.9 桌面版三行摘要折疊介面 ===== */
-@media (pointer:fine) and (min-width:821px){
-  .desktopCollapseHeader{
-    transition:background .18s ease, box-shadow .18s ease;
-  }
-
-  .desktopCollapseSummary{
-    display:none;
-    margin-top:6px;
-    color:#5f7087;
-    font-size:11px;
-    font-weight:700;
-    line-height:1.55;
-    white-space:normal;
-  }
-
-  .desktopCollapsibleSection.isCollapsed .desktopCollapseSummary{
-    display:grid!important;
-    gap:1px;
-  }
-
-  .desktopSummaryLine{
-    display:block;
-    min-height:17px;
-  }
-
-  .desktopCollapseBody{
-    overflow:hidden;
-    opacity:1;
-    max-height:5000px;
-    padding:0 12px 12px;
-    transition:max-height .2s ease, opacity .16s ease, padding .2s ease;
-  }
-
-  .desktopCollapsibleSection.isCollapsed .desktopCollapseBody{
-    display:block!important;
-    max-height:0!important;
-    opacity:0;
-    padding-top:0!important;
-    padding-bottom:0!important;
-    pointer-events:none;
-  }
-
-  .desktopCollapsibleSection.isCollapsed{
-    min-height:96px;
-  }
-
-  .desktopCollapsibleSection.isCollapsed .desktopCollapseHeader{
-    min-height:94px;
-  }
-
-  .desktopCollapseTitle{
-    font-size:13px;
-    font-weight:900;
-    color:#183e73;
-  }
-
-  .desktopCollapseArrow{
-    padding-top:2px;
-  }
-}
-
-
 /* ===== V2.0 手機載盤設定折疊 + 四方案高度壓縮 ===== */
 @media (pointer:coarse), (max-width:820px){
-  /* 首頁載盤設定改成可折疊摘要 */
-  body.touchUiEnabled .mobileTrayCollapsible{
-    padding:0!important;
-    overflow:hidden;
-  }
-
-  body.touchUiEnabled .mobileTrayCollapseHeader{
-    width:100%;
-    display:flex;
-    align-items:flex-start;
-    gap:10px;
-    padding:16px 18px;
-    border:0;
-    background:transparent;
-    text-align:left;
-    color:#24344a;
-    cursor:pointer;
-  }
-
-  body.touchUiEnabled .mobileTrayCollapseArrow{
-    flex:0 0 auto;
-    width:14px;
-    padding-top:2px;
-    color:#1671e8;
-    font-size:15px;
-    font-weight:900;
-    line-height:1.3;
-  }
-
-  body.touchUiEnabled .mobileTrayCollapseText{
-    min-width:0;
-    flex:1;
-  }
-
-  body.touchUiEnabled .mobileTrayCollapseTitle{
-    display:block;
-    font-size:18px;
-    font-weight:900;
-    line-height:1.35;
-  }
-
-  body.touchUiEnabled .mobileTrayCollapseSummary{
-    display:none;
-    margin-top:8px;
-    color:#607087;
-    font-size:13px;
-    font-weight:700;
-    line-height:1.55;
-  }
-
-  body.touchUiEnabled .mobileTrayCollapsible.isCollapsed .mobileTrayCollapseSummary{
-    display:grid!important;
-    gap:1px;
-  }
-
-  body.touchUiEnabled .mobileTraySummaryLine{
-    display:block;
-  }
-
-  body.touchUiEnabled .mobileTrayCollapseBody{
-    overflow:hidden;
-    opacity:1;
-    max-height:5000px;
-    padding:0 18px 18px;
-    transition:max-height .22s ease, opacity .16s ease, padding .22s ease;
-  }
-
-  body.touchUiEnabled .mobileTrayCollapsible.isCollapsed .mobileTrayCollapseBody{
-    display:block!important;
-    max-height:0!important;
-    opacity:0;
-    padding-top:0!important;
-    padding-bottom:0!important;
-    pointer-events:none;
-  }
-
-  /* 被折疊容器包住後，原本標題不再重複顯示 */
-  body.touchUiEnabled .mobileTrayCollapseBody > h2,
-  body.touchUiEnabled .mobileTrayCollapseBody > .sectionTitle{
-    display:none!important;
-  }
-
   /* 四方案總覽：縮短卡片高度，讓設定抽屜打開時仍盡量看到完整四格 */
   body.touchUiEnabled:not(.mobileDetailMode) .mobileOverviewGrid,
   body.touchUiEnabled:not(.mobileDetailMode) .planGrid{
@@ -3474,844 +3233,912 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
-</style>
 
+/* ===== V2.4 共用折疊元件：桌面與手機使用同一份結構與邏輯 ===== */
+.sharedCollapsibleSection{
+  padding:0!important;
+  overflow:hidden;
+}
+
+.sharedCollapseHeader{
+  width:100%;
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin:0;
+  padding:12px;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#173d72;
+  text-align:left;
+  cursor:pointer;
+  box-shadow:none;
+  transition:background .18s ease;
+}
+
+.sharedCollapseHeader:hover{
+  background:#f5f9ff;
+}
+
+.sharedCollapseArrow{
+  flex:0 0 auto;
+  width:14px;
+  padding-top:2px;
+  color:#166ee8;
+  font-size:12px;
+  font-weight:900;
+  line-height:1.3;
+}
+
+.sharedCollapseText{
+  min-width:0;
+  flex:1;
+}
+
+.sharedCollapseTitle{
+  display:block;
+  color:#183e73;
+  font-size:13px;
+  font-weight:900;
+  line-height:1.35;
+}
+
+.sharedCollapseSummary{
+  display:none;
+  margin-top:6px;
+  color:#5f7087;
+  font-size:11px;
+  font-weight:700;
+  line-height:1.55;
+}
+
+.sharedCollapsibleSection.isCollapsed .sharedCollapseSummary{
+  display:grid;
+  gap:1px;
+}
+
+.sharedSummaryLine{
+  display:block;
+  min-height:17px;
+}
+
+.sharedCollapseBody{
+  overflow:hidden;
+  opacity:1;
+  max-height:5000px;
+  padding:0 12px 12px;
+  transition:max-height .2s ease, opacity .16s ease, padding .2s ease;
+}
+
+.sharedCollapsibleSection.isCollapsed .sharedCollapseBody{
+  max-height:0!important;
+  opacity:0;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  pointer-events:none;
+}
+
+.sharedCollapsibleSection.isCollapsed{
+  min-height:96px;
+}
+
+.sharedCollapsibleSection.isCollapsed .sharedCollapseHeader{
+  min-height:94px;
+}
+
+/* 原本標題改由共用折疊標題列取代 */
+.sharedCollapseBody > h2,
+.sharedCollapseBody > .sectionTitle{
+  display:none!important;
+}
+
+/* 吋數換算只存在於載盤設定內，不再保留另一張重複卡片 */
+#traySettingsSection .inchConversionSection{
+  margin:12px 0 0!important;
+  padding:12px 0 0!important;
+  border:0!important;
+  border-top:1px solid #dbe4f1!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+#traySettingsSection .inchConversionSection > h2{
+  display:block!important;
+  margin:0 0 9px!important;
+  font-size:12px!important;
+}
+
+@media (pointer:coarse), (max-width:820px){
+  .sharedCollapseHeader{
+    gap:10px;
+    padding:16px 18px;
+  }
+
+  .sharedCollapseArrow{
+    width:16px;
+    font-size:15px;
+  }
+
+  .sharedCollapseTitle{
+    font-size:18px;
+  }
+
+  .sharedCollapseSummary{
+    margin-top:8px;
+    font-size:13px;
+  }
+
+  .sharedSummaryLine{
+    min-height:20px;
+  }
+
+  .sharedCollapseBody{
+    padding:0 18px 18px;
+  }
+
+  .sharedCollapsibleSection.isCollapsed{
+    min-height:130px;
+  }
+
+  .sharedCollapsibleSection.isCollapsed .sharedCollapseHeader{
+    min-height:128px;
+  }
+}
+
+</style>
 </head>
 <body>
-
 <div class="pageHeader">
-  <div class="pageHeaderTop">
-    <div>
-      <h1>參數設定</h1>
-      <p>主排列、互動刪除、追加工件與空白區智慧分析</p>
-    </div>
-
-    <div class="headerQuickTools" aria-label="常用操作">
-      <button id="headerMeasureToggle" class="headerQuickButton" type="button">
+<div class="pageHeaderTop">
+<div>
+<h1>參數設定</h1>
+<p>主排列、互動刪除、追加工件與空白區智慧分析</p>
+</div>
+<div aria-label="常用操作" class="headerQuickTools">
+<button class="headerQuickButton" id="headerMeasureToggle" type="button">
         量測模式 <kbd>M</kbd>
-      </button>
-      <button id="headerSnapToggle" class="headerQuickButton" type="button">
+</button>
+<button class="headerQuickButton" id="headerSnapToggle" type="button">
         磁吸模式 <kbd>S</kbd>
-      </button>
-      <button id="headerHelpBtn" class="headerQuickButton" type="button">
+</button>
+<button class="headerQuickButton" id="headerHelpBtn" type="button">
         操作說明 <kbd>?</kbd>
-      </button>
-      <label class="headerQuickField">
+</button>
+<label class="headerQuickField">
         X 內縮
-        <input id="headerSafeX" type="number" min="0" step="0.1" value="10">
+        <input id="headerSafeX" min="0" step="0.1" type="number" value="10"/>
         mm
       </label>
-      <label class="headerQuickField">
+<label class="headerQuickField">
         Y 內縮
-        <input id="headerSafeY" type="number" min="0" step="0.1" value="10">
+        <input id="headerSafeY" min="0" step="0.1" type="number" value="10"/>
         mm
       </label>
-      <span class="headerQuickHint">常用置中微調</span>
-    </div>
-
-    <div class="headerBadge">V2.3 Beta · 四方案專用適合畫面</div>
-  </div>
-
-  <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
+<span class="headerQuickHint">常用置中微調</span>
+</div>
+<div class="headerBadge">V2.4 Beta · 共用折疊元件與首屏防閃</div>
+</div>
+<div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
   </div>
 </div>
-
-<input type="radio" name="mode" id="arrayMode" checked hidden>
-<input type="radio" name="mode" id="circleMode" hidden>
-<input type="radio" name="direction" id="vertical" checked hidden>
-<input type="radio" name="direction" id="horizontal" hidden>
-<input type="checkbox" id="autoCompare" checked hidden>
-
+<input checked="" hidden="" id="arrayMode" name="mode" type="radio"/>
+<input hidden="" id="circleMode" name="mode" type="radio"/>
+<input checked="" hidden="" id="vertical" name="direction" type="radio"/>
+<input hidden="" id="horizontal" name="direction" type="radio"/>
+<input checked="" hidden="" id="autoCompare" type="checkbox"/>
 <div class="container">
-  <aside class="panel controlPanel">
-    <h1>載盤工件排列模擬器</h1>
-    <div class="section stepManagedSection" id="traySettingsSection"><h2>載盤設定</h2>
-      <div class="sectionStepControl" data-step-section="traySettingsSection">
-        <span>上下鍵微調量</span>
-        <div class="stepPresetGroup">
-          <button type="button" data-step-value="1" class="active">1</button>
-          <button type="button" data-step-value="0.1" class="">0.1</button>
-          <button type="button" data-step-value="custom">自訂</button>
-        </div>
-        <input class="customStepInput" type="number" min="0.0001" step="0.0001" value="1" aria-label="自訂微調量" hidden>
-      </div>
+<aside class="panel controlPanel">
+<h1>載盤工件排列模擬器</h1>
+<div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="tray" data-default-collapsed="true" id="traySettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">載盤設定</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">700 mm × 415 mm</span><span class="sharedSummaryLine">內縮 10 mm × 10 mm</span><span class="sharedSummaryLine">公司慣用：1 吋 = 25 mm</span></span></span></button><div class="sharedCollapseBody">
+<div class="sectionStepControl" data-step-section="traySettingsSection">
+<span>上下鍵微調量</span>
+<div class="stepPresetGroup">
+<button class="active" data-step-value="1" type="button">1</button>
+<button class="" data-step-value="0.1" type="button">0.1</button>
+<button data-step-value="custom" type="button">自訂</button>
+</div>
+<input aria-label="自訂微調量" class="customStepInput" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
+</div>
+<label>載盤長度（mm）</label><input id="trayLength" min="1" type="number" value="700"/>
+<label>載盤寬度（mm）</label><input id="trayWidth" min="1" type="number" value="415"/>
+<label>X 方向內縮（mm）</label><input id="safeX" min="0" type="number" value="10"/>
+<label>Y 方向內縮（mm）</label><input id="safeY" min="0" type="number" value="10"/>
+<div class="section inchConversionSection"><h2>吋數換算</h2>
+<div class="options inchFactorOptions">
+<label><input checked="" id="inchFactor25" name="inchFactor" type="radio"/> 公司慣用<br/><strong>1 吋 = 25 mm</strong></label>
+<label><input id="inchFactor254" name="inchFactor" type="radio"/> 標準換算<br/><strong>1 吋 = 25.4 mm</strong></label>
+</div>
+<div class="hint">吋數只用來快速填入毫米尺寸；所有擺盤與碰撞計算仍以毫米欄位為準。</div>
+</div></div></div>
 
-      <label>載盤長度（mm）</label><input id="trayLength" type="number" min="1" value="700">
-      <label>載盤寬度（mm）</label><input id="trayWidth" type="number" min="1" value="415">
-      <label>X 方向內縮（mm）</label><input id="safeX" type="number" min="0" value="10">
-      <label>Y 方向內縮（mm）</label><input id="safeY" type="number" min="0" value="10">
-    </div>
+<div class="section primaryWorkpieceSection stepManagedSection sharedCollapsibleSection" data-collapse-key="primary" data-default-collapsed="false" id="primarySettingsSection"><button aria-expanded="true" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▲</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">工件設定</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">矩形</span><span class="sharedSummaryLine">200 mm × 200 mm</span><span class="sharedSummaryLine">間距 40 mm × 20 mm</span></span></span></button><div class="sharedCollapseBody">
 
-    <div class="section inchConversionSection"><h2>吋數換算</h2>
-      <div class="options inchFactorOptions">
-        <label><input type="radio" name="inchFactor" id="inchFactor25" checked> 公司慣用<br><strong>1 吋 = 25 mm</strong></label>
-        <label><input type="radio" name="inchFactor" id="inchFactor254"> 標準換算<br><strong>1 吋 = 25.4 mm</strong></label>
-      </div>
-      <div class="hint">吋數只用來快速填入毫米尺寸；所有擺盤與碰撞計算仍以毫米欄位為準。</div>
-    </div>
+<div class="sectionStepControl" data-step-section="primarySettingsSection">
+<span>上下鍵微調量</span>
+<div class="stepPresetGroup">
+<button class="active" data-step-value="1" type="button">1</button>
+<button class="" data-step-value="0.1" type="button">0.1</button>
+<button data-step-value="custom" type="button">自訂</button>
+</div>
+<input aria-label="自訂微調量" class="customStepInput" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
+</div>
+<div class="primaryShapeBlock" id="primaryShapeBlock">
+<div class="primaryFieldTitle">工件形狀</div>
+<div class="primaryShapeSelector">
+<label>
+<input checked="" id="primaryRectShape" name="primaryShape" type="radio"/>
+<span class="shapeIcon">▭</span>
+<span>矩形</span>
+</label>
+<label>
+<input id="primaryCircleShape" name="primaryShape" type="radio"/>
+<span class="shapeIcon">○</span>
+<span>圓形</span>
+</label>
+<label class="shapeComingSoon" title="已預留介面，尚未加入完整碰撞計算">
+<input disabled="" id="primaryOtherShape" name="primaryShape" type="radio"/>
+<span class="shapeIcon">⬡</span>
+<span>其他形狀</span>
+<small>預留</small>
+</label>
+</div>
+</div>
+<div class="primarySizeBlockTitle">尺寸</div>
+<label class="inchHelperLabel primaryInchFlat">輔助尺寸（吋）
+        <input id="partInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
+<span class="helperNote" id="partInchPreview">輸入後會同步設定主要尺寸</span>
+</label>
+<div class="primaryDimensionGrid">
+<label class="dimensionField primaryDimensionField" id="partLengthField">
+<span class="dimensionLabel" id="partLengthLabel">長度（mm）</span>
+<input id="partLength" min="1" type="number" value="200"/>
+</label>
+<label class="dimensionField primaryDimensionField" id="partWidthField">
+<span class="dimensionLabel">寬度（mm）</span>
+<input id="partWidth" min="1" type="number" value="200"/>
+</label>
+</div>
+<div class="dimensionSwapRow">
+<button class="dimensionSwapButton" id="swapPrimaryDimensions" type="button">↔ 互換長度與寬度</button>
+</div>
+<div class="primaryDimensionGrid">
+<label class="dimensionField primaryDimensionField">
+<span class="dimensionLabel">X 方向間隔（mm）</span>
+<input id="gapX" min="0" type="number" value="40"/>
+</label>
+<label class="dimensionField primaryDimensionField">
+<span class="dimensionLabel">Y 方向間隔（mm）</span>
+<input id="gapY" min="0" type="number" value="20"/>
+</label>
+</div>
+</div></div>
+<div class="section secondarySection stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="secondary" data-default-collapsed="true" id="secondarySettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">追加工件設定</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">矩形</span><span class="sharedSummaryLine">26 mm × 76 mm</span><span class="sharedSummaryLine">已追加 0 個｜即時重畫：開</span></span></span></button><div class="sharedCollapseBody">
 
-    <div class="section primaryWorkpieceSection stepManagedSection" id="primarySettingsSection">
-      <h2>工件設定</h2>
-      <div class="sectionStepControl" data-step-section="primarySettingsSection">
-        <span>上下鍵微調量</span>
-        <div class="stepPresetGroup">
-          <button type="button" data-step-value="1" class="active">1</button>
-          <button type="button" data-step-value="0.1" class="">0.1</button>
-          <button type="button" data-step-value="custom">自訂</button>
-        </div>
-        <input class="customStepInput" type="number" min="0.0001" step="0.0001" value="1" aria-label="自訂微調量" hidden>
-      </div>
-
-
-      <div class="primaryShapeBlock" id="primaryShapeBlock">
-        <div class="primaryFieldTitle">工件形狀</div>
-        <div class="primaryShapeSelector">
-          <label>
-            <input type="radio" name="primaryShape" id="primaryRectShape" checked>
-            <span class="shapeIcon">▭</span>
-            <span>矩形</span>
-          </label>
-          <label>
-            <input type="radio" name="primaryShape" id="primaryCircleShape">
-            <span class="shapeIcon">○</span>
-            <span>圓形</span>
-          </label>
-          <label class="shapeComingSoon" title="已預留介面，尚未加入完整碰撞計算">
-            <input type="radio" name="primaryShape" id="primaryOtherShape" disabled>
-            <span class="shapeIcon">⬡</span>
-            <span>其他形狀</span>
-            <small>預留</small>
-          </label>
-        </div>
-      </div>
-
-      <div class="primarySizeBlockTitle">尺寸</div>
-      <label class="inchHelperLabel primaryInchFlat">輔助尺寸（吋）
-        <input id="partInches" type="number" min="0" step="0.01" placeholder="例如 4、4.3">
-        <span class="helperNote" id="partInchPreview">輸入後會同步設定主要尺寸</span>
-      </label>
-
-      <div class="primaryDimensionGrid">
-        <label id="partLengthField" class="dimensionField primaryDimensionField">
-          <span id="partLengthLabel" class="dimensionLabel">長度（mm）</span>
-          <input id="partLength" type="number" min="1" value="200">
-        </label>
-        <label id="partWidthField" class="dimensionField primaryDimensionField">
-          <span class="dimensionLabel">寬度（mm）</span>
-          <input id="partWidth" type="number" min="1" value="200">
-        </label>
-      </div>
-      <div class="dimensionSwapRow">
-        <button id="swapPrimaryDimensions" class="dimensionSwapButton" type="button">↔ 互換長度與寬度</button>
-      </div>
-
-      <div class="primaryDimensionGrid">
-        <label class="dimensionField primaryDimensionField">
-          <span class="dimensionLabel">X 方向間隔（mm）</span>
-          <input id="gapX" type="number" min="0" value="40">
-        </label>
-        <label class="dimensionField primaryDimensionField">
-          <span class="dimensionLabel">Y 方向間隔（mm）</span>
-          <input id="gapY" type="number" min="0" value="20">
-        </label>
-      </div>
-    </div>
-
-
-<div class="section secondarySection stepManagedSection" id="secondarySettingsSection">
-  <h2>追加工件設定</h2>
-      <div class="sectionStepControl" data-step-section="secondarySettingsSection">
-        <span>上下鍵微調量</span>
-        <div class="stepPresetGroup">
-          <button type="button" data-step-value="1" class="active">1</button>
-          <button type="button" data-step-value="0.1" class="">0.1</button>
-          <button type="button" data-step-value="custom">自訂</button>
-        </div>
-        <input class="customStepInput" type="number" min="0.0001" step="0.0001" value="1" aria-label="自訂微調量" hidden>
-      </div>
-
-
-  <div class="secondaryPanelV2">
-    <div class="secondaryBlock">
-      <div class="secondaryBlockTitle">工件形狀</div>
-      <div class="secondaryShapeSelector">
-        <label>
-          <input type="radio" name="secondaryMode" id="secondaryArrayMode" checked>
-          <span class="shapeIcon">▭</span>
-          <span>矩形</span>
-        </label>
-        <label>
-          <input type="radio" name="secondaryMode" id="secondaryCircleMode">
-          <span class="shapeIcon">○</span>
-          <span>圓形</span>
-        </label>
-      </div>
-    </div>
-
-    <div class="secondaryBlock">
-      <div class="secondaryBlockTitle">尺寸</div>
-
-      <label class="secondaryInchCard">
-        <span class="fieldCaption">輔助尺寸（吋）</span>
-        <input id="secondaryInches" type="number" min="0" step="0.01" placeholder="例如 4、4.3">
-        <span class="helperNote" id="secondaryInchPreview">僅協助換算，不直接列入擺盤計算</span>
-      </label>
-
-      <div class="secondaryDimensionGrid">
-        <label id="secondaryLengthField" class="secondaryFieldCard">
-          <span id="secondaryLengthLabel" class="fieldCaption">長度（mm）</span>
-          <input id="secondaryLength" type="number" value="26" step="1">
-        </label>
-
-        <label id="secondaryWidthField" class="secondaryFieldCard">
-          <span class="fieldCaption">寬度（mm）</span>
-          <input id="secondaryWidth" type="number" value="76" step="1">
-        </label>
-      </div>
-      <div class="dimensionSwapRow">
-        <button id="swapSecondaryDimensions" class="dimensionSwapButton" type="button">↔ 互換長度與寬度</button>
-      </div>
-    </div>
-
-    <div class="secondaryBlock">
-      <div class="secondaryBlockTitle">工件間隔</div>
-      <div class="secondaryDimensionGrid">
-        <label class="secondaryFieldCard">
-          <span class="fieldCaption">X 方向間隔（mm）</span>
-          <input id="secondaryGapX" type="number" value="5" step="0.1">
-        </label>
-
-        <label class="secondaryFieldCard">
-          <span class="fieldCaption">Y 方向間隔（mm）</span>
-          <input id="secondaryGapY" type="number" value="5" step="0.1">
-        </label>
-      </div>
-    </div>
-
-    <div class="secondaryBlock">
-      <div class="secondaryBlockTitle">排列方向</div>
-      <div class="secondaryChoiceRow">
-        <label>
-          <input type="radio" name="secondaryDirection" id="secondaryVertical" checked>
-          <span>直擺</span>
-        </label>
-        <label>
-          <input type="radio" name="secondaryDirection" id="secondaryHorizontal">
-          <span>橫擺</span>
-        </label>
-      </div>
-    </div>
-
-    <div id="secondaryCircleArrangeBox" class="secondaryBlock">
-      <div class="secondaryBlockTitle">圓形排列方式</div>
-      <div class="secondaryChoiceRow">
-        <label>
-          <input type="radio" name="secondaryCircleArrange" id="secondaryCircleGrid" checked>
-          <span>方形陣列</span>
-        </label>
-        <label>
-          <input type="radio" name="secondaryCircleArrange" id="secondaryCircleHoney">
-          <span>蜂巢排列</span>
-        </label>
-      </div>
-    </div>
-
-    <label class="secondaryAutoRedrawToggle">
-      <input id="secondaryAutoRedraw" type="checkbox" checked>
-      <span>
-        <b>設定變更後立即重畫</b>
-        <small>關閉後可保留既有追加工件，切換尺寸或形狀後再逐個生成。</small>
-      </span>
-    </label>
-
-    <div class="secondaryActionsV2">
-      <button id="addOneSecondary" type="button">生成 1 個</button>
-      <button id="clearSecondary" type="button">清除追加工件</button>
-    </div>
-    <button id="adaptiveFillBtn" class="adaptiveFillButton" type="button">蜂巢自適應填充(Beta)</button>
-    <div id="adaptiveFillStatus" class="adaptiveFillStatus">追加工件的智慧填補維持原有邏輯；右側主要方案比較則會同時比較方形陣列／蜂巢排列的直擺與橫擺四種方案。</div>
-
-    <div class="secondaryFooterHint">
+<div class="sectionStepControl" data-step-section="secondarySettingsSection">
+<span>上下鍵微調量</span>
+<div class="stepPresetGroup">
+<button class="active" data-step-value="1" type="button">1</button>
+<button class="" data-step-value="0.1" type="button">0.1</button>
+<button data-step-value="custom" type="button">自訂</button>
+</div>
+<input aria-label="自訂微調量" class="customStepInput" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
+</div>
+<div class="secondaryPanelV2">
+<div class="secondaryBlock">
+<div class="secondaryBlockTitle">工件形狀</div>
+<div class="secondaryShapeSelector">
+<label>
+<input checked="" id="secondaryArrayMode" name="secondaryMode" type="radio"/>
+<span class="shapeIcon">▭</span>
+<span>矩形</span>
+</label>
+<label>
+<input id="secondaryCircleMode" name="secondaryMode" type="radio"/>
+<span class="shapeIcon">○</span>
+<span>圓形</span>
+</label>
+</div>
+</div>
+<div class="secondaryBlock">
+<div class="secondaryBlockTitle">尺寸</div>
+<label class="secondaryInchCard">
+<span class="fieldCaption">輔助尺寸（吋）</span>
+<input id="secondaryInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
+<span class="helperNote" id="secondaryInchPreview">僅協助換算，不直接列入擺盤計算</span>
+</label>
+<div class="secondaryDimensionGrid">
+<label class="secondaryFieldCard" id="secondaryLengthField">
+<span class="fieldCaption" id="secondaryLengthLabel">長度（mm）</span>
+<input id="secondaryLength" step="1" type="number" value="26"/>
+</label>
+<label class="secondaryFieldCard" id="secondaryWidthField">
+<span class="fieldCaption">寬度（mm）</span>
+<input id="secondaryWidth" step="1" type="number" value="76"/>
+</label>
+</div>
+<div class="dimensionSwapRow">
+<button class="dimensionSwapButton" id="swapSecondaryDimensions" type="button">↔ 互換長度與寬度</button>
+</div>
+</div>
+<div class="secondaryBlock">
+<div class="secondaryBlockTitle">工件間隔</div>
+<div class="secondaryDimensionGrid">
+<label class="secondaryFieldCard">
+<span class="fieldCaption">X 方向間隔（mm）</span>
+<input id="secondaryGapX" step="0.1" type="number" value="5"/>
+</label>
+<label class="secondaryFieldCard">
+<span class="fieldCaption">Y 方向間隔（mm）</span>
+<input id="secondaryGapY" step="0.1" type="number" value="5"/>
+</label>
+</div>
+</div>
+<div class="secondaryBlock">
+<div class="secondaryBlockTitle">排列方向</div>
+<div class="secondaryChoiceRow">
+<label>
+<input checked="" id="secondaryVertical" name="secondaryDirection" type="radio"/>
+<span>直擺</span>
+</label>
+<label>
+<input id="secondaryHorizontal" name="secondaryDirection" type="radio"/>
+<span>橫擺</span>
+</label>
+</div>
+</div>
+<div class="secondaryBlock" id="secondaryCircleArrangeBox">
+<div class="secondaryBlockTitle">圓形排列方式</div>
+<div class="secondaryChoiceRow">
+<label>
+<input checked="" id="secondaryCircleGrid" name="secondaryCircleArrange" type="radio"/>
+<span>方形陣列</span>
+</label>
+<label>
+<input id="secondaryCircleHoney" name="secondaryCircleArrange" type="radio"/>
+<span>蜂巢排列</span>
+</label>
+</div>
+</div>
+<label class="secondaryAutoRedrawToggle">
+<input checked="" id="secondaryAutoRedraw" type="checkbox"/>
+<span>
+<b>設定變更後立即重畫</b>
+<small>關閉後可保留既有追加工件，切換尺寸或形狀後再逐個生成。</small>
+</span>
+</label>
+<div class="secondaryActionsV2">
+<button id="addOneSecondary" type="button">生成 1 個</button>
+<button id="clearSecondary" type="button">清除追加工件</button>
+</div>
+<button class="adaptiveFillButton" id="adaptiveFillBtn" type="button">蜂巢自適應填充(Beta)</button>
+<div class="adaptiveFillStatus" id="adaptiveFillStatus">追加工件的智慧填補維持原有邏輯；右側主要方案比較則會同時比較方形陣列／蜂巢排列的直擺與橫擺四種方案。</div>
+<div class="secondaryFooterHint">
       圓形模式只顯示直徑；方形模式顯示長度與寬度。修改追加工件的形狀、尺寸、間隔或排列方式後，會自動清除舊結果並重新填補，不會重建主要工件。
     </div>
-  </div>
 </div>
+</div></div>
+<div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="edit" data-default-collapsed="true" id="editSettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">量測與編輯</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">磁吸：開</span><span class="sharedSummaryLine">吸力：15 mm</span><span class="sharedSummaryLine">量測：關</span></span></span></button><div class="sharedCollapseBody">
 
-<div class="section stepManagedSection" id="editSettingsSection">
-  <h2>量測與編輯</h2>
-      <div class="sectionStepControl" data-step-section="editSettingsSection">
-        <span>上下鍵微調量</span>
-        <div class="stepPresetGroup">
-          <button type="button" data-step-value="1" class="active">1</button>
-          <button type="button" data-step-value="0.1" class="">0.1</button>
-          <button type="button" data-step-value="custom">自訂</button>
-        </div>
-        <input class="customStepInput" type="number" min="0.0001" step="0.0001" value="1" aria-label="自訂微調量" hidden>
-      </div>
-
-  <div class="editToolsPanel">
-    <div class="toolRow">
-      <button id="measureModeBtn" type="button">兩點量測</button>
-      <button id="clearMeasurementsBtn" type="button">清除量測</button>
-    </div>
-
-    <div id="measureStatus" class="toolStatus">量測模式未啟用</div>
-
-    <div class="snapSettings">
-      <label class="snapToggle">
-        <input type="checkbox" id="snapEnabled">
+<div class="sectionStepControl" data-step-section="editSettingsSection">
+<span>上下鍵微調量</span>
+<div class="stepPresetGroup">
+<button class="active" data-step-value="1" type="button">1</button>
+<button class="" data-step-value="0.1" type="button">0.1</button>
+<button data-step-value="custom" type="button">自訂</button>
+</div>
+<input aria-label="自訂微調量" class="customStepInput" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
+</div>
+<div class="editToolsPanel">
+<div class="toolRow">
+<button id="measureModeBtn" type="button">兩點量測</button>
+<button id="clearMeasurementsBtn" type="button">清除量測</button>
+</div>
+<div class="toolStatus" id="measureStatus">量測模式未啟用</div>
+<div class="snapSettings">
+<label class="snapToggle">
+<input id="snapEnabled" type="checkbox"/>
         啟用磁力吸附
       </label>
-      <label>吸力半徑（mm）
-        <input id="snapStep" type="number" value="15" min="0" step="1">
-      </label>
-
-      <div class="snapTypePanel">
-        <div class="snapTypeTitle">──── 拖曳與量測共用吸附目標 ────</div>
-
-        <label class="snapTargetStandalone">
-          <input id="snapTypeBoundary" type="checkbox" checked>
-          <span>安全邊界</span>
-        </label>
-
-        <div class="snapTargetGroup">
-          <label class="snapTargetHeader">
-            <input id="snapGroupRect" type="checkbox" checked>
-            <span>矩形</span>
-          </label>
-          <div class="snapTargetChildren">
-            <label><input id="snapRectCorners" type="checkbox" checked>四角</label>
-            <label><input id="snapRectMidpoints" type="checkbox" checked>邊中點</label>
-            <label><input id="snapRectEdges" type="checkbox" checked>邊緣相切</label>
-          </div>
-        </div>
-
-        <div class="snapTargetGroup">
-          <label class="snapTargetHeader">
-            <input id="snapGroupCircle" type="checkbox" checked>
-            <span>圓形</span>
-          </label>
-          <div class="snapTargetChildren">
-            <label><input id="snapCircleCenter" type="checkbox" checked>圓心</label>
-            <label><input id="snapTypeQuadrant" type="checkbox" checked>四分點</label>
-          </div>
-        </div>
-
-        <div class="snapTargetGroup">
-          <label class="snapTargetHeader">
-            <input id="snapGroupTangent" type="checkbox" checked>
-            <span>相切</span>
-          </label>
-          <div class="snapTargetChildren">
-            <label><input id="snapTypeSingleCircle" type="checkbox" checked>單圓相切</label>
-            <label><input id="snapTypeDoubleCircle" type="checkbox" checked>雙圓相切</label>
-            <label><input id="snapTypeCircleRect" type="checkbox" checked>圓矩相切</label>
-          </div>
-        </div>
-
-        <div class="snapTypeActions">
-          <button id="snapTypesAllBtn" type="button">全開</button>
-          <button id="snapTypesNoneBtn" type="button">全關</button>
-        </div>
-
-        <div class="snapTypeNote">
+<label>吸力半徑（mm）
+        <input id="snapStep" min="0" step="1" type="number" value="15"/>
+</label>
+<div class="snapTypePanel">
+<div class="snapTypeTitle">──── 拖曳與量測共用吸附目標 ────</div>
+<label class="snapTargetStandalone">
+<input checked="" id="snapTypeBoundary" type="checkbox"/>
+<span>安全邊界</span>
+</label>
+<div class="snapTargetGroup">
+<label class="snapTargetHeader">
+<input checked="" id="snapGroupRect" type="checkbox"/>
+<span>矩形</span>
+</label>
+<div class="snapTargetChildren">
+<label><input checked="" id="snapRectCorners" type="checkbox"/>四角</label>
+<label><input checked="" id="snapRectMidpoints" type="checkbox"/>邊中點</label>
+<label><input checked="" id="snapRectEdges" type="checkbox"/>邊緣相切</label>
+</div>
+</div>
+<div class="snapTargetGroup">
+<label class="snapTargetHeader">
+<input checked="" id="snapGroupCircle" type="checkbox"/>
+<span>圓形</span>
+</label>
+<div class="snapTargetChildren">
+<label><input checked="" id="snapCircleCenter" type="checkbox"/>圓心</label>
+<label><input checked="" id="snapTypeQuadrant" type="checkbox"/>四分點</label>
+</div>
+</div>
+<div class="snapTargetGroup">
+<label class="snapTargetHeader">
+<input checked="" id="snapGroupTangent" type="checkbox"/>
+<span>相切</span>
+</label>
+<div class="snapTargetChildren">
+<label><input checked="" id="snapTypeSingleCircle" type="checkbox"/>單圓相切</label>
+<label><input checked="" id="snapTypeDoubleCircle" type="checkbox"/>雙圓相切</label>
+<label><input checked="" id="snapTypeCircleRect" type="checkbox"/>圓矩相切</label>
+</div>
+</div>
+<div class="snapTypeActions">
+<button id="snapTypesAllBtn" type="button">全開</button>
+<button id="snapTypesNoneBtn" type="button">全關</button>
+</div>
+<div class="snapTypeNote">
           下列開關同時控制拖曳磁吸與量測捕捉；需要尋找兩個圓的共同相切位置時，可先按「全關」，再只開啟「雙圓相切」。
         </div>
-      </div>
-    </div>
-
-    <div class="alignTitle">框選／選取工件對齊</div>
-    <div class="alignGrid">
-      <button type="button" data-align="left">靠左</button>
-      <button type="button" data-align="right">靠右</button>
-      <button type="button" data-align="top">靠上</button>
-      <button type="button" data-align="bottom">靠下</button>
-      <button type="button" data-align="centerX">水平置中</button>
-      <button type="button" data-align="centerY">垂直置中</button>
-    </div>
-
-    <div class="toolRow" style="margin-top:7px">
-      <button id="snapSelectedBtn" type="button">切換吸附點</button>
-      <button id="restorePositionsBtn" type="button">還原本次移動</button>
-    </div>
-
-  </div>
 </div>
-
+</div>
+<div class="alignTitle">框選／選取工件對齊</div>
+<div class="alignGrid">
+<button data-align="left" type="button">靠左</button>
+<button data-align="right" type="button">靠右</button>
+<button data-align="top" type="button">靠上</button>
+<button data-align="bottom" type="button">靠下</button>
+<button data-align="centerX" type="button">水平置中</button>
+<button data-align="centerY" type="button">垂直置中</button>
+</div>
+<div class="toolRow" style="margin-top:7px">
+<button id="snapSelectedBtn" type="button">切換吸附點</button>
+<button id="restorePositionsBtn" type="button">還原本次移動</button>
+</div>
+</div>
+</div></div>
 <div class="section configSection">
-  <h2>設定檔</h2>
-  <div class="configActions">
-    <button id="importConfigBtn" type="button">📥 匯入 default.cfg</button>
-    <button id="exportConfigBtn" type="button">📤 匯出 default.cfg</button>
-  </div>
-  <input id="configFileInput" type="file" accept=".cfg,text/plain" hidden>
-  <div id="configStatus" class="configStatus">
+<h2>設定檔</h2>
+<div class="configActions">
+<button id="importConfigBtn" type="button">📥 匯入 default.cfg</button>
+<button id="exportConfigBtn" type="button">📤 匯出 default.cfg</button>
+</div>
+<input accept=".cfg,text/plain" hidden="" id="configFileInput" type="file"/>
+<div class="configStatus" id="configStatus">
     使用 Key=Value 純文字格式；缺少的參數會套用內建預設值，未知參數會忽略。
   </div>
 </div>
-
 <div class="section">
-  <h2>V5 空間分析</h2>
-  <div class="analysisPanel">
-    <div class="analysisActions">
-      <button id="analyzeSpacesBtn" type="button">分析剩餘空間</button>
-      <button id="clearAnalysisBtn" type="button">清除分析</button>
-    </div>
-    <label class="analysisCheck">
-      <input type="checkbox" id="showSpaceLabels" checked>
+<h2>V5 空間分析</h2>
+<div class="analysisPanel">
+<div class="analysisActions">
+<button id="analyzeSpacesBtn" type="button">分析剩餘空間</button>
+<button id="clearAnalysisBtn" type="button">清除分析</button>
+</div>
+<label class="analysisCheck">
+<input checked="" id="showSpaceLabels" type="checkbox"/>
       顯示空白區編號與尺寸
     </label>
-    <div class="hint">
+<div class="hint">
       以既有工件外框分析可用的矩形空白區，列出面積最大的候選區域，並估算目前二次工件可放數量。
     </div>
-  </div>
 </div>
-
+</div>
 <button id="resetBtn" type="button">↻ 恢復預設值</button>
-    <button id="exportBtn" type="button" class="secondaryBtn">↓ 匯出 SVG 工程圖</button>
-    
-  </aside>
-
-  <main class="canvasArea overviewMode">
-      <div class="overviewToolbar" id="overviewToolbar">
-        <button id="backToOverviewBtn" type="button" style="display:none">返回四方案總覽</button>
-        <span id="activePlanLabel">目前：四方案總覽</span>
-        <div class="v5StatusBar" id="v5StatusBar">
-          <span class="v5StatusChip" id="statusPrimary">主要工件：0</span>
-          <span class="v5StatusChip" id="statusMatrix">排列矩陣：—</span>
-          <span class="v5StatusChip" id="statusSecondary">追加工件：0</span>
-          <span class="v5StatusChip" id="statusZones">空白區：未分析</span>
-        </div>
-        <div id="mobileWorkspaceHint" class="mobileWorkspaceHint">
+<button class="secondaryBtn" id="exportBtn" type="button">↓ 匯出 SVG 工程圖</button>
+</aside>
+<main class="canvasArea overviewMode">
+<div class="overviewToolbar" id="overviewToolbar">
+<button id="backToOverviewBtn" style="display:none" type="button">返回四方案總覽</button>
+<span id="activePlanLabel">目前：四方案總覽</span>
+<div class="v5StatusBar" id="v5StatusBar">
+<span class="v5StatusChip" id="statusPrimary">主要工件：0</span>
+<span class="v5StatusChip" id="statusMatrix">排列矩陣：—</span>
+<span class="v5StatusChip" id="statusSecondary">追加工件：0</span>
+<span class="v5StatusChip" id="statusZones">空白區：未分析</span>
+</div>
+<div class="mobileWorkspaceHint" id="mobileWorkspaceHint">
           設定載盤長寬、安全範圍、工件尺寸與 XY 間距後，系統會即時比較排列方案。
           選擇方案後可選取或框選工件、磁吸或自由拖曳、量測、追加工件、對齊、平移及縮放圖面。
         </div>
-        <div class="canvasZoomHint">滾輪縮放 · 以滑鼠位置為中心 · 雙擊空白處還原</div>
-      </div>
-
-      <div id="planOverview" class="planOverview">
-        <button class="planCard" type="button" data-plan-key="array-vertical">
-          <div class="planCardHeader">
-            <strong>方形陣列＋直擺</strong>
-            <span class="planCount" id="count-array-vertical">0 個</span>
-          </div>
-          <svg id="preview-array-vertical" class="planPreview" aria-label="方形陣列直擺預覽"></svg>
-          <div class="planCardFooter" id="footer-array-vertical">點擊進入詳細編輯</div>
-        </button>
-
-        <button class="planCard" type="button" data-plan-key="array-horizontal">
-          <div class="planCardHeader">
-            <strong>方形陣列＋橫擺</strong>
-            <span class="planCount" id="count-array-horizontal">0 個</span>
-          </div>
-          <svg id="preview-array-horizontal" class="planPreview" aria-label="方形陣列橫擺預覽"></svg>
-          <div class="planCardFooter" id="footer-array-horizontal">點擊進入詳細編輯</div>
-        </button>
-
-        <button class="planCard" type="button" data-plan-key="honey-vertical">
-          <div class="planCardHeader">
-            <strong>蜂巢排列＋直擺</strong>
-            <span class="planCount" id="count-honey-vertical">0 個</span>
-          </div>
-          <svg id="preview-honey-vertical" class="planPreview" aria-label="蜂巢排列直擺預覽"></svg>
-          <div class="planCardFooter" id="footer-honey-vertical">點擊進入詳細編輯</div>
-        </button>
-
-        <button class="planCard" type="button" data-plan-key="honey-horizontal">
-          <div class="planCardHeader">
-            <strong>蜂巢排列＋橫擺</strong>
-            <span class="planCount" id="count-honey-horizontal">0 個</span>
-          </div>
-          <svg id="preview-honey-horizontal" class="planPreview" aria-label="蜂巢排列橫擺預覽"></svg>
-          <div class="planCardFooter" id="footer-honey-horizontal">點擊進入詳細編輯</div>
-        </button>
-      </div>
-
-    <svg id="drawing" role="img" aria-label="載盤排列工程圖"></svg><div id="mobileModeBadge" class="mobileModeBadge">手機：選取</div></main>
-
-  <aside class="panel infoPanel"><h1>計算結果</h1><div id="result"></div><div id="selectionInfo"></div></aside>
+<div class="canvasZoomHint">滾輪縮放 · 以滑鼠位置為中心 · 雙擊空白處還原</div>
 </div>
-<div id="helpModalBackdrop" class="helpModalBackdrop" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
-  <div class="helpModal">
-    <div class="helpModalHeader">
-      <h2 id="helpModalTitle">操作說明</h2>
-      <button id="helpModalClose" class="helpModalClose" type="button" aria-label="關閉說明">×</button>
-    </div>
-    <div class="helpModalBody">
+<div class="planOverview" id="planOverview">
+<button class="planCard" data-plan-key="array-vertical" type="button">
+<div class="planCardHeader">
+<strong>方形陣列＋直擺</strong>
+<span class="planCount" id="count-array-vertical">0 個</span>
+</div>
+<svg aria-label="方形陣列直擺預覽" class="planPreview" id="preview-array-vertical"></svg>
+<div class="planCardFooter" id="footer-array-vertical">點擊進入詳細編輯</div>
+</button>
+<button class="planCard" data-plan-key="array-horizontal" type="button">
+<div class="planCardHeader">
+<strong>方形陣列＋橫擺</strong>
+<span class="planCount" id="count-array-horizontal">0 個</span>
+</div>
+<svg aria-label="方形陣列橫擺預覽" class="planPreview" id="preview-array-horizontal"></svg>
+<div class="planCardFooter" id="footer-array-horizontal">點擊進入詳細編輯</div>
+</button>
+<button class="planCard" data-plan-key="honey-vertical" type="button">
+<div class="planCardHeader">
+<strong>蜂巢排列＋直擺</strong>
+<span class="planCount" id="count-honey-vertical">0 個</span>
+</div>
+<svg aria-label="蜂巢排列直擺預覽" class="planPreview" id="preview-honey-vertical"></svg>
+<div class="planCardFooter" id="footer-honey-vertical">點擊進入詳細編輯</div>
+</button>
+<button class="planCard" data-plan-key="honey-horizontal" type="button">
+<div class="planCardHeader">
+<strong>蜂巢排列＋橫擺</strong>
+<span class="planCount" id="count-honey-horizontal">0 個</span>
+</div>
+<svg aria-label="蜂巢排列橫擺預覽" class="planPreview" id="preview-honey-horizontal"></svg>
+<div class="planCardFooter" id="footer-honey-horizontal">點擊進入詳細編輯</div>
+</button>
+</div>
+<svg aria-label="載盤排列工程圖" id="drawing" role="img"></svg><div class="mobileModeBadge" id="mobileModeBadge">手機：選取</div></main>
+<aside class="panel infoPanel"><h1>計算結果</h1><div id="result"></div><div id="selectionInfo"></div></aside>
+</div>
+<div aria-labelledby="helpModalTitle" aria-modal="true" class="helpModalBackdrop" id="helpModalBackdrop" role="dialog">
+<div class="helpModal">
+<div class="helpModalHeader">
+<h2 id="helpModalTitle">操作說明</h2>
+<button aria-label="關閉說明" class="helpModalClose" id="helpModalClose" type="button">×</button>
+</div>
+<div class="helpModalBody">
 <div class="helpGrid">
-        <section class="helpSection">
-          <h3>選取與 CAD 框選</h3>
-          <p><strong>單點：</strong>在工件上按下左鍵，沒有拖動並放開後才選取。</p>
-          <p><strong>拖曳：</strong>按下後開始移動即切換為框選，不會先單選該工件。</p>
-          <div class="helpSelectionDemo">
-            <div class="helpWindowDemo">左 → 右：視窗框選<br>必須完整包覆才選取</div>
-            <div class="helpCrossingDemo">右 → 左：交集框選<br>碰到工件就選取</div>
-          </div>
-          <p><span class="helpKey">Esc</span>取消選取；<span class="helpKey">Delete</span>刪除所選工件。</p>
-        </section>
-
-        <section class="helpSection">
-          <h3>移動與微調</h3>
-          <p>選取工件後用方向鍵移動，步距由「量測與編輯」的微調量決定。</p>
-          <ul>
-            <li><span class="helpKey">方向鍵</span>移動一個步距</li>
-            <li><span class="helpKey">Shift</span>＋方向鍵：移動 10 倍步距</li>
-            <li><span class="helpKey">Backspace</span>或 Ctrl＋Z：復原刪除</li>
-          </ul>
-        </section>
-
-        <section class="helpSection">
-          <h3>量測模式</h3>
-          <p><span class="helpKey">M</span>切換兩點量測。滑鼠移動會預覽可吸附的角點、邊、圓心、圓形四分點、圓周與載盤邊界。</p>
-          <ul>
-            <li>左鍵依序設定第一點與第二點</li>
-            <li><span class="helpKey">Shift</span>啟用 0°／45°／90° 極座標追蹤</li>
-            <li><span class="helpKey">Esc</span>取消目前未完成的量測</li>
-          </ul>
-        </section>
-
-        <section class="helpSection">
-          <h3>磁吸模式</h3>
-          <p><span class="helpKey">S</span>切換磁吸。啟用後左鍵拖曳工件，靠近候選位置時只顯示虛線預覽，放開才真正吸附。</p>
-          <ul>
-            <li>吸力半徑代表候選位置的偵測範圍</li>
-            <li>量測完成後可選取並拖曳標註位置，標註顯示 X、Y、角度與距離；拖曳磁吸與量測共用相同開關及吸力半徑；可依安全邊界、矩形四角／邊中點／邊緣相切、圓心／四分點，以及各類相切方式分別控制</li>
+<section class="helpSection">
+<h3>選取與 CAD 框選</h3>
+<p><strong>單點：</strong>在工件上按下左鍵，沒有拖動並放開後才選取。</p>
+<p><strong>拖曳：</strong>按下後開始移動即切換為框選，不會先單選該工件。</p>
+<div class="helpSelectionDemo">
+<div class="helpWindowDemo">左 → 右：視窗框選<br/>必須完整包覆才選取</div>
+<div class="helpCrossingDemo">右 → 左：交集框選<br/>碰到工件就選取</div>
+</div>
+<p><span class="helpKey">Esc</span>取消選取；<span class="helpKey">Delete</span>刪除所選工件。</p>
+</section>
+<section class="helpSection">
+<h3>移動與微調</h3>
+<p>選取工件後用方向鍵移動，步距由「量測與編輯」的微調量決定。</p>
+<ul>
+<li><span class="helpKey">方向鍵</span>移動一個步距</li>
+<li><span class="helpKey">Shift</span>＋方向鍵：移動 10 倍步距</li>
+<li><span class="helpKey">Backspace</span>或 Ctrl＋Z：復原刪除</li>
+</ul>
+</section>
+<section class="helpSection">
+<h3>量測模式</h3>
+<p><span class="helpKey">M</span>切換兩點量測。滑鼠移動會預覽可吸附的角點、邊、圓心、圓形四分點、圓周與載盤邊界。</p>
+<ul>
+<li>左鍵依序設定第一點與第二點</li>
+<li><span class="helpKey">Shift</span>啟用 0°／45°／90° 極座標追蹤</li>
+<li><span class="helpKey">Esc</span>取消目前未完成的量測</li>
+</ul>
+</section>
+<section class="helpSection">
+<h3>磁吸模式</h3>
+<p><span class="helpKey">S</span>切換磁吸。啟用後左鍵拖曳工件，靠近候選位置時只顯示虛線預覽，放開才真正吸附。</p>
+<ul>
+<li>吸力半徑代表候選位置的偵測範圍</li>
+<li>量測完成後可選取並拖曳標註位置，標註顯示 X、Y、角度與距離；拖曳磁吸與量測共用相同開關及吸力半徑；可依安全邊界、矩形四角／邊中點／邊緣相切、圓心／四分點，以及各類相切方式分別控制</li>
 <li>每一類吸附點都可獨立開關；只保留雙圓相切可減少其他候選干擾</li>
-            <li>按住右鍵拖曳工件可暫時忽略吸力，靠近障礙後仍可沿邊平滑滑動</li>
-          </ul>
-        </section>
-
-        <section class="helpSection">
-          <h3>檢視操作</h3>
-          <ul>
-            <li>滾輪：以游標位置為中心縮放</li>
-            <li>雙擊空白處：還原預設縮放</li>
-            <li>右鍵按住空白處拖曳：平移工程圖</li>
-          </ul>
-        </section>
-
-        <section class="helpSection">
-          <h3>方案與追加工件</h3>
-          <p>四方案總覽會比較方形陣列／蜂巢排列及直擺／橫擺。進入方案後可修改主要工件、追加工件與內縮值，即時觀察結果。</p>
-          <p>「生成 1 個」適合逐個測試追加位置；「蜂巢自適應填充」用於批次尋找規則排列。</p>
-        </section>
-      </div>
-    </div>
-  </div>
+<li>按住右鍵拖曳工件可暫時忽略吸力，靠近障礙後仍可沿邊平滑滑動</li>
+</ul>
+</section>
+<section class="helpSection">
+<h3>檢視操作</h3>
+<ul>
+<li>滾輪：以游標位置為中心縮放</li>
+<li>雙擊空白處：還原預設縮放</li>
+<li>右鍵按住空白處拖曳：平移工程圖</li>
+</ul>
+</section>
+<section class="helpSection">
+<h3>方案與追加工件</h3>
+<p>四方案總覽會比較方形陣列／蜂巢排列及直擺／橫擺。進入方案後可修改主要工件、追加工件與內縮值，即時觀察結果。</p>
+<p>「生成 1 個」適合逐個測試追加位置；「蜂巢自適應填充」用於批次尋找規則排列。</p>
+</section>
 </div>
-
-
-<div id="mobileTouchToolbar" class="mobileTouchToolbar" aria-label="手機觸控工具列">
-  <button id="mobileSelectBtn" type="button">選取<br>模式</button>
-  <button id="mobilePanBtn" type="button">移動<br>畫面</button>
-  <button id="mobileSnapBtn" type="button">磁吸<br>模式</button>
-  <button id="mobileFreeDragBtn" type="button" disabled>自由<br>拖曳</button>
-  <button id="mobileMeasureBtn" type="button">量測<br>模式</button>
-  <button id="mobileClearMeasurementsBtn" type="button">清除<br>量測</button>
-  <button id="mobileDeleteBtn" type="button">刪除</button>
-  <button id="mobileSystemSettingsBtn" type="button">設定<br>工具</button>
 </div>
-<button id="mobileCanvasExit" class="mobileCanvasExit" type="button" aria-label="離開全螢幕畫布">×</button>
-
-<div id="mobileQuickToolbar" class="mobileQuickToolbar" aria-label="手機分類工具列">
-  <button id="mobileInsetBtn" type="button">安全<br>設定</button>
-  <button id="mobilePrimarySettingsBtn" type="button">工件<br>設定</button>
-  <button id="mobileSecondarySettingsBtn" type="button">追加<br>工件</button>
-  <button id="mobileSnapSettingsBtn" type="button">吸附<br>點</button>
-  <button id="mobileAlignSettingsBtn" type="button">對齊<br>工件</button>
-  <button id="mobileZoomOutBtn" type="button">縮小<br>畫面</button>
-  <button id="mobileZoomInBtn" type="button">放大<br>畫面</button>
-  <button id="mobileFitBtn" type="button">適合<br>畫面</button>
 </div>
-
-<button id="mobileEnterWorkspaceBtn" class="mobileEnterWorkspaceBtn" type="button">
+</div>
+<div aria-label="手機觸控工具列" class="mobileTouchToolbar" id="mobileTouchToolbar">
+<button id="mobileSelectBtn" type="button">選取<br/>模式</button>
+<button id="mobilePanBtn" type="button">移動<br/>畫面</button>
+<button id="mobileSnapBtn" type="button">磁吸<br/>模式</button>
+<button disabled="" id="mobileFreeDragBtn" type="button">自由<br/>拖曳</button>
+<button id="mobileMeasureBtn" type="button">量測<br/>模式</button>
+<button id="mobileClearMeasurementsBtn" type="button">清除<br/>量測</button>
+<button id="mobileDeleteBtn" type="button">刪除</button>
+<button id="mobileSystemSettingsBtn" type="button">設定<br/>工具</button>
+</div>
+<button aria-label="離開全螢幕畫布" class="mobileCanvasExit" id="mobileCanvasExit" type="button">×</button>
+<div aria-label="手機分類工具列" class="mobileQuickToolbar" id="mobileQuickToolbar">
+<button id="mobileInsetBtn" type="button">安全<br/>設定</button>
+<button id="mobilePrimarySettingsBtn" type="button">工件<br/>設定</button>
+<button id="mobileSecondarySettingsBtn" type="button">追加<br/>工件</button>
+<button id="mobileSnapSettingsBtn" type="button">吸附<br/>點</button>
+<button id="mobileAlignSettingsBtn" type="button">對齊<br/>工件</button>
+<button id="mobileZoomOutBtn" type="button">縮小<br/>畫面</button>
+<button id="mobileZoomInBtn" type="button">放大<br/>畫面</button>
+<button id="mobileFitBtn" type="button">適合<br/>畫面</button>
+</div>
+<button class="mobileEnterWorkspaceBtn" id="mobileEnterWorkspaceBtn" type="button">
   適合畫面
 </button>
-
-<div id="mobileFineTuneBackdrop" class="mobileFineTuneBackdrop" hidden></div>
-<section id="mobileFineTuneSheet" class="mobileFineTuneSheet" aria-label="手機分類設定" hidden>
-  <div class="mobileFineTuneHandle"></div>
-  <div class="mobileFineTuneHeader">
-    <div>
-      <strong id="mobileFineTuneTitle">安全設定</strong>
-      <small id="mobileFineTuneSubtitle">修改後即時更新圖面</small>
-    </div>
-    <button id="mobileFineTuneCloseBtn" type="button" aria-label="關閉設定面板">×</button>
-  </div>
-
-  <div id="mobileInsetPanel" class="mobilePanelSection">
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">安全範圍</div>
-      <div class="mobileFineTuneGrid">
-        <label>
-          <span>X 方向內縮</span>
-          <div class="mobileNumberControl">
-            <button type="button" data-mobile-step-target="mobileSafeX" data-mobile-step="-1">−</button>
-            <input id="mobileSafeX" type="number" min="0" step="1">
-            <button type="button" data-mobile-step-target="mobileSafeX" data-mobile-step="1">＋</button>
-          </div>
-        </label>
-        <label>
-          <span>Y 方向內縮</span>
-          <div class="mobileNumberControl">
-            <button type="button" data-mobile-step-target="mobileSafeY" data-mobile-step="-1">−</button>
-            <input id="mobileSafeY" type="number" min="0" step="1">
-            <button type="button" data-mobile-step-target="mobileSafeY" data-mobile-step="1">＋</button>
-          </div>
-        </label>
-      </div>
-    </div>
-  </div>
-
-  <div id="mobilePrimaryPanel" class="mobilePanelSection" hidden>
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">工件形狀</div>
-      <div class="mobileShapeButtons">
-        <button id="mobileRectShapeBtn" type="button">▭ 矩形</button>
-        <button id="mobileCircleShapeBtn" type="button">○ 圓形</button>
-      </div>
-    </div>
-
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">尺寸</div>
-      <label class="mobileWideField">
-        <span>輔助尺寸（吋）</span>
-        <input id="mobilePartInches" type="number" min="0" step="0.01" placeholder="例如 4、4.3">
-      </label>
-      <div class="mobileFineTuneGrid">
-        <label>
-          <span id="mobilePartLengthLabel">工件長度</span>
-          <div class="mobileNumberControl">
-            <button type="button" data-mobile-step-target="mobilePartLength" data-mobile-step="-1">−</button>
-            <input id="mobilePartLength" type="number" min="1" step="1">
-            <button type="button" data-mobile-step-target="mobilePartLength" data-mobile-step="1">＋</button>
-          </div>
-        </label>
-        <label id="mobilePartWidthField">
-          <span>工件寬度</span>
-          <div class="mobileNumberControl">
-            <button type="button" data-mobile-step-target="mobilePartWidth" data-mobile-step="-1">−</button>
-            <input id="mobilePartWidth" type="number" min="1" step="1">
-            <button type="button" data-mobile-step-target="mobilePartWidth" data-mobile-step="1">＋</button>
-          </div>
-        </label>
-      </div>
-      <button id="mobileSwapPrimaryBtn" class="mobileFullAction" type="button">↔ 交換長度與寬度</button>
-    </div>
-
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">工件間距</div>
-      <div class="mobileFineTuneGrid">
-        <label>
-          <span>X 方向間距</span>
-          <div class="mobileNumberControl">
-            <button type="button" data-mobile-step-target="mobileGapX" data-mobile-step="-1">−</button>
-            <input id="mobileGapX" type="number" min="0" step="1">
-            <button type="button" data-mobile-step-target="mobileGapX" data-mobile-step="1">＋</button>
-          </div>
-        </label>
-        <label>
-          <span>Y 方向間距</span>
-          <div class="mobileNumberControl">
-            <button type="button" data-mobile-step-target="mobileGapY" data-mobile-step="-1">−</button>
-            <input id="mobileGapY" type="number" min="0" step="1">
-            <button type="button" data-mobile-step-target="mobileGapY" data-mobile-step="1">＋</button>
-          </div>
-        </label>
-      </div>
-    </div>
-  </div>
-
-  <div id="mobileSecondaryPanel" class="mobilePanelSection" hidden>
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">更新方式</div>
-      <label class="mobileSwitchRow">
-        <input id="mobileSecondaryAutoRedraw" type="checkbox" checked>
-        <span>設定變更後立即重畫</span>
-      </label>
-      <div class="mobilePanelHint">
+<div class="mobileFineTuneBackdrop" hidden="" id="mobileFineTuneBackdrop"></div>
+<section aria-label="手機分類設定" class="mobileFineTuneSheet" hidden="" id="mobileFineTuneSheet">
+<div class="mobileFineTuneHandle"></div>
+<div class="mobileFineTuneHeader">
+<div>
+<strong id="mobileFineTuneTitle">安全設定</strong>
+<small id="mobileFineTuneSubtitle">修改後即時更新圖面</small>
+</div>
+<button aria-label="關閉設定面板" id="mobileFineTuneCloseBtn" type="button">×</button>
+</div>
+<div class="mobilePanelSection" id="mobileInsetPanel">
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">安全範圍</div>
+<div class="mobileFineTuneGrid">
+<label>
+<span>X 方向內縮</span>
+<div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobileSafeX" type="button">−</button>
+<input id="mobileSafeX" min="0" step="1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobileSafeX" type="button">＋</button>
+</div>
+</label>
+<label>
+<span>Y 方向內縮</span>
+<div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobileSafeY" type="button">−</button>
+<input id="mobileSafeY" min="0" step="1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobileSafeY" type="button">＋</button>
+</div>
+</label>
+</div>
+</div>
+</div>
+<div class="mobilePanelSection" hidden="" id="mobilePrimaryPanel">
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">工件形狀</div>
+<div class="mobileShapeButtons">
+<button id="mobileRectShapeBtn" type="button">▭ 矩形</button>
+<button id="mobileCircleShapeBtn" type="button">○ 圓形</button>
+</div>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">尺寸</div>
+<label class="mobileWideField">
+<span>輔助尺寸（吋）</span>
+<input id="mobilePartInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
+</label>
+<div class="mobileFineTuneGrid">
+<label>
+<span id="mobilePartLengthLabel">工件長度</span>
+<div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobilePartLength" type="button">−</button>
+<input id="mobilePartLength" min="1" step="1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobilePartLength" type="button">＋</button>
+</div>
+</label>
+<label id="mobilePartWidthField">
+<span>工件寬度</span>
+<div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobilePartWidth" type="button">−</button>
+<input id="mobilePartWidth" min="1" step="1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobilePartWidth" type="button">＋</button>
+</div>
+</label>
+</div>
+<button class="mobileFullAction" id="mobileSwapPrimaryBtn" type="button">↔ 交換長度與寬度</button>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">工件間距</div>
+<div class="mobileFineTuneGrid">
+<label>
+<span>X 方向間距</span>
+<div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobileGapX" type="button">−</button>
+<input id="mobileGapX" min="0" step="1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobileGapX" type="button">＋</button>
+</div>
+</label>
+<label>
+<span>Y 方向間距</span>
+<div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobileGapY" type="button">−</button>
+<input id="mobileGapY" min="0" step="1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobileGapY" type="button">＋</button>
+</div>
+</label>
+</div>
+</div>
+</div>
+<div class="mobilePanelSection" hidden="" id="mobileSecondaryPanel">
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">更新方式</div>
+<label class="mobileSwitchRow">
+<input checked="" id="mobileSecondaryAutoRedraw" type="checkbox"/>
+<span>設定變更後立即重畫</span>
+</label>
+<div class="mobilePanelHint">
         關閉後，修改形狀、尺寸、間距或排列方式不會清除既有追加工件；
         可使用「生成 1 個」混合加入不同尺寸與形狀。
       </div>
-    </div>
-
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">追加工件形狀</div>
-      <div class="mobileShapeButtons">
-        <button id="mobileSecondaryRectBtn" type="button">▭ 矩形</button>
-        <button id="mobileSecondaryCircleBtn" type="button">○ 圓形</button>
-      </div>
-    </div>
-
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">追加工件尺寸</div>
-      <label class="mobileWideField">
-        <span>輔助尺寸（吋）</span>
-        <input id="mobileSecondaryInches" type="number" min="0" step="0.01" placeholder="例如 4、4.3">
-      </label>
-      <div class="mobileFineTuneGrid">
-        <label>
-          <span id="mobileSecondaryLengthLabel">工件長度</span>
-          <div class="mobileNumberControl">
-            <button type="button" data-mobile-step-target="mobileSecondaryLength" data-mobile-step="-1">−</button>
-            <input id="mobileSecondaryLength" type="number" min="1" step="1">
-            <button type="button" data-mobile-step-target="mobileSecondaryLength" data-mobile-step="1">＋</button>
-          </div>
-        </label>
-        <label id="mobileSecondaryWidthField">
-          <span>工件寬度</span>
-          <div class="mobileNumberControl">
-            <button type="button" data-mobile-step-target="mobileSecondaryWidth" data-mobile-step="-1">−</button>
-            <input id="mobileSecondaryWidth" type="number" min="1" step="1">
-            <button type="button" data-mobile-step-target="mobileSecondaryWidth" data-mobile-step="1">＋</button>
-          </div>
-        </label>
-      </div>
-      <button id="mobileSwapSecondaryBtn" class="mobileFullAction" type="button">↔ 交換長度與寬度</button>
-    </div>
-
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">追加工件間距</div>
-      <div class="mobileFineTuneGrid">
-        <label>
-          <span>X 方向間距</span>
-          <div class="mobileNumberControl">
-            <button type="button" data-mobile-step-target="mobileSecondaryGapX" data-mobile-step="-1">−</button>
-            <input id="mobileSecondaryGapX" type="number" min="0" step="0.1">
-            <button type="button" data-mobile-step-target="mobileSecondaryGapX" data-mobile-step="1">＋</button>
-          </div>
-        </label>
-        <label>
-          <span>Y 方向間距</span>
-          <div class="mobileNumberControl">
-            <button type="button" data-mobile-step-target="mobileSecondaryGapY" data-mobile-step="-1">−</button>
-            <input id="mobileSecondaryGapY" type="number" min="0" step="0.1">
-            <button type="button" data-mobile-step-target="mobileSecondaryGapY" data-mobile-step="1">＋</button>
-          </div>
-        </label>
-      </div>
-    </div>
-
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">排列方向</div>
-      <div class="mobileShapeButtons">
-        <button id="mobileSecondaryVerticalBtn" type="button">直擺</button>
-        <button id="mobileSecondaryHorizontalBtn" type="button">橫擺</button>
-      </div>
-    </div>
-
-    <div id="mobileSecondaryCircleArrangeCard" class="mobileSectionCard">
-      <div class="mobileSectionTitle">圓形排列方式</div>
-      <div class="mobileShapeButtons">
-        <button id="mobileSecondaryGridBtn" type="button">方形陣列</button>
-        <button id="mobileSecondaryHoneyBtn" type="button">蜂巢排列</button>
-      </div>
-    </div>
-
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">追加工件操作</div>
-      <div class="mobileActionGridThree">
-        <button id="mobileAddOneSecondaryBtn" type="button">生成 1 個</button>
-        <button id="mobileClearSecondaryBtn" type="button">清除追加工件</button>
-        <button id="mobileAdaptiveFillBtn" type="button">蜂巢自適應</button>
-      </div>
-    </div>
-  </div>
-  <div id="mobileSnapPanel" class="mobilePanelSection" hidden>
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">吸附模式</div>
-      <label class="mobileSwitchRow">
-        <input id="mobileSnapEnabledMirror" type="checkbox">
-        <span>啟用磁吸模式</span>
-      </label>
-      <label class="mobileWideField">
-        <span>吸力半徑</span>
-        <input id="mobileSnapStepMirror" type="number" min="0" step="1">
-      </label>
-    </div>
-
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">安全範圍</div>
-      <label class="mobileSwitchRow"><input data-snap-mirror="snapTypeBoundary" type="checkbox"><span>安全範圍</span></label>
-    </div>
-
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">矩形吸附點</div>
-      <label class="mobileSwitchRow"><input data-snap-mirror="snapRectCorners" type="checkbox"><span>四角</span></label>
-      <label class="mobileSwitchRow"><input data-snap-mirror="snapRectMidpoints" type="checkbox"><span>邊中點</span></label>
-      <label class="mobileSwitchRow"><input data-snap-mirror="snapRectEdges" type="checkbox"><span>邊緣相切</span></label>
-    </div>
-
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">圓形與相切吸附點</div>
-      <label class="mobileSwitchRow"><input data-snap-mirror="snapCircleCenter" type="checkbox"><span>圓心</span></label>
-      <label class="mobileSwitchRow"><input data-snap-mirror="snapTypeQuadrant" type="checkbox"><span>四分點</span></label>
-      <label class="mobileSwitchRow"><input data-snap-mirror="snapTypeSingleCircle" type="checkbox"><span>單圓相切</span></label>
-      <label class="mobileSwitchRow"><input data-snap-mirror="snapTypeDoubleCircle" type="checkbox"><span>雙圓相切</span></label>
-      <label class="mobileSwitchRow"><input data-snap-mirror="snapTypeCircleRect" type="checkbox"><span>圓矩相切</span></label>
-      <div class="mobileTwoActions">
-        <button id="mobileSnapAllBtn" type="button">全部開啟</button>
-        <button id="mobileSnapNoneBtn" type="button">全部關閉</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="mobileAlignPanel" class="mobilePanelSection" hidden>
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">選取工件對齊</div>
-      <div class="mobileAlignGrid">
-        <button type="button" data-mobile-align="left">靠左</button>
-        <button type="button" data-mobile-align="right">靠右</button>
-        <button type="button" data-mobile-align="top">靠上</button>
-        <button type="button" data-mobile-align="bottom">靠下</button>
-        <button type="button" data-mobile-align="centerX">水平置中</button>
-        <button type="button" data-mobile-align="centerY">垂直置中</button>
-      </div>
-    </div>
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">位置工具</div>
-      <div class="mobileTwoActions">
-        <button id="mobileSnapSelectedBtn" type="button">切換吸附點</button>
-        <button id="mobileRestorePositionsBtn" type="button">還原本次移動</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="mobileSystemPanel" class="mobilePanelSection" hidden>
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">設定檔</div>
-      <div class="mobileTwoActions">
-        <button id="mobileImportConfigBtn" type="button">匯入設定檔</button>
-        <button id="mobileExportConfigBtn" type="button">匯出設定檔</button>
-      </div>
-      <div id="mobileConfigStatus" class="mobilePanelHint">與桌面版共用 default.cfg 設定。</div>
-    </div>
-
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">V5 空間分析</div>
-      <div class="mobileTwoActions">
-        <button id="mobileAnalyzeSpacesBtn" type="button">分析剩餘空間</button>
-        <button id="mobileClearAnalysisBtn" type="button">清除分析</button>
-      </div>
-      <label class="mobileSwitchRow">
-        <input id="mobileShowSpaceLabels" type="checkbox">
-        <span>顯示空白區編號與尺寸</span>
-      </label>
-    </div>
-
-    <div class="mobileSectionCard">
-      <div class="mobileSectionTitle">其他</div>
-      <div class="mobileTwoActions">
-        <button id="mobileResetBtn" type="button">恢復預設值</button>
-        <button id="mobileExportSvgBtn" type="button">匯出 SVG</button>
-      </div>
-    </div>
-  </div>
-
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">追加工件形狀</div>
+<div class="mobileShapeButtons">
+<button id="mobileSecondaryRectBtn" type="button">▭ 矩形</button>
+<button id="mobileSecondaryCircleBtn" type="button">○ 圓形</button>
+</div>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">追加工件尺寸</div>
+<label class="mobileWideField">
+<span>輔助尺寸（吋）</span>
+<input id="mobileSecondaryInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
+</label>
+<div class="mobileFineTuneGrid">
+<label>
+<span id="mobileSecondaryLengthLabel">工件長度</span>
+<div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobileSecondaryLength" type="button">−</button>
+<input id="mobileSecondaryLength" min="1" step="1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobileSecondaryLength" type="button">＋</button>
+</div>
+</label>
+<label id="mobileSecondaryWidthField">
+<span>工件寬度</span>
+<div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobileSecondaryWidth" type="button">−</button>
+<input id="mobileSecondaryWidth" min="1" step="1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobileSecondaryWidth" type="button">＋</button>
+</div>
+</label>
+</div>
+<button class="mobileFullAction" id="mobileSwapSecondaryBtn" type="button">↔ 交換長度與寬度</button>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">追加工件間距</div>
+<div class="mobileFineTuneGrid">
+<label>
+<span>X 方向間距</span>
+<div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobileSecondaryGapX" type="button">−</button>
+<input id="mobileSecondaryGapX" min="0" step="0.1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobileSecondaryGapX" type="button">＋</button>
+</div>
+</label>
+<label>
+<span>Y 方向間距</span>
+<div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobileSecondaryGapY" type="button">−</button>
+<input id="mobileSecondaryGapY" min="0" step="0.1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobileSecondaryGapY" type="button">＋</button>
+</div>
+</label>
+</div>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">排列方向</div>
+<div class="mobileShapeButtons">
+<button id="mobileSecondaryVerticalBtn" type="button">直擺</button>
+<button id="mobileSecondaryHorizontalBtn" type="button">橫擺</button>
+</div>
+</div>
+<div class="mobileSectionCard" id="mobileSecondaryCircleArrangeCard">
+<div class="mobileSectionTitle">圓形排列方式</div>
+<div class="mobileShapeButtons">
+<button id="mobileSecondaryGridBtn" type="button">方形陣列</button>
+<button id="mobileSecondaryHoneyBtn" type="button">蜂巢排列</button>
+</div>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">追加工件操作</div>
+<div class="mobileActionGridThree">
+<button id="mobileAddOneSecondaryBtn" type="button">生成 1 個</button>
+<button id="mobileClearSecondaryBtn" type="button">清除追加工件</button>
+<button id="mobileAdaptiveFillBtn" type="button">蜂巢自適應</button>
+</div>
+</div>
+</div>
+<div class="mobilePanelSection" hidden="" id="mobileSnapPanel">
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">吸附模式</div>
+<label class="mobileSwitchRow">
+<input id="mobileSnapEnabledMirror" type="checkbox"/>
+<span>啟用磁吸模式</span>
+</label>
+<label class="mobileWideField">
+<span>吸力半徑</span>
+<input id="mobileSnapStepMirror" min="0" step="1" type="number"/>
+</label>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">安全範圍</div>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapTypeBoundary" type="checkbox"/><span>安全範圍</span></label>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">矩形吸附點</div>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapRectCorners" type="checkbox"/><span>四角</span></label>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapRectMidpoints" type="checkbox"/><span>邊中點</span></label>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapRectEdges" type="checkbox"/><span>邊緣相切</span></label>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">圓形與相切吸附點</div>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapCircleCenter" type="checkbox"/><span>圓心</span></label>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapTypeQuadrant" type="checkbox"/><span>四分點</span></label>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapTypeSingleCircle" type="checkbox"/><span>單圓相切</span></label>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapTypeDoubleCircle" type="checkbox"/><span>雙圓相切</span></label>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapTypeCircleRect" type="checkbox"/><span>圓矩相切</span></label>
+<div class="mobileTwoActions">
+<button id="mobileSnapAllBtn" type="button">全部開啟</button>
+<button id="mobileSnapNoneBtn" type="button">全部關閉</button>
+</div>
+</div>
+</div>
+<div class="mobilePanelSection" hidden="" id="mobileAlignPanel">
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">選取工件對齊</div>
+<div class="mobileAlignGrid">
+<button data-mobile-align="left" type="button">靠左</button>
+<button data-mobile-align="right" type="button">靠右</button>
+<button data-mobile-align="top" type="button">靠上</button>
+<button data-mobile-align="bottom" type="button">靠下</button>
+<button data-mobile-align="centerX" type="button">水平置中</button>
+<button data-mobile-align="centerY" type="button">垂直置中</button>
+</div>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">位置工具</div>
+<div class="mobileTwoActions">
+<button id="mobileSnapSelectedBtn" type="button">切換吸附點</button>
+<button id="mobileRestorePositionsBtn" type="button">還原本次移動</button>
+</div>
+</div>
+</div>
+<div class="mobilePanelSection" hidden="" id="mobileSystemPanel">
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">設定檔</div>
+<div class="mobileTwoActions">
+<button id="mobileImportConfigBtn" type="button">匯入設定檔</button>
+<button id="mobileExportConfigBtn" type="button">匯出設定檔</button>
+</div>
+<div class="mobilePanelHint" id="mobileConfigStatus">與桌面版共用 default.cfg 設定。</div>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">V5 空間分析</div>
+<div class="mobileTwoActions">
+<button id="mobileAnalyzeSpacesBtn" type="button">分析剩餘空間</button>
+<button id="mobileClearAnalysisBtn" type="button">清除分析</button>
+</div>
+<label class="mobileSwitchRow">
+<input id="mobileShowSpaceLabels" type="checkbox"/>
+<span>顯示空白區編號與尺寸</span>
+</label>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">其他</div>
+<div class="mobileTwoActions">
+<button id="mobileResetBtn" type="button">恢復預設值</button>
+<button id="mobileExportSvgBtn" type="button">匯出 SVG</button>
+</div>
+</div>
+</div>
 </section>
-
-
 <script>
 const NS="http://www.w3.org/2000/svg";
 const svg=document.getElementById("drawing");
@@ -10846,344 +10673,10 @@ renderCurrent=function(){
 };
 
 
-/* ===== V1.8 桌面版設定區折疊與即時摘要 ===== */
-(function initDesktopCollapsibleSettings(){
-  const desktopMedia=window.matchMedia("(pointer:fine) and (min-width:821px)");
-  if(!desktopMedia.matches)return;
-
-  const traySection=document.getElementById("traySettingsSection");
-  const primarySection=document.getElementById("primarySettingsSection");
-  const secondarySection=document.getElementById("secondarySettingsSection");
-  const editSection=document.getElementById("editSettingsSection");
-  const inchSection=document.querySelector(".inchConversionSection");
-
-  if(!traySection||!primarySection||!secondarySection||!editSection)return;
-
-  /* 將吋數換算併入載盤設定內容中 */
-  if(inchSection && inchSection.parentElement!==traySection){
-    traySection.appendChild(inchSection);
-  }
-
-  function makeCollapsible(section,title,collapsed,summaryBuilder,storageKey){
-    if(section.dataset.desktopCollapsibleReady==="true")return;
-    section.dataset.desktopCollapsibleReady="true";
-    section.classList.add("desktopCollapsibleSection");
-
-    const originalChildren=[...section.children];
-    const originalHeading=originalChildren.find(
-      child=>child.tagName==="H2"
-    );
-    if(originalHeading)originalHeading.remove();
-
-    const header=document.createElement("button");
-    header.type="button";
-    header.className="desktopCollapseHeader";
-    header.setAttribute("aria-expanded",String(!collapsed));
-
-    const arrow=document.createElement("span");
-    arrow.className="desktopCollapseArrow";
-
-    const textBox=document.createElement("span");
-    textBox.className="desktopCollapseText";
-
-    const titleNode=document.createElement("span");
-    titleNode.className="desktopCollapseTitle";
-    titleNode.textContent=title;
-
-    const summary=document.createElement("span");
-    summary.className="desktopCollapseSummary";
-
-    textBox.append(titleNode,summary);
-    header.append(arrow,textBox);
-
-    const body=document.createElement("div");
-    body.className="desktopCollapseBody";
-
-    [...section.children].forEach(child=>body.appendChild(child));
-    section.append(header,body);
-
-    function normalizeSummaryLines(value){
-      const source=Array.isArray(value)?value:[String(value??"")];
-      const lines=source.slice(0,3);
-      while(lines.length<3)lines.push("");
-      return lines;
-    }
-
-    function updateState(){
-      const isCollapsed=section.classList.contains("isCollapsed");
-      arrow.textContent=isCollapsed?"▼":"▲";
-      header.setAttribute("aria-expanded",String(!isCollapsed));
-
-      const lines=normalizeSummaryLines(summaryBuilder());
-      summary.replaceChildren(
-        ...lines.map(line=>{
-          const row=document.createElement("span");
-          row.className="desktopSummaryLine";
-          row.textContent=line;
-          return row;
-        })
-      );
-    }
-
-    function setCollapsed(value,save=true){
-      section.classList.toggle("isCollapsed",Boolean(value));
-      if(save && storageKey){
-        try{
-          localStorage.setItem(
-            `traySimulator.desktopCollapse.${storageKey}`,
-            value?"collapsed":"expanded"
-          );
-        }catch(_error){}
-      }
-      updateState();
-    }
-
-    header.addEventListener("click",()=>{
-      setCollapsed(!section.classList.contains("isCollapsed"));
-    });
-
-    section.addEventListener("input",updateState);
-    section.addEventListener("change",updateState);
-
-    let initialCollapsed=collapsed;
-    if(storageKey){
-      try{
-        const saved=localStorage.getItem(
-          `traySimulator.desktopCollapse.${storageKey}`
-        );
-        if(saved==="collapsed")initialCollapsed=true;
-        if(saved==="expanded")initialCollapsed=false;
-      }catch(_error){}
-    }
-
-    setCollapsed(initialCollapsed,false);
-    return {section,header,body,summary,updateState,setCollapsed};
-  }
-
-  const numberValue=(id,fallback="—")=>{
-    const el=document.getElementById(id);
-    return el && el.value!=="" ? el.value : fallback;
-  };
-
-  const checked=(id)=>Boolean(document.getElementById(id)?.checked);
-
-  const trayCollapse=makeCollapsible(
-    traySection,
-    "載盤設定",
-    true,
-    ()=>{
-      const factor=checked("inchFactor25")
-        ?"公司慣用(吋=25mm)"
-        :"標準換算(吋=25.4mm)";
-      return [
-        `${numberValue("trayLength")} mm × ${numberValue("trayWidth")} mm`,
-        `內縮 ${numberValue("safeX")} mm × ${numberValue("safeY")} mm`,
-        factor==="公司慣用(吋=25mm)"
-          ?"公司慣用：1 吋 = 25 mm"
-          :"標準換算：1 吋 = 25.4 mm"
-      ];
-    },
-    "tray"
-  );
-
-  const primaryCollapse=makeCollapsible(
-    primarySection,
-    "工件設定",
-    false,
-    ()=>{
-      const circle=checked("primaryCircleShape");
-      const shape=circle?"圓形":"矩形";
-      const size=circle
-        ?`直徑${numberValue("partLength")}`
-        :`${numberValue("partLength")}×${numberValue("partWidth")}`;
-      return [
-        shape,
-        circle
-          ?`直徑 ${numberValue("partLength")} mm`
-          :`${numberValue("partLength")} mm × ${numberValue("partWidth")} mm`,
-        `間距 ${numberValue("gapX")} mm × ${numberValue("gapY")} mm`
-      ];
-    },
-    "primary"
-  );
-
-  const secondaryCollapse=makeCollapsible(
-    secondarySection,
-    "追加工件設定",
-    true,
-    ()=>{
-      const circle=checked("secondaryCircleMode");
-      const shape=circle?"圓形":"矩形";
-      const size=circle
-        ?`直徑${numberValue("secondaryLength")}`
-        :`${numberValue("secondaryLength")}×${numberValue("secondaryWidth")}`;
-      const count=Array.isArray(window.secondaryItems)
-        ?window.secondaryItems.length
-        :(typeof secondaryItems!=="undefined"&&Array.isArray(secondaryItems)
-          ?secondaryItems.length
-          :0);
-      const redraw=checked("secondaryAutoRedraw")?"即時重畫開":"即時重畫關";
-      return [
-        shape,
-        circle
-          ?`直徑 ${numberValue("secondaryLength")} mm`
-          :`${numberValue("secondaryLength")} mm × ${numberValue("secondaryWidth")} mm`,
-        `已追加 ${count} 個｜即時重畫：${redraw==="即時重畫開"?"開":"關"}`
-      ];
-    },
-    "secondary"
-  );
-
-  const editCollapse=makeCollapsible(
-    editSection,
-    "量測與編輯",
-    true,
-    ()=>{
-      const snap=checked("snapEnabled")?"磁吸開":"磁吸關";
-      const measuring=document.getElementById("measureModeBtn")
-        ?.classList.contains("active");
-      return [
-        `磁吸：${snap==="磁吸開"?"開":"關"}`,
-        `吸力：${numberValue("snapStep")} mm`,
-        `量測：${measuring?"開":"關"}`
-      ];
-    },
-    "edit"
-  );
-
-  const updateAllSummaries=()=>{
-    trayCollapse?.updateState();
-    primaryCollapse?.updateState();
-    secondaryCollapse?.updateState();
-    editCollapse?.updateState();
-  };
-
-  /* 追加、刪除、量測模式等不是輸入欄位變更，也要更新摘要 */
-  document.addEventListener("click",()=>{
-    requestAnimationFrame(updateAllSummaries);
-  });
-
-  const observer=new MutationObserver(()=>{
-    requestAnimationFrame(updateAllSummaries);
-  });
-  const canvas=document.getElementById("drawing");
-  if(canvas){
-    observer.observe(canvas,{childList:true,subtree:true,attributes:true});
-  }
-
-  updateAllSummaries();
-})();
 
 
-/* ===== V2.0 手機載盤設定折疊 ===== */
-(function initMobileTrayCollapsible(){
-  const touchMode=window.matchMedia("(pointer:coarse), (max-width:820px)");
-  if(!touchMode.matches)return;
 
-  const traySection=document.getElementById("traySettingsSection");
-  if(!traySection || traySection.dataset.mobileTrayCollapsibleReady==="true")return;
 
-  /* 手機版也將原本獨立的吋數換算卡片併入載盤設定，才能一起收合。 */
-  const inchSection=document.querySelector(".inchConversionSection");
-  if(inchSection && inchSection.parentElement!==traySection){
-    traySection.appendChild(inchSection);
-  }
-
-  traySection.dataset.mobileTrayCollapsibleReady="true";
-  traySection.classList.add("mobileTrayCollapsible");
-
-  const originalChildren=[...traySection.children];
-  const originalHeading=originalChildren.find(
-    child=>child.tagName==="H2" || child.classList?.contains("sectionTitle")
-  );
-  if(originalHeading)originalHeading.remove();
-
-  const header=document.createElement("button");
-  header.type="button";
-  header.className="mobileTrayCollapseHeader";
-  header.setAttribute("aria-expanded","false");
-
-  const arrow=document.createElement("span");
-  arrow.className="mobileTrayCollapseArrow";
-
-  const textBox=document.createElement("span");
-  textBox.className="mobileTrayCollapseText";
-
-  const title=document.createElement("span");
-  title.className="mobileTrayCollapseTitle";
-  title.textContent="載盤設定";
-
-  const summary=document.createElement("span");
-  summary.className="mobileTrayCollapseSummary";
-
-  textBox.append(title,summary);
-  header.append(arrow,textBox);
-
-  const body=document.createElement("div");
-  body.className="mobileTrayCollapseBody";
-  [...traySection.children].forEach(child=>body.appendChild(child));
-  traySection.append(header,body);
-
-  const numberValue=(id,fallback="—")=>{
-    const el=document.getElementById(id);
-    return el && el.value!=="" ? el.value : fallback;
-  };
-
-  const isCompanyInch=()=>Boolean(
-    document.getElementById("inchFactor25")?.checked
-  );
-
-  function renderSummary(){
-    const lines=[
-      `${numberValue("trayLength")} mm × ${numberValue("trayWidth")} mm`,
-      `內縮 ${numberValue("safeX")} mm × ${numberValue("safeY")} mm`,
-      isCompanyInch()
-        ?"公司慣用：1 吋 = 25 mm"
-        :"標準換算：1 吋 = 25.4 mm"
-    ];
-
-    summary.replaceChildren(
-      ...lines.map(line=>{
-        const row=document.createElement("span");
-        row.className="mobileTraySummaryLine";
-        row.textContent=line;
-        return row;
-      })
-    );
-  }
-
-  function setCollapsed(collapsed,save=true){
-    traySection.classList.toggle("isCollapsed",collapsed);
-    arrow.textContent=collapsed?"▼":"▲";
-    header.setAttribute("aria-expanded",String(!collapsed));
-    renderSummary();
-
-    if(save){
-      try{
-        localStorage.setItem(
-          "traySimulator.mobileTrayCollapse",
-          collapsed?"collapsed":"expanded"
-        );
-      }catch(_error){}
-    }
-  }
-
-  let initialCollapsed=true;
-  try{
-    const saved=localStorage.getItem("traySimulator.mobileTrayCollapse");
-    if(saved==="expanded")initialCollapsed=false;
-    if(saved==="collapsed")initialCollapsed=true;
-  }catch(_error){}
-
-  header.addEventListener("click",()=>{
-    setCollapsed(!traySection.classList.contains("isCollapsed"));
-  });
-
-  traySection.addEventListener("input",renderSummary);
-  traySection.addEventListener("change",renderSummary);
-
-  setCollapsed(initialCollapsed,false);
-})();
 
 
 /* ===== V2.3 四方案專用適合畫面狀態 ===== */
@@ -11237,9 +10730,124 @@ setMobileFineTuneOpen=function(open,panel=mobileActivePanel){
   }
 };
 
+
+/* ===== V2.4 共用折疊元件邏輯 ===== */
+(function initSharedCollapsibleSettings(){
+  const sections=[...document.querySelectorAll(".sharedCollapsibleSection")];
+  if(!sections.length)return;
+
+  const numberValue=(id,fallback="—")=>{
+    const el=document.getElementById(id);
+    return el && el.value!=="" ? el.value : fallback;
+  };
+  const checked=id=>Boolean(document.getElementById(id)?.checked);
+
+  const summaryBuilders={
+    tray:()=>[
+      `${numberValue("trayLength")} mm × ${numberValue("trayWidth")} mm`,
+      `內縮 ${numberValue("safeX")} mm × ${numberValue("safeY")} mm`,
+      checked("inchFactor25")
+        ?"公司慣用：1 吋 = 25 mm"
+        :"標準換算：1 吋 = 25.4 mm"
+    ],
+    primary:()=>{
+      const circle=checked("primaryCircleShape");
+      return [
+        circle?"圓形":"矩形",
+        circle
+          ?`直徑 ${numberValue("partLength")} mm`
+          :`${numberValue("partLength")} mm × ${numberValue("partWidth")} mm`,
+        `間距 ${numberValue("gapX")} mm × ${numberValue("gapY")} mm`
+      ];
+    },
+    secondary:()=>{
+      const circle=checked("secondaryCircleMode");
+      const count=typeof secondaryItems!=="undefined" && Array.isArray(secondaryItems)
+        ?secondaryItems.length
+        :0;
+      return [
+        circle?"圓形":"矩形",
+        circle
+          ?`直徑 ${numberValue("secondaryLength")} mm`
+          :`${numberValue("secondaryLength")} mm × ${numberValue("secondaryWidth")} mm`,
+        `已追加 ${count} 個｜即時重畫：${checked("secondaryAutoRedraw")?"開":"關"}`
+      ];
+    },
+    edit:()=>[
+      `磁吸：${checked("snapEnabled")?"開":"關"}`,
+      `吸力：${numberValue("snapStep")} mm`,
+      `量測：${document.getElementById("measureModeBtn")?.classList.contains("active")?"開":"關"}`
+    ]
+  };
+
+  function renderSummary(section){
+    const key=section.dataset.collapseKey;
+    const summary=section.querySelector(".sharedCollapseSummary");
+    if(!summary)return;
+
+    const lines=(summaryBuilders[key]?.()||["","",""]).slice(0,3);
+    while(lines.length<3)lines.push("");
+
+    summary.replaceChildren(
+      ...lines.map(line=>{
+        const row=document.createElement("span");
+        row.className="sharedSummaryLine";
+        row.textContent=line;
+        return row;
+      })
+    );
+  }
+
+  function setCollapsed(section,collapsed,save=true){
+    section.classList.toggle("isCollapsed",collapsed);
+
+    const header=section.querySelector(".sharedCollapseHeader");
+    const arrow=section.querySelector(".sharedCollapseArrow");
+    if(header)header.setAttribute("aria-expanded",String(!collapsed));
+    if(arrow)arrow.textContent=collapsed?"▼":"▲";
+
+    if(save){
+      try{
+        localStorage.setItem(
+          `traySimulator.sharedCollapse.${section.dataset.collapseKey}`,
+          collapsed?"collapsed":"expanded"
+        );
+      }catch(_error){}
+    }
+
+    renderSummary(section);
+  }
+
+  sections.forEach(section=>{
+    const key=section.dataset.collapseKey;
+    const defaultCollapsed=section.dataset.defaultCollapsed==="true";
+    let initialCollapsed=defaultCollapsed;
+
+    try{
+      const saved=localStorage.getItem(`traySimulator.sharedCollapse.${key}`);
+      if(saved==="collapsed")initialCollapsed=true;
+      if(saved==="expanded")initialCollapsed=false;
+    }catch(_error){}
+
+    section.querySelector(".sharedCollapseHeader")?.addEventListener("click",()=>{
+      setCollapsed(section,!section.classList.contains("isCollapsed"));
+    });
+
+    section.addEventListener("input",()=>renderSummary(section));
+    section.addEventListener("change",()=>renderSummary(section));
+    setCollapsed(section,initialCollapsed,false);
+  });
+
+  const updateAll=()=>sections.forEach(renderSummary);
+  document.addEventListener("click",()=>requestAnimationFrame(updateAll));
+
+  const drawing=document.getElementById("drawing");
+  if(drawing){
+    new MutationObserver(()=>requestAnimationFrame(updateAll))
+      .observe(drawing,{childList:true,subtree:true,attributes:true});
+  }
+})();
+
 </script>
-
-
-
 </body>
 </html>

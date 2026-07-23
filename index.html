@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V1.1 Beta 桌面與手機自動適配</title>
+<title>智慧載盤規劃系統｜V1.1.1 Beta 手機工具列功能修正版</title>
 
 <style>
 :root{
@@ -2173,7 +2173,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V1.1 Beta · 桌面／手機自動適配</div>
+    <div class="headerBadge">V1.1.1 Beta · 手機工具列功能修正版</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -2652,6 +2652,19 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
     </div>
   </div>
 </div>
+
+
+<div id="mobileTouchToolbar" class="mobileTouchToolbar" aria-label="手機觸控工具列">
+  <button id="mobileSelectBtn" type="button">選取</button>
+  <button id="mobileSnapBtn" type="button">磁吸</button>
+  <button id="mobileMeasureBtn" type="button">量測</button>
+  <button id="mobilePanBtn" type="button">平移</button>
+  <button id="mobileDeleteBtn" type="button">刪除</button>
+  <button id="mobileZoomOutBtn" type="button">－</button>
+  <button id="mobileZoomInBtn" type="button">＋</button>
+  <button id="mobileFitBtn" type="button">適合畫面</button>
+</div>
+<button id="mobileCanvasExit" class="mobileCanvasExit" type="button" aria-label="離開全螢幕畫布">×</button>
 
 <script>
 const NS="http://www.w3.org/2000/svg";
@@ -7984,6 +7997,26 @@ const mobileFitBtn=document.getElementById("mobileFitBtn");
 const mobileCanvasExit=document.getElementById("mobileCanvasExit");
 const mobileModeBadge=document.getElementById("mobileModeBadge");
 
+[
+  mobileSelectBtn,
+  mobileSnapBtn,
+  mobileMeasureBtn,
+  mobilePanBtn,
+  mobileDeleteBtn,
+  mobileZoomOutBtn,
+  mobileZoomInBtn,
+  mobileFitBtn,
+  mobileCanvasExit
+].forEach(button=>{
+  if(!button)return;
+  button.addEventListener("pointerdown",event=>{
+    event.stopPropagation();
+  });
+  button.addEventListener("touchstart",event=>{
+    event.stopPropagation();
+  },{passive:true});
+});
+
 let mobileInteractionMode="select";
 let mobileTouchPanState=null;
 
@@ -8017,7 +8050,7 @@ function syncMobileModeUi(){
 
 function enableTouchUi(){
   document.body.classList.add("touchUiEnabled");
-  syncMobileModeUi();
+  requestAnimationFrame(syncMobileModeUi);
 }
 
 function disableTouchUi(){
@@ -8068,13 +8101,13 @@ function toggleMobileFullscreen(force){
   }
 }
 
-function zoomCanvasFromCenter(direction){
+function zoomCanvasFromCenter(deltaY){
   const rect=svg.getBoundingClientRect();
   if(!rect.width||!rect.height)return;
   zoomCanvasAt(
     rect.left+rect.width/2,
     rect.top+rect.height/2,
-    direction
+    deltaY
   );
 }
 
@@ -8182,14 +8215,16 @@ mobilePanBtn?.addEventListener("click",()=>{
 });
 
 mobileDeleteBtn?.addEventListener("click",mobileDeleteSelection);
-mobileZoomOutBtn?.addEventListener("click",()=>zoomCanvasFromCenter(1));
-mobileZoomInBtn?.addEventListener("click",()=>zoomCanvasFromCenter(-1));
+mobileZoomOutBtn?.addEventListener("click",()=>zoomCanvasFromCenter(100));
+mobileZoomInBtn?.addEventListener("click",()=>zoomCanvasFromCenter(-100));
 mobileFitBtn?.addEventListener("click",()=>{
   if(document.body.classList.contains("mobileCanvasFullscreen")){
     resetCanvasZoom();
+    setToolStatus("已將圖面調整為適合畫面。","success");
   }else{
     toggleMobileFullscreen(true);
   }
+  syncMobileModeUi();
 });
 mobileCanvasExit?.addEventListener("click",()=>toggleMobileFullscreen(false));
 
@@ -8212,17 +8247,6 @@ applyResponsiveInteractionMode();
 </script>
 
 
-<div id="mobileTouchToolbar" class="mobileTouchToolbar" aria-label="手機觸控工具列">
-  <button id="mobileSelectBtn" type="button">選取</button>
-  <button id="mobileSnapBtn" type="button">磁吸</button>
-  <button id="mobileMeasureBtn" type="button">量測</button>
-  <button id="mobilePanBtn" type="button">平移</button>
-  <button id="mobileDeleteBtn" type="button">刪除</button>
-  <button id="mobileZoomOutBtn" type="button">－</button>
-  <button id="mobileZoomInBtn" type="button">＋</button>
-  <button id="mobileFitBtn" type="button">適合畫面</button>
-</div>
-<button id="mobileCanvasExit" class="mobileCanvasExit" type="button" aria-label="離開全螢幕畫布">×</button>
 
 </body>
 </html>

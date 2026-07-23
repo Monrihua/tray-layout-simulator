@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V1.7 Beta 選取填色與追加工件控制</title>
+<title>智慧載盤規劃系統｜V1.9 Beta 三行摘要折疊介面</title>
 
 <style>
 :root{
@@ -2937,6 +2937,165 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   font-size:10px;
 }
 
+
+/* ===== V1.8 桌面版設定區折疊 ===== */
+@media (pointer:fine) and (min-width:821px){
+  .desktopCollapsibleSection{
+    padding:0!important;
+    overflow:hidden;
+  }
+
+  .desktopCollapseHeader{
+    width:100%;
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    margin:0;
+    padding:12px 12px;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    color:#173d72;
+    text-align:left;
+    cursor:pointer;
+    box-shadow:none;
+  }
+
+  .desktopCollapseHeader:hover{
+    background:#f5f9ff;
+  }
+
+  .desktopCollapseArrow{
+    flex:0 0 auto;
+    width:13px;
+    padding-top:1px;
+    color:#166ee8;
+    font-size:12px;
+    font-weight:900;
+    line-height:1.25;
+  }
+
+  .desktopCollapseText{
+    min-width:0;
+    flex:1;
+  }
+
+  .desktopCollapseTitle{
+    display:block;
+    font-size:13px;
+    font-weight:900;
+    line-height:1.35;
+  }
+
+  .desktopCollapseSummary{
+    display:none;
+    margin-top:5px;
+    color:#586b84;
+    font-size:11px;
+    font-weight:700;
+    line-height:1.5;
+    white-space:normal;
+  }
+
+  .desktopCollapsibleSection.isCollapsed .desktopCollapseSummary{
+    display:block;
+  }
+
+  .desktopCollapseBody{
+    padding:0 12px 12px;
+  }
+
+  .desktopCollapsibleSection.isCollapsed .desktopCollapseBody{
+    display:none;
+  }
+
+  /* 原本標題改由折疊標題列取代 */
+  .desktopCollapsibleSection > h2,
+  .desktopCollapseBody > h2{
+    display:none!important;
+  }
+
+  /* 吋數換算併入載盤設定，不再顯示第二張獨立卡片 */
+  #traySettingsSection .inchConversionSection{
+    margin:12px 0 0!important;
+    padding:12px 0 0!important;
+    border:0!important;
+    border-top:1px solid #dbe4f1!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+
+  #traySettingsSection .inchConversionSection > h2{
+    display:block!important;
+    margin:0 0 9px!important;
+    font-size:12px!important;
+  }
+}
+
+
+/* ===== V1.9 桌面版三行摘要折疊介面 ===== */
+@media (pointer:fine) and (min-width:821px){
+  .desktopCollapseHeader{
+    transition:background .18s ease, box-shadow .18s ease;
+  }
+
+  .desktopCollapseSummary{
+    display:none;
+    margin-top:6px;
+    color:#5f7087;
+    font-size:11px;
+    font-weight:700;
+    line-height:1.55;
+    white-space:normal;
+  }
+
+  .desktopCollapsibleSection.isCollapsed .desktopCollapseSummary{
+    display:grid!important;
+    gap:1px;
+  }
+
+  .desktopSummaryLine{
+    display:block;
+    min-height:17px;
+  }
+
+  .desktopCollapseBody{
+    overflow:hidden;
+    opacity:1;
+    max-height:5000px;
+    padding:0 12px 12px;
+    transition:max-height .2s ease, opacity .16s ease, padding .2s ease;
+  }
+
+  .desktopCollapsibleSection.isCollapsed .desktopCollapseBody{
+    display:block!important;
+    max-height:0!important;
+    opacity:0;
+    padding-top:0!important;
+    padding-bottom:0!important;
+    pointer-events:none;
+  }
+
+  .desktopCollapsibleSection.isCollapsed{
+    min-height:96px;
+  }
+
+  .desktopCollapsibleSection.isCollapsed .desktopCollapseHeader{
+    min-height:94px;
+  }
+
+  .desktopCollapseTitle{
+    font-size:13px;
+    font-weight:900;
+    color:#183e73;
+  }
+
+  .desktopCollapseArrow{
+    padding-top:2px;
+  }
+}
+
 </style>
 
 </head>
@@ -2972,7 +3131,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V1.7 Beta · 選取填色與追加工件控制</div>
+    <div class="headerBadge">V1.9 Beta · 三行摘要折疊介面</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -10307,6 +10466,235 @@ renderCurrent=function(){
   previousRenderCurrentV17();
   requestAnimationFrame(updateCurrentUtilization);
 };
+
+
+/* ===== V1.8 桌面版設定區折疊與即時摘要 ===== */
+(function initDesktopCollapsibleSettings(){
+  const desktopMedia=window.matchMedia("(pointer:fine) and (min-width:821px)");
+  if(!desktopMedia.matches)return;
+
+  const traySection=document.getElementById("traySettingsSection");
+  const primarySection=document.getElementById("primarySettingsSection");
+  const secondarySection=document.getElementById("secondarySettingsSection");
+  const editSection=document.getElementById("editSettingsSection");
+  const inchSection=document.querySelector(".inchConversionSection");
+
+  if(!traySection||!primarySection||!secondarySection||!editSection)return;
+
+  /* 將吋數換算併入載盤設定內容中 */
+  if(inchSection && inchSection.parentElement!==traySection){
+    traySection.appendChild(inchSection);
+  }
+
+  function makeCollapsible(section,title,collapsed,summaryBuilder,storageKey){
+    if(section.dataset.desktopCollapsibleReady==="true")return;
+    section.dataset.desktopCollapsibleReady="true";
+    section.classList.add("desktopCollapsibleSection");
+
+    const originalChildren=[...section.children];
+    const originalHeading=originalChildren.find(
+      child=>child.tagName==="H2"
+    );
+    if(originalHeading)originalHeading.remove();
+
+    const header=document.createElement("button");
+    header.type="button";
+    header.className="desktopCollapseHeader";
+    header.setAttribute("aria-expanded",String(!collapsed));
+
+    const arrow=document.createElement("span");
+    arrow.className="desktopCollapseArrow";
+
+    const textBox=document.createElement("span");
+    textBox.className="desktopCollapseText";
+
+    const titleNode=document.createElement("span");
+    titleNode.className="desktopCollapseTitle";
+    titleNode.textContent=title;
+
+    const summary=document.createElement("span");
+    summary.className="desktopCollapseSummary";
+
+    textBox.append(titleNode,summary);
+    header.append(arrow,textBox);
+
+    const body=document.createElement("div");
+    body.className="desktopCollapseBody";
+
+    [...section.children].forEach(child=>body.appendChild(child));
+    section.append(header,body);
+
+    function normalizeSummaryLines(value){
+      const source=Array.isArray(value)?value:[String(value??"")];
+      const lines=source.slice(0,3);
+      while(lines.length<3)lines.push("");
+      return lines;
+    }
+
+    function updateState(){
+      const isCollapsed=section.classList.contains("isCollapsed");
+      arrow.textContent=isCollapsed?"▼":"▲";
+      header.setAttribute("aria-expanded",String(!isCollapsed));
+
+      const lines=normalizeSummaryLines(summaryBuilder());
+      summary.replaceChildren(
+        ...lines.map(line=>{
+          const row=document.createElement("span");
+          row.className="desktopSummaryLine";
+          row.textContent=line;
+          return row;
+        })
+      );
+    }
+
+    function setCollapsed(value,save=true){
+      section.classList.toggle("isCollapsed",Boolean(value));
+      if(save && storageKey){
+        try{
+          localStorage.setItem(
+            `traySimulator.desktopCollapse.${storageKey}`,
+            value?"collapsed":"expanded"
+          );
+        }catch(_error){}
+      }
+      updateState();
+    }
+
+    header.addEventListener("click",()=>{
+      setCollapsed(!section.classList.contains("isCollapsed"));
+    });
+
+    section.addEventListener("input",updateState);
+    section.addEventListener("change",updateState);
+
+    let initialCollapsed=collapsed;
+    if(storageKey){
+      try{
+        const saved=localStorage.getItem(
+          `traySimulator.desktopCollapse.${storageKey}`
+        );
+        if(saved==="collapsed")initialCollapsed=true;
+        if(saved==="expanded")initialCollapsed=false;
+      }catch(_error){}
+    }
+
+    setCollapsed(initialCollapsed,false);
+    return {section,header,body,summary,updateState,setCollapsed};
+  }
+
+  const numberValue=(id,fallback="—")=>{
+    const el=document.getElementById(id);
+    return el && el.value!=="" ? el.value : fallback;
+  };
+
+  const checked=(id)=>Boolean(document.getElementById(id)?.checked);
+
+  const trayCollapse=makeCollapsible(
+    traySection,
+    "載盤設定",
+    true,
+    ()=>{
+      const factor=checked("inchFactor25")
+        ?"公司慣用(吋=25mm)"
+        :"標準換算(吋=25.4mm)";
+      return [
+        `${numberValue("trayLength")} mm × ${numberValue("trayWidth")} mm`,
+        `內縮 ${numberValue("safeX")} mm × ${numberValue("safeY")} mm`,
+        factor==="公司慣用(吋=25mm)"
+          ?"公司慣用：1 吋 = 25 mm"
+          :"標準換算：1 吋 = 25.4 mm"
+      ];
+    },
+    "tray"
+  );
+
+  const primaryCollapse=makeCollapsible(
+    primarySection,
+    "工件設定",
+    false,
+    ()=>{
+      const circle=checked("primaryCircleShape");
+      const shape=circle?"圓形":"矩形";
+      const size=circle
+        ?`直徑${numberValue("partLength")}`
+        :`${numberValue("partLength")}×${numberValue("partWidth")}`;
+      return [
+        shape,
+        circle
+          ?`直徑 ${numberValue("partLength")} mm`
+          :`${numberValue("partLength")} mm × ${numberValue("partWidth")} mm`,
+        `間距 ${numberValue("gapX")} mm × ${numberValue("gapY")} mm`
+      ];
+    },
+    "primary"
+  );
+
+  const secondaryCollapse=makeCollapsible(
+    secondarySection,
+    "追加工件設定",
+    true,
+    ()=>{
+      const circle=checked("secondaryCircleMode");
+      const shape=circle?"圓形":"矩形";
+      const size=circle
+        ?`直徑${numberValue("secondaryLength")}`
+        :`${numberValue("secondaryLength")}×${numberValue("secondaryWidth")}`;
+      const count=Array.isArray(window.secondaryItems)
+        ?window.secondaryItems.length
+        :(typeof secondaryItems!=="undefined"&&Array.isArray(secondaryItems)
+          ?secondaryItems.length
+          :0);
+      const redraw=checked("secondaryAutoRedraw")?"即時重畫開":"即時重畫關";
+      return [
+        shape,
+        circle
+          ?`直徑 ${numberValue("secondaryLength")} mm`
+          :`${numberValue("secondaryLength")} mm × ${numberValue("secondaryWidth")} mm`,
+        `已追加 ${count} 個｜即時重畫：${redraw==="即時重畫開"?"開":"關"}`
+      ];
+    },
+    "secondary"
+  );
+
+  const editCollapse=makeCollapsible(
+    editSection,
+    "量測與編輯",
+    true,
+    ()=>{
+      const snap=checked("snapEnabled")?"磁吸開":"磁吸關";
+      const measuring=document.getElementById("measureModeBtn")
+        ?.classList.contains("active");
+      return [
+        `磁吸：${snap==="磁吸開"?"開":"關"}`,
+        `吸力：${numberValue("snapStep")} mm`,
+        `量測：${measuring?"開":"關"}`
+      ];
+    },
+    "edit"
+  );
+
+  const updateAllSummaries=()=>{
+    trayCollapse?.updateState();
+    primaryCollapse?.updateState();
+    secondaryCollapse?.updateState();
+    editCollapse?.updateState();
+  };
+
+  /* 追加、刪除、量測模式等不是輸入欄位變更，也要更新摘要 */
+  document.addEventListener("click",()=>{
+    requestAnimationFrame(updateAllSummaries);
+  });
+
+  const observer=new MutationObserver(()=>{
+    requestAnimationFrame(updateAllSummaries);
+  });
+  const canvas=document.getElementById("drawing");
+  if(canvas){
+    observer.observe(canvas,{childList:true,subtree:true,attributes:true});
+  }
+
+  updateAllSummaries();
+})();
 
 </script>
 

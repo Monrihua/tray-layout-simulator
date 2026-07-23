@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V1.3 Beta 手機分類工具面板</title>
+<title>智慧載盤規劃系統｜V1.4 Beta 手機完整分類工作區</title>
 
 <style>
 :root{
@@ -2426,6 +2426,113 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V1.4 手機完整分類工作區 ===== */
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled .mobileQuickToolbar{
+    display:flex;
+    grid-template-columns:none;
+    overflow-x:auto;
+    overflow-y:hidden;
+    gap:6px;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  body.touchUiEnabled .mobileQuickToolbar::-webkit-scrollbar{display:none}
+  body.touchUiEnabled .mobileQuickToolbar button{
+    flex:0 0 92px;
+    min-width:92px;
+  }
+
+  body.touchUiEnabled .mobileFineTuneSheet{
+    height:36dvh;
+    max-height:36dvh;
+    min-height:280px;
+    overflow-y:auto;
+  }
+
+  body.touchUiEnabled .mobileFineTuneHeader{
+    position:sticky;
+    top:-8px;
+    z-index:3;
+    padding:8px 0 8px;
+    background:#f7f9fc;
+  }
+
+  body.touchUiEnabled .mobileSwitchRow{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-height:42px;
+    margin:0;
+    padding:7px 4px;
+    border-bottom:1px solid #edf1f6;
+    color:#33465f;
+    font-size:12px;
+    font-weight:850;
+  }
+  body.touchUiEnabled .mobileSwitchRow:last-child{border-bottom:0}
+  body.touchUiEnabled .mobileSwitchRow input{
+    width:22px;
+    height:22px;
+    flex:0 0 auto;
+  }
+
+  body.touchUiEnabled .mobileTwoActions,
+  body.touchUiEnabled .mobileActionGridThree{
+    display:grid;
+    gap:8px;
+  }
+  body.touchUiEnabled .mobileTwoActions{grid-template-columns:1fr 1fr}
+  body.touchUiEnabled .mobileActionGridThree{grid-template-columns:repeat(3,1fr)}
+  body.touchUiEnabled .mobileTwoActions button,
+  body.touchUiEnabled .mobileActionGridThree button{
+    min-height:44px;
+    margin:0;
+    border-radius:9px;
+    font-size:11px;
+    font-weight:900;
+  }
+
+  body.touchUiEnabled .mobileAlignGrid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  body.touchUiEnabled .mobileAlignGrid button{
+    min-height:44px;
+    margin:0;
+    border-radius:9px;
+    font-size:12px;
+    font-weight:900;
+  }
+
+  body.touchUiEnabled .mobilePanelHint{
+    margin-top:8px;
+    color:#6a788b;
+    font-size:10px;
+    line-height:1.5;
+  }
+
+  /* 手機已有替代介面的左側功能直接隱藏，只保留載盤設定與吋數換算 */
+  body.touchUiEnabled #primarySettingsSection,
+  body.touchUiEnabled #secondarySettingsSection,
+  body.touchUiEnabled #editSettingsSection,
+  body.touchUiEnabled .configSection,
+  body.touchUiEnabled .configSection + .section{
+    display:none!important;
+  }
+
+  /* 圓形時統一隱藏寬度欄位，剩餘欄位自動撐滿 */
+  body.touchUiEnabled #mobilePartWidthField.hiddenByShape,
+  body.touchUiEnabled #mobileSecondaryWidthField.hiddenByShape{
+    display:none!important;
+  }
+  body.touchUiEnabled .mobileFineTuneGrid:has(> label.hiddenByShape) > label:not(.hiddenByShape){
+    grid-column:1 / -1;
+  }
+}
+
 </style>
 
 </head>
@@ -2461,7 +2568,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V1.3 Beta · 手機分類工具面板</div>
+    <div class="headerBadge">V1.4 Beta · 手機完整分類工作區</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -2954,12 +3061,15 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 <button id="mobileCanvasExit" class="mobileCanvasExit" type="button" aria-label="離開全螢幕畫布">×</button>
 
-<div id="mobileQuickToolbar" class="mobileQuickToolbar" aria-label="手機快速工具列">
+<div id="mobileQuickToolbar" class="mobileQuickToolbar" aria-label="手機分類工具列">
   <button id="mobileZoomOutBtn" type="button">縮小畫面</button>
   <button id="mobileZoomInBtn" type="button">放大畫面</button>
   <button id="mobileInsetBtn" type="button">微調內縮</button>
   <button id="mobilePrimarySettingsBtn" type="button">工件設定</button>
   <button id="mobileSecondarySettingsBtn" type="button">追加工件</button>
+  <button id="mobileSnapSettingsBtn" type="button">吸附點</button>
+  <button id="mobileAlignSettingsBtn" type="button">對齊工件</button>
+  <button id="mobileSystemSettingsBtn" type="button">設定工具</button>
 </div>
 
 <div id="mobileFineTuneBackdrop" class="mobileFineTuneBackdrop" hidden></div>
@@ -3129,7 +3239,107 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
         <button id="mobileSecondaryHoneyBtn" type="button">蜂巢排列</button>
       </div>
     </div>
+
+    <div class="mobileSectionCard">
+      <div class="mobileSectionTitle">追加工件操作</div>
+      <div class="mobileActionGridThree">
+        <button id="mobileAddOneSecondaryBtn" type="button">生成 1 個</button>
+        <button id="mobileClearSecondaryBtn" type="button">清除追加工件</button>
+        <button id="mobileAdaptiveFillBtn" type="button">蜂巢自適應</button>
+      </div>
+    </div>
   </div>
+  <div id="mobileSnapPanel" class="mobilePanelSection" hidden>
+    <div class="mobileSectionCard">
+      <div class="mobileSectionTitle">吸附模式</div>
+      <label class="mobileSwitchRow">
+        <input id="mobileSnapEnabledMirror" type="checkbox">
+        <span>啟用磁吸模式</span>
+      </label>
+      <label class="mobileWideField">
+        <span>吸力半徑</span>
+        <input id="mobileSnapStepMirror" type="number" min="0" step="1">
+      </label>
+    </div>
+
+    <div class="mobileSectionCard">
+      <div class="mobileSectionTitle">安全範圍</div>
+      <label class="mobileSwitchRow"><input data-snap-mirror="snapTypeBoundary" type="checkbox"><span>安全範圍</span></label>
+    </div>
+
+    <div class="mobileSectionCard">
+      <div class="mobileSectionTitle">矩形吸附點</div>
+      <label class="mobileSwitchRow"><input data-snap-mirror="snapRectCorners" type="checkbox"><span>四角</span></label>
+      <label class="mobileSwitchRow"><input data-snap-mirror="snapRectMidpoints" type="checkbox"><span>邊中點</span></label>
+      <label class="mobileSwitchRow"><input data-snap-mirror="snapRectEdges" type="checkbox"><span>邊緣相切</span></label>
+    </div>
+
+    <div class="mobileSectionCard">
+      <div class="mobileSectionTitle">圓形與相切吸附點</div>
+      <label class="mobileSwitchRow"><input data-snap-mirror="snapCircleCenter" type="checkbox"><span>圓心</span></label>
+      <label class="mobileSwitchRow"><input data-snap-mirror="snapTypeQuadrant" type="checkbox"><span>四分點</span></label>
+      <label class="mobileSwitchRow"><input data-snap-mirror="snapTypeSingleCircle" type="checkbox"><span>單圓相切</span></label>
+      <label class="mobileSwitchRow"><input data-snap-mirror="snapTypeDoubleCircle" type="checkbox"><span>雙圓相切</span></label>
+      <label class="mobileSwitchRow"><input data-snap-mirror="snapTypeCircleRect" type="checkbox"><span>圓矩相切</span></label>
+      <div class="mobileTwoActions">
+        <button id="mobileSnapAllBtn" type="button">全部開啟</button>
+        <button id="mobileSnapNoneBtn" type="button">全部關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobileAlignPanel" class="mobilePanelSection" hidden>
+    <div class="mobileSectionCard">
+      <div class="mobileSectionTitle">選取工件對齊</div>
+      <div class="mobileAlignGrid">
+        <button type="button" data-mobile-align="left">靠左</button>
+        <button type="button" data-mobile-align="right">靠右</button>
+        <button type="button" data-mobile-align="top">靠上</button>
+        <button type="button" data-mobile-align="bottom">靠下</button>
+        <button type="button" data-mobile-align="centerX">水平置中</button>
+        <button type="button" data-mobile-align="centerY">垂直置中</button>
+      </div>
+    </div>
+    <div class="mobileSectionCard">
+      <div class="mobileSectionTitle">位置工具</div>
+      <div class="mobileTwoActions">
+        <button id="mobileSnapSelectedBtn" type="button">切換吸附點</button>
+        <button id="mobileRestorePositionsBtn" type="button">還原本次移動</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobileSystemPanel" class="mobilePanelSection" hidden>
+    <div class="mobileSectionCard">
+      <div class="mobileSectionTitle">設定檔</div>
+      <div class="mobileTwoActions">
+        <button id="mobileImportConfigBtn" type="button">匯入設定檔</button>
+        <button id="mobileExportConfigBtn" type="button">匯出設定檔</button>
+      </div>
+      <div id="mobileConfigStatus" class="mobilePanelHint">與桌面版共用 default.cfg 設定。</div>
+    </div>
+
+    <div class="mobileSectionCard">
+      <div class="mobileSectionTitle">V5 空間分析</div>
+      <div class="mobileTwoActions">
+        <button id="mobileAnalyzeSpacesBtn" type="button">分析剩餘空間</button>
+        <button id="mobileClearAnalysisBtn" type="button">清除分析</button>
+      </div>
+      <label class="mobileSwitchRow">
+        <input id="mobileShowSpaceLabels" type="checkbox">
+        <span>顯示空白區編號與尺寸</span>
+      </label>
+    </div>
+
+    <div class="mobileSectionCard">
+      <div class="mobileSectionTitle">其他</div>
+      <div class="mobileTwoActions">
+        <button id="mobileResetBtn" type="button">恢復預設值</button>
+        <button id="mobileExportSvgBtn" type="button">匯出 SVG</button>
+      </div>
+    </div>
+  </div>
+
 </section>
 
 
@@ -9028,6 +9238,188 @@ syncMobileFineTuneFromMain();
 syncMobileFreeDragAvailability();
 showMobilePanel("inset");
 syncMobileModeUi();
+
+/* ===== V1.4 手機完整分類頁面 ===== */
+const mobileSnapSettingsBtn=document.getElementById("mobileSnapSettingsBtn");
+const mobileAlignSettingsBtn=document.getElementById("mobileAlignSettingsBtn");
+const mobileSystemSettingsBtn=document.getElementById("mobileSystemSettingsBtn");
+
+const mobileSnapPanel=document.getElementById("mobileSnapPanel");
+const mobileAlignPanel=document.getElementById("mobileAlignPanel");
+const mobileSystemPanel=document.getElementById("mobileSystemPanel");
+
+const mobileSnapEnabledMirror=document.getElementById("mobileSnapEnabledMirror");
+const mobileSnapStepMirror=document.getElementById("mobileSnapStepMirror");
+const mobileShowSpaceLabels=document.getElementById("mobileShowSpaceLabels");
+
+function syncExtendedMobilePanels(){
+  if(mobileSnapEnabledMirror)mobileSnapEnabledMirror.checked=snapEnabled.checked;
+  const snapStepMain=document.getElementById("snapStep");
+  if(mobileSnapStepMirror&&snapStepMain&&document.activeElement!==mobileSnapStepMirror){
+    mobileSnapStepMirror.value=snapStepMain.value;
+  }
+
+  document.querySelectorAll("[data-snap-mirror]").forEach(mirror=>{
+    const main=document.getElementById(mirror.dataset.snapMirror);
+    if(main)mirror.checked=main.checked;
+  });
+
+  const showLabelsMain=document.getElementById("showSpaceLabels");
+  if(mobileShowSpaceLabels&&showLabelsMain){
+    mobileShowSpaceLabels.checked=showLabelsMain.checked;
+  }
+}
+
+const oldShowMobilePanelV14=showMobilePanel;
+showMobilePanel=function(panel){
+  mobileActivePanel=panel;
+  [
+    mobileInsetPanel,mobilePrimaryPanel,mobileSecondaryPanel,
+    mobileSnapPanel,mobileAlignPanel,mobileSystemPanel
+  ].forEach(section=>{
+    if(section)section.hidden=true;
+  });
+
+  const panelMap={
+    inset:mobileInsetPanel,
+    primary:mobilePrimaryPanel,
+    secondary:mobileSecondaryPanel,
+    snap:mobileSnapPanel,
+    align:mobileAlignPanel,
+    system:mobileSystemPanel
+  };
+  if(panelMap[panel])panelMap[panel].hidden=false;
+
+  const meta={
+    inset:["微調內縮","安全範圍 X／Y 方向內縮"],
+    primary:["工件設定","主要工件形狀、尺寸、間距與交換"],
+    secondary:["追加工件","追加工件形狀、尺寸、間距與排列"],
+    snap:["吸附點設定","拖曳與量測共用吸附目標"],
+    align:["對齊工件","選取後進行對齊與位置操作"],
+    system:["設定工具","設定檔、V5 空間分析與輸出"]
+  }[panel];
+
+  mobileFineTuneTitle.textContent=meta[0];
+  mobileFineTuneSubtitle.textContent=meta[1];
+
+  const buttons={
+    inset:mobileInsetBtn,
+    primary:mobilePrimarySettingsBtn,
+    secondary:mobileSecondarySettingsBtn,
+    snap:mobileSnapSettingsBtn,
+    align:mobileAlignSettingsBtn,
+    system:mobileSystemSettingsBtn
+  };
+  Object.entries(buttons).forEach(([key,button])=>{
+    button?.classList.toggle("active",key===panel&&!mobileFineTuneSheet.hidden);
+  });
+
+  syncMobileFineTuneFromMain();
+  syncExtendedMobilePanels();
+};
+
+mobileSnapSettingsBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("snap"));
+mobileAlignSettingsBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("align"));
+mobileSystemSettingsBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("system"));
+
+mobileSnapEnabledMirror?.addEventListener("change",()=>{
+  snapEnabled.checked=mobileSnapEnabledMirror.checked;
+  snapEnabled.dispatchEvent(new Event("change",{bubbles:true}));
+  syncExtendedMobilePanels();
+});
+
+mobileSnapStepMirror?.addEventListener("input",()=>{
+  const main=document.getElementById("snapStep");
+  if(!main)return;
+  main.value=mobileSnapStepMirror.value;
+  dispatchMobileControlChange(main);
+});
+
+document.querySelectorAll("[data-snap-mirror]").forEach(mirror=>{
+  mirror.addEventListener("change",()=>{
+    const main=document.getElementById(mirror.dataset.snapMirror);
+    if(!main)return;
+    main.checked=mirror.checked;
+    main.dispatchEvent(new Event("change",{bubbles:true}));
+    syncExtendedMobilePanels();
+  });
+});
+
+document.getElementById("mobileSnapAllBtn")?.addEventListener("click",()=>{
+  document.getElementById("snapTypesAllBtn")?.click();
+  syncExtendedMobilePanels();
+});
+document.getElementById("mobileSnapNoneBtn")?.addEventListener("click",()=>{
+  document.getElementById("snapTypesNoneBtn")?.click();
+  syncExtendedMobilePanels();
+});
+
+document.querySelectorAll("[data-mobile-align]").forEach(button=>{
+  button.addEventListener("click",()=>{
+    document.querySelector(`[data-align="${button.dataset.mobileAlign}"]`)?.click();
+  });
+});
+document.getElementById("mobileSnapSelectedBtn")?.addEventListener("click",()=>{
+  document.getElementById("snapSelectedBtn")?.click();
+});
+document.getElementById("mobileRestorePositionsBtn")?.addEventListener("click",()=>{
+  document.getElementById("restorePositionsBtn")?.click();
+});
+
+document.getElementById("mobileImportConfigBtn")?.addEventListener("click",()=>{
+  document.getElementById("importConfigBtn")?.click();
+});
+document.getElementById("mobileExportConfigBtn")?.addEventListener("click",()=>{
+  document.getElementById("exportConfigBtn")?.click();
+});
+document.getElementById("mobileAnalyzeSpacesBtn")?.addEventListener("click",()=>{
+  document.getElementById("analyzeSpacesBtn")?.click();
+});
+document.getElementById("mobileClearAnalysisBtn")?.addEventListener("click",()=>{
+  document.getElementById("clearAnalysisBtn")?.click();
+});
+mobileShowSpaceLabels?.addEventListener("change",()=>{
+  const main=document.getElementById("showSpaceLabels");
+  if(!main)return;
+  main.checked=mobileShowSpaceLabels.checked;
+  main.dispatchEvent(new Event("change",{bubbles:true}));
+});
+document.getElementById("mobileResetBtn")?.addEventListener("click",()=>{
+  document.getElementById("resetBtn")?.click();
+  syncMobileFineTuneFromMain();
+  syncExtendedMobilePanels();
+});
+document.getElementById("mobileExportSvgBtn")?.addEventListener("click",()=>{
+  document.getElementById("exportBtn")?.click();
+});
+
+document.getElementById("mobileAddOneSecondaryBtn")?.addEventListener("click",()=>{
+  document.getElementById("addOneSecondary")?.click();
+});
+document.getElementById("mobileClearSecondaryBtn")?.addEventListener("click",()=>{
+  document.getElementById("clearSecondary")?.click();
+});
+document.getElementById("mobileAdaptiveFillBtn")?.addEventListener("click",()=>{
+  document.getElementById("adaptiveFillBtn")?.click();
+});
+
+[
+  snapEnabled,document.getElementById("snapStep"),
+  document.getElementById("showSpaceLabels"),
+  ...Array.from(document.querySelectorAll("[data-snap-mirror]"))
+].forEach(control=>control?.addEventListener("change",syncExtendedMobilePanels));
+
+const oldSetMobileFineTuneOpenV14=setMobileFineTuneOpen;
+setMobileFineTuneOpen=function(open,panel=mobileActivePanel){
+  oldSetMobileFineTuneOpenV14(open,panel);
+  if(!open){
+    [mobileSnapSettingsBtn,mobileAlignSettingsBtn,mobileSystemSettingsBtn]
+      .forEach(btn=>btn?.classList.remove("active"));
+  }
+};
+
+syncExtendedMobilePanels();
+
 </script>
 
 

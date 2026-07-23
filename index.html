@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V1.2 Beta 手機工作區與微調工具列</title>
+<title>智慧載盤規劃系統｜V1.2.1 Beta 微調面板關閉修正版</title>
 
 <style>
 :root{
@@ -2354,6 +2354,13 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V1.2.1 修正：hidden 必須優先隱藏手機面板與遮罩 ===== */
+.mobileFineTuneSheet[hidden],
+.mobileFineTuneBackdrop[hidden]{
+  display:none!important;
+}
+
 </style>
 
 </head>
@@ -2389,7 +2396,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V1.2 Beta · 手機工作區與微調工具列</div>
+    <div class="headerBadge">V1.2.1 Beta · 微調面板關閉修正版</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -8784,6 +8791,22 @@ window.addEventListener("keydown",event=>{
 syncMobileFineTuneFromMain();
 syncMobileFreeDragAvailability();
 syncMobileModeUi();
+
+
+/* ===== V1.2.1 iOS 關閉面板穩定化 ===== */
+function closeMobileFineTuneFromTouch(event){
+  event?.preventDefault?.();
+  event?.stopPropagation?.();
+  setMobileFineTuneOpen(false);
+}
+
+mobileFineTuneCloseBtn?.addEventListener("pointerup",closeMobileFineTuneFromTouch);
+mobileFineTuneCloseBtn?.addEventListener("touchend",closeMobileFineTuneFromTouch,{passive:false});
+mobileFineTuneBackdrop?.addEventListener("pointerup",event=>{
+  if(event.target===mobileFineTuneBackdrop){
+    closeMobileFineTuneFromTouch(event);
+  }
+});
 
 </script>
 

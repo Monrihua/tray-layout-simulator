@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V1.6.2 Beta 固定狀態提示與長按微調</title>
+<title>智慧載盤規劃系統｜V1.7 Beta 選取填色與追加工件控制</title>
 
 <style>
 :root{
@@ -2878,6 +2878,65 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V1.7 選取狀態統一改為內部填色 ===== */
+.part.selected,
+.circlePart.selected,
+.part.multiSelected,
+.circlePart.multiSelected{
+  fill:#4f8dff!important;
+  stroke:#222!important;
+  stroke-width:.65!important;
+  filter:none!important;
+}
+
+.secondaryPart.selected,
+.secondaryRect.selected,
+.secondaryPart.multiSelected,
+.secondaryRect.multiSelected{
+  fill:#ff8c2a!important;
+  stroke:#8a5a00!important;
+  stroke-width:1!important;
+  filter:none!important;
+}
+
+.secondaryAutoRedrawToggle{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  margin:12px 0;
+  padding:11px 12px;
+  border:1px solid #cfdcf5;
+  border-radius:10px;
+  background:#f7faff;
+  cursor:pointer;
+}
+
+.secondaryAutoRedrawToggle input{
+  width:20px;
+  height:20px;
+  margin-top:1px;
+  flex:0 0 auto;
+}
+
+.secondaryAutoRedrawToggle span{
+  display:block;
+  color:#31445f;
+  line-height:1.4;
+}
+
+.secondaryAutoRedrawToggle b{
+  display:block;
+  margin-bottom:2px;
+  font-size:12px;
+}
+
+.secondaryAutoRedrawToggle small{
+  display:block;
+  color:#6b7789;
+  font-size:10px;
+}
+
 </style>
 
 </head>
@@ -2913,7 +2972,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V1.6.2 Beta · 固定狀態提示與長按微調</div>
+    <div class="headerBadge">V1.7 Beta · 選取填色與追加工件控制</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -3120,6 +3179,14 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
         </label>
       </div>
     </div>
+
+    <label class="secondaryAutoRedrawToggle">
+      <input id="secondaryAutoRedraw" type="checkbox" checked>
+      <span>
+        <b>設定變更後立即重畫</b>
+        <small>關閉後可保留既有追加工件，切換尺寸或形狀後再逐個生成。</small>
+      </span>
+    </label>
 
     <div class="secondaryActionsV2">
       <button id="addOneSecondary" type="button">生成 1 個</button>
@@ -3520,6 +3587,18 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   </div>
 
   <div id="mobileSecondaryPanel" class="mobilePanelSection" hidden>
+    <div class="mobileSectionCard">
+      <div class="mobileSectionTitle">更新方式</div>
+      <label class="mobileSwitchRow">
+        <input id="mobileSecondaryAutoRedraw" type="checkbox" checked>
+        <span>設定變更後立即重畫</span>
+      </label>
+      <div class="mobilePanelHint">
+        關閉後，修改形狀、尺寸、間距或排列方式不會清除既有追加工件；
+        可使用「生成 1 個」混合加入不同尺寸與形狀。
+      </div>
+    </div>
+
     <div class="mobileSectionCard">
       <div class="mobileSectionTitle">追加工件形狀</div>
       <div class="mobileShapeButtons">
@@ -4559,7 +4638,7 @@ function buildResultHTML(previewPlan,bestPlan,plans,auto,isCircle,TL,TW,SX,SY,UL
     <hr>
     <b>間隔</b><br>X：${fmt(GX)} mm<br>Y：${fmt(GY)} mm
     <hr>
-    <b>目前預覽的安全範圍面積利用率</b><br>${util.toFixed(2)}%
+    <b>目前預覽的安全範圍面積利用率</b><br><span id="utilizationValue">${util.toFixed(2)}%</span>
   `;
 }
 
@@ -7105,6 +7184,8 @@ function rebuildSecondaryAutomatically(){
 
 function scheduleSecondaryAutoRefresh(delay=180){
   if(secondaryAutoRefreshSuspended)return;
+  const autoRedrawControl=document.getElementById("secondaryAutoRedraw");
+  if(autoRedrawControl && !autoRedrawControl.checked)return;
 
   clearTimeout(secondaryAutoRefreshTimer);
   secondaryAutoRefreshTimer=setTimeout(()=>{
@@ -7284,6 +7365,34 @@ function clearSecondary(){
   updateResultAfterManualChanges();
 }
 
+function itemOccupiedArea(item){
+  if(!item)return 0;
+  if(item.type==="circle"){
+    const radius=Number(item.r)||Math.max(0,(Number(item.w)||0)/2);
+    return Math.PI*radius*radius;
+  }
+  return Math.max(0,Number(item.w)||0)*Math.max(0,Number(item.h)||0);
+}
+
+function updateCurrentUtilization(){
+  const areaSafe=currentContext
+    ? Math.max(0,Number(currentContext.UL)||0)*Math.max(0,Number(currentContext.UW)||0)
+    : 0;
+
+  const primaryArea=activePrimaryItems()
+    .reduce((sum,entry)=>sum+itemOccupiedArea(entry.item),0);
+  const secondaryArea=secondaryItems
+    .reduce((sum,item)=>sum+itemOccupiedArea(item),0);
+
+  const utilization=areaSafe
+    ? (primaryArea+secondaryArea)/areaSafe*100
+    : 0;
+
+  const value=document.getElementById("utilizationValue");
+  if(value)value.textContent=`${utilization.toFixed(2)}%`;
+  return utilization;
+}
+
 function updateResultAfterManualChanges(addedNow=null){
   emptyZones=[];
   analysisVisible=false;
@@ -7306,6 +7415,7 @@ function updateResultAfterManualChanges(addedNow=null){
     追加工件 <b>${secondaryCount}</b> 個
     ${addedNow!==null?`（本次新增 ${addedNow} 個）`:""}。
   `;
+  updateCurrentUtilization();
   updateAnalysisResults();
   updateV5Status();
 }
@@ -10148,6 +10258,55 @@ if(previousDetailSyncV162){
 }
 
 requestAnimationFrame(syncMobileModeUi);
+
+
+/* ===== V1.7 追加工件即時重畫開關同步 ===== */
+const secondaryAutoRedraw=document.getElementById("secondaryAutoRedraw");
+const mobileSecondaryAutoRedraw=document.getElementById("mobileSecondaryAutoRedraw");
+
+function syncSecondaryAutoRedrawControls(source=null){
+  if(!secondaryAutoRedraw||!mobileSecondaryAutoRedraw)return;
+
+  if(source===mobileSecondaryAutoRedraw){
+    secondaryAutoRedraw.checked=mobileSecondaryAutoRedraw.checked;
+  }else{
+    mobileSecondaryAutoRedraw.checked=secondaryAutoRedraw.checked;
+  }
+}
+
+secondaryAutoRedraw?.addEventListener("change",()=>{
+  syncSecondaryAutoRedrawControls(secondaryAutoRedraw);
+
+  clearTimeout(secondaryAutoRefreshTimer);
+  secondaryAutoRefreshTimer=null;
+
+  if(secondaryAutoRedraw.checked){
+    scheduleSecondaryAutoRefresh(0);
+    setAdaptiveFillStatus(
+      "已開啟即時重畫：修改追加工件設定後會重新填補。",
+      "success"
+    );
+  }else{
+    setAdaptiveFillStatus(
+      "已關閉即時重畫：既有追加工件會保留，可切換尺寸或形狀後逐個生成。",
+      "success"
+    );
+  }
+});
+
+mobileSecondaryAutoRedraw?.addEventListener("change",()=>{
+  syncSecondaryAutoRedrawControls(mobileSecondaryAutoRedraw);
+  secondaryAutoRedraw?.dispatchEvent(new Event("change",{bubbles:true}));
+});
+
+syncSecondaryAutoRedrawControls();
+
+/* 每次詳細圖重新渲染後，補算主要＋追加工件的實際利用率。 */
+const previousRenderCurrentV17=renderCurrent;
+renderCurrent=function(){
+  previousRenderCurrentV17();
+  requestAnimationFrame(updateCurrentUtilization);
+};
 
 </script>
 

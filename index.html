@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智慧載盤規劃系統｜V1.5.1 Beta 手機方案總覽與工具列流程修正</title>
+<title>智慧載盤規劃系統｜V1.5.2 Beta 四方案與工具列顯示修正</title>
 
 <style>
 :root{
@@ -2722,6 +2722,95 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V1.5.2：實際結構對應修正 ===== */
+@media (pointer:coarse), (max-width:820px){
+  /* 四方案真正使用的是 .planOverview，強制改為 2 × 2 */
+  body.touchUiEnabled .canvasArea.overviewMode{
+    min-height:760px!important;
+    height:760px!important;
+  }
+
+  body.touchUiEnabled .canvasArea.overviewMode .planOverview{
+    position:absolute!important;
+    inset:18px 10px 12px!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-rows:minmax(0,1fr) minmax(0,1fr)!important;
+    gap:9px!important;
+    overflow:hidden!important;
+  }
+
+  body.touchUiEnabled .canvasArea.overviewMode .planCard{
+    min-width:0!important;
+    min-height:0!important;
+    height:auto!important;
+    padding:0!important;
+  }
+
+  body.touchUiEnabled .canvasArea.overviewMode .planCardHeader{
+    padding:7px 8px!important;
+  }
+
+  body.touchUiEnabled .canvasArea.overviewMode .planCardHeader strong{
+    font-size:10px!important;
+    line-height:1.25!important;
+  }
+
+  body.touchUiEnabled .canvasArea.overviewMode .planCount{
+    padding:3px 5px!important;
+    font-size:9px!important;
+  }
+
+  body.touchUiEnabled .canvasArea.overviewMode .planPreview{
+    width:100%!important;
+    height:auto!important;
+    max-height:none!important;
+    min-height:0!important;
+  }
+
+  body.touchUiEnabled .canvasArea.overviewMode .planCardFooter{
+    padding:5px 6px!important;
+    font-size:8px!important;
+  }
+
+  /* 下排工具列永遠顯示，覆蓋 V1.5 的隱藏規則 */
+  body.touchUiEnabled .mobileQuickToolbar,
+  body.touchUiEnabled:not(.mobileCanvasFullscreen) .mobileQuickToolbar,
+  body.touchUiEnabled.mobileCanvasFullscreen .mobileQuickToolbar{
+    display:grid!important;
+    bottom:max(8px,env(safe-area-inset-bottom))!important;
+  }
+
+  /* 初始四方案頁只顯示下排 */
+  body.touchUiEnabled:not(.mobileDetailMode) .mobileTouchToolbar{
+    display:none!important;
+  }
+
+  /* 點選方案進入詳細圖後，顯示上排並把下排上移 */
+  body.touchUiEnabled.mobileDetailMode .mobileTouchToolbar{
+    display:grid!important;
+    bottom:max(8px,env(safe-area-inset-bottom))!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode .mobileQuickToolbar{
+    bottom:max(68px,calc(env(safe-area-inset-bottom) + 68px))!important;
+  }
+
+  body.touchUiEnabled:not(.mobileDetailMode){
+    padding-bottom:76px!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode{
+    padding-bottom:138px!important;
+  }
+
+  /* 不再依賴全螢幕狀態決定工具列 */
+  body.touchUiEnabled .mobileEnterWorkspaceBtn{
+    display:none!important;
+  }
+}
+
 </style>
 
 </head>
@@ -2757,7 +2846,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       <span class="headerQuickHint">常用置中微調</span>
     </div>
 
-    <div class="headerBadge">V1.5.1 Beta · 手機方案總覽與工具列流程修正</div>
+    <div class="headerBadge">V1.5.2 Beta · 四方案與工具列顯示修正</div>
   </div>
 
   <div id="headerLiveHint" class="headerLiveHint" role="status" aria-live="polite">
@@ -9683,6 +9772,37 @@ toggleMobileFullscreen=function(force){
 
 window.addEventListener("resize",syncMobileToolbarFlow);
 syncMobileToolbarFlow();
+
+
+/* ===== V1.5.2：依四方案／詳細圖狀態控制工具列 ===== */
+function syncMobileDetailToolbar(){
+  const canvas=document.querySelector(".canvasArea");
+  const isDetail=!!canvas && !canvas.classList.contains("overviewMode");
+  document.body.classList.toggle("mobileDetailMode",isDetail);
+}
+
+/* 點選方案後，原程式會移除 overviewMode；下一幀同步上排工具列 */
+document.querySelectorAll(".planCard").forEach(card=>{
+  card.addEventListener("click",()=>{
+    requestAnimationFrame(syncMobileDetailToolbar);
+  });
+});
+
+backToOverviewBtn?.addEventListener("click",()=>{
+  requestAnimationFrame(syncMobileDetailToolbar);
+});
+
+/* 監看 class 變化，避免程式內其他入口未觸發同步 */
+const mobileCanvasArea=document.querySelector(".canvasArea");
+if(mobileCanvasArea){
+  new MutationObserver(syncMobileDetailToolbar).observe(mobileCanvasArea,{
+    attributes:true,
+    attributeFilter:["class"]
+  });
+}
+
+/* 適合畫面恢復單純視角功能，不再作為工具列顯示條件 */
+syncMobileDetailToolbar();
 
 </script>
 

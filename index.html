@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤規劃系統｜V3.9 Beta 精簡資訊寬度與推薦方案</title>
+<title>智慧載盤規劃系統｜V4.0 Beta 修正自訂微調與吸力加減</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -4069,6 +4069,53 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V4.0 手機資訊列高度統一與圖面靠上 ===== */
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled.mobileDetailMode #backToOverviewBtn,
+  body.touchUiEnabled.mobileDetailMode #activePlanLabel,
+  body.touchUiEnabled.mobileDetailMode #recommendedPlanLabel{
+    height:46px!important;
+    min-height:46px!important;
+    max-height:46px!important;
+    padding-top:0!important;
+    padding-bottom:0!important;
+    align-items:center!important;
+    box-sizing:border-box!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #v5StatusBar .v5StatusChip{
+    height:42px!important;
+    min-height:42px!important;
+    max-height:42px!important;
+    padding-top:4px!important;
+    padding-bottom:4px!important;
+    box-sizing:border-box!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #overviewToolbar{
+    padding-bottom:4px!important;
+    row-gap:6px!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #drawing{
+    align-self:stretch!important;
+    object-position:center top!important;
+  }
+
+  body.touchUiEnabled #mobileSnapPanel .mobileWideField .mobileNumberControl{
+    margin-top:4px!important;
+  }
+
+  body.touchUiEnabled .mobileGlobalStepRow{
+    grid-template-columns:72px 72px 72px minmax(88px,1fr)!important;
+  }
+
+  body.touchUiEnabled .mobileGlobalStepCustom:not([hidden]){
+    display:block!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4100,7 +4147,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V3.9 Beta · 精簡資訊寬度與推薦方案</div>
+<div class="headerBadge">V4.0 Beta · 修正自訂微調與吸力加減</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -4815,7 +4862,11 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </label>
 <label class="mobileWideField">
 <span>吸力半徑</span>
+<div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobileSnapStepMirror" type="button">−</button>
 <input id="mobileSnapStepMirror" min="0" step="1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobileSnapStepMirror" type="button">＋</button>
+</div>
 </label>
 </div>
 <div class="mobileSectionCard">
@@ -7732,7 +7783,13 @@ function applyCurrentViewBox(){
     "viewBox",
     `${currentViewBox.x} ${currentViewBox.y} ${currentViewBox.width} ${currentViewBox.height}`
   );
-  svg.setAttribute("preserveAspectRatio","xMidYMid meet");
+  svg.setAttribute(
+    "preserveAspectRatio",
+    document.body.classList.contains("touchUiEnabled") &&
+    document.body.classList.contains("mobileDetailMode")
+      ?"xMidYMin meet"
+      :"xMidYMid meet"
+  );
 }
 
 function resetCanvasZoom(){
@@ -11823,6 +11880,189 @@ requestAnimationFrame(()=>{
 
   control.dataset.secondaryMirrorOnly="true";
 });
+
+
+/* ===== V4.0 修正桌面與手機「自訂微調量」 ===== */
+(function repairUnifiedCustomStepControls(){
+  const desktopControls=[...document.querySelectorAll(".sectionStepControl")];
+  const mobileControls=[...document.querySelectorAll("[data-global-step-control]")];
+  const sectionIds=[
+    "traySettingsSection",
+    "primarySettingsSection",
+    "secondarySettingsSection",
+    "editSettingsSection"
+  ];
+
+  const parseStep=value=>{
+    const step=Number(value);
+    return Number.isFinite(step)&&step>0?step:null;
+  };
+
+  function allCustomInputs(){
+    return [
+      ...desktopControls.map(control=>control.querySelector(".customStepInput")),
+      ...mobileControls.map(control=>control.querySelector(".mobileGlobalStepCustom"))
+    ].filter(Boolean);
+  }
+
+  function setCustomMode(enabled,focusInput=null){
+    desktopControls.forEach(control=>{
+      const customButton=control.querySelector('[data-step-value="custom"]');
+      const customInput=control.querySelector(".customStepInput");
+      control.querySelectorAll("[data-step-value]").forEach(button=>{
+        button.classList.toggle("active",enabled&&button===customButton);
+      });
+      if(customInput)customInput.hidden=!enabled;
+    });
+
+    mobileControls.forEach(control=>{
+      const customButton=control.querySelector('[data-global-step-value="custom"]');
+      const customInput=control.querySelector(".mobileGlobalStepCustom");
+      control.querySelectorAll("[data-global-step-value]").forEach(button=>{
+        button.classList.toggle("active",enabled&&button===customButton);
+      });
+      if(customInput)customInput.hidden=!enabled;
+    });
+
+    if(enabled&&focusInput){
+      requestAnimationFrame(()=>{
+        focusInput.focus();
+        focusInput.select();
+      });
+    }
+  }
+
+  function applyStep(value,mode="preset"){
+    const step=parseStep(value);
+    if(step===null)return;
+
+    sectionIds.forEach(id=>applySectionStep(id,step));
+
+    document.querySelectorAll(
+      ".mobilePanelSection input[type='number']:not(.mobileGlobalStepCustom)"
+    ).forEach(input=>{
+      input.step=String(step);
+      input.dataset.activeStep=String(step);
+    });
+
+    allCustomInputs().forEach(input=>{
+      if(document.activeElement!==input)input.value=String(step);
+    });
+
+    if(mode==="preset"){
+      desktopControls.forEach(control=>{
+        const buttons=[...control.querySelectorAll("[data-step-value]")];
+        const preset=buttons.find(button=>Number(button.dataset.stepValue)===step);
+        buttons.forEach(button=>button.classList.toggle("active",button===preset));
+        const custom=control.querySelector(".customStepInput");
+        if(custom)custom.hidden=true;
+      });
+
+      mobileControls.forEach(control=>{
+        const buttons=[...control.querySelectorAll("[data-global-step-value]")];
+        const preset=buttons.find(button=>Number(button.dataset.globalStepValue)===step);
+        buttons.forEach(button=>button.classList.toggle("active",button===preset));
+        const custom=control.querySelector(".mobileGlobalStepCustom");
+        if(custom)custom.hidden=true;
+      });
+    }else{
+      setCustomMode(true);
+    }
+
+    try{
+      localStorage.setItem("traySimulator.globalStep",String(step));
+      localStorage.setItem("traySimulator.globalStepMode",mode);
+    }catch(_error){}
+  }
+
+  /* Capture 階段先處理，阻止舊版重複監聽器把自訂欄位立刻隱藏。 */
+  desktopControls.forEach(control=>{
+    control.querySelectorAll("[data-step-value]").forEach(button=>{
+      button.addEventListener("click",event=>{
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        const value=button.dataset.stepValue;
+        const custom=control.querySelector(".customStepInput");
+
+        if(value==="custom"){
+          let current=parseStep(custom?.value);
+          if(current===null){
+            try{
+              current=parseStep(localStorage.getItem("traySimulator.globalStep"))||1;
+            }catch(_error){
+              current=1;
+            }
+          }
+          allCustomInputs().forEach(input=>input.value=String(current));
+          setCustomMode(true,custom);
+          try{
+            localStorage.setItem("traySimulator.globalStepMode","custom");
+          }catch(_error){}
+        }else{
+          applyStep(value,"preset");
+        }
+      },true);
+    });
+  });
+
+  mobileControls.forEach(control=>{
+    control.querySelectorAll("[data-global-step-value]").forEach(button=>{
+      button.addEventListener("click",event=>{
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        const value=button.dataset.globalStepValue;
+        const custom=control.querySelector(".mobileGlobalStepCustom");
+
+        if(value==="custom"){
+          let current=parseStep(custom?.value);
+          if(current===null){
+            try{
+              current=parseStep(localStorage.getItem("traySimulator.globalStep"))||1;
+            }catch(_error){
+              current=1;
+            }
+          }
+          allCustomInputs().forEach(input=>input.value=String(current));
+          setCustomMode(true,custom);
+          try{
+            localStorage.setItem("traySimulator.globalStepMode","custom");
+          }catch(_error){}
+        }else{
+          applyStep(value,"preset");
+        }
+      },true);
+    });
+  });
+
+  allCustomInputs().forEach(input=>{
+    input.addEventListener("input",()=>{
+      const step=parseStep(input.value);
+      if(step===null)return;
+      allCustomInputs().forEach(other=>{
+        if(other!==input)other.value=String(step);
+      });
+      applyStep(step,"custom");
+    },true);
+
+    input.addEventListener("change",()=>{
+      const step=parseStep(input.value);
+      if(step!==null)applyStep(step,"custom");
+    },true);
+  });
+
+  let initial=1;
+  let mode="preset";
+  try{
+    initial=parseStep(localStorage.getItem("traySimulator.globalStep"))||1;
+    mode=localStorage.getItem("traySimulator.globalStepMode")==="custom"
+      ?"custom"
+      :"preset";
+  }catch(_error){}
+
+  applyStep(initial,mode);
+})();
 
 </script>
 </body>

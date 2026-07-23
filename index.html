@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤規劃系統｜V2.9 Beta 真正修正適合畫面第一次生效</title>
+<title>智慧載盤規劃系統｜V3.0 Beta 手機單一工作流程</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -3486,6 +3486,37 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V3.0 手機單一工作流程 ===== */
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled .container > aside.controlPanel{
+    display:none!important;
+  }
+
+  body.touchUiEnabled .container{
+    display:block!important;
+    width:100%!important;
+    margin:0!important;
+    padding:0!important;
+  }
+
+  body.touchUiEnabled .mobileQuickToolbar{
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;
+  }
+
+  body.touchUiEnabled .mobileQuickToolbar button{
+    font-size:10px!important;
+  }
+
+  body.touchUiEnabled .canvasArea.overviewMode{
+    margin-top:0!important;
+  }
+
+  body.touchUiEnabled .canvasArea.overviewMode ~ .mobileQuickToolbar #mobileFitBtn{
+    opacity:.42!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3517,7 +3548,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V2.9 Beta · 真正修正適合畫面第一次生效</div>
+<div class="headerBadge">V3.0 Beta · 手機單一工作流程</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -3964,13 +3995,12 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 <button aria-label="離開全螢幕畫布" class="mobileCanvasExit" id="mobileCanvasExit" type="button">×</button>
 <div aria-label="手機分類工具列" class="mobileQuickToolbar" id="mobileQuickToolbar">
+<button id="mobileTraySettingsBtn" type="button">載盤<br/>設定</button>
 <button id="mobileInsetBtn" type="button">安全<br/>設定</button>
 <button id="mobilePrimarySettingsBtn" type="button">工件<br/>設定</button>
 <button id="mobileSecondarySettingsBtn" type="button">追加<br/>工件</button>
 <button id="mobileSnapSettingsBtn" type="button">吸附<br/>點</button>
 <button id="mobileAlignSettingsBtn" type="button">對齊<br/>工件</button>
-<button id="mobileZoomOutBtn" type="button">縮小<br/>畫面</button>
-<button id="mobileZoomInBtn" type="button">放大<br/>畫面</button>
 <button id="mobileFitBtn" type="button">適合<br/>畫面</button>
 </div>
 <button class="mobileEnterWorkspaceBtn" id="mobileEnterWorkspaceBtn" type="button">
@@ -3985,6 +4015,31 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 <small id="mobileFineTuneSubtitle">修改後即時更新圖面</small>
 </div>
 <button aria-label="關閉設定面板" id="mobileFineTuneCloseBtn" type="button">×</button>
+</div>
+<div class="mobilePanelSection" hidden="" id="mobileTrayPanel">
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">載盤尺寸</div>
+<div class="mobileFineTuneGrid">
+<label><span>載盤長度</span><div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobileTrayLength" type="button">−</button>
+<input id="mobileTrayLength" min="1" step="1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobileTrayLength" type="button">＋</button>
+</div></label>
+<label><span>載盤寬度</span><div class="mobileNumberControl">
+<button data-mobile-step="-1" data-mobile-step-target="mobileTrayWidth" type="button">−</button>
+<input id="mobileTrayWidth" min="1" step="1" type="number"/>
+<button data-mobile-step="1" data-mobile-step-target="mobileTrayWidth" type="button">＋</button>
+</div></label>
+</div>
+</div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">吋數換算</div>
+<div class="mobileShapeButtons">
+<button id="mobileInch25Btn" type="button">公司慣用<br/>1 吋 = 25 mm</button>
+<button id="mobileInch254Btn" type="button">標準換算<br/>1 吋 = 25.4 mm</button>
+</div>
+<div class="mobilePanelHint">吋數只用於快速輸入尺寸，所有排列與碰撞計算仍以毫米為準。</div>
+</div>
 </div>
 <div class="mobilePanelSection" id="mobileInsetPanel">
 <div class="mobileSectionCard">
@@ -9594,8 +9649,6 @@ const mobileSnapBtn=document.getElementById("mobileSnapBtn");
 const mobileMeasureBtn=document.getElementById("mobileMeasureBtn");
 const mobilePanBtn=document.getElementById("mobilePanBtn");
 const mobileDeleteBtn=document.getElementById("mobileDeleteBtn");
-const mobileZoomOutBtn=document.getElementById("mobileZoomOutBtn");
-const mobileZoomInBtn=document.getElementById("mobileZoomInBtn");
 const mobileFitBtn=document.getElementById("mobileFitBtn");
 const mobileCanvasExit=document.getElementById("mobileCanvasExit");
 const mobileModeBadge=document.getElementById("mobileModeBadge");
@@ -9606,8 +9659,6 @@ const mobileModeBadge=document.getElementById("mobileModeBadge");
   mobileMeasureBtn,
   mobilePanBtn,
   mobileDeleteBtn,
-  mobileZoomOutBtn,
-  mobileZoomInBtn,
   mobileFitBtn,
   mobileCanvasExit
 ].forEach(button=>{
@@ -9818,14 +9869,19 @@ mobilePanBtn?.addEventListener("click",()=>{
 });
 
 mobileDeleteBtn?.addEventListener("click",mobileDeleteSelection);
-mobileZoomOutBtn?.addEventListener("click",()=>zoomCanvasFromCenter(100));
-mobileZoomInBtn?.addEventListener("click",()=>zoomCanvasFromCenter(-100));
 mobileFitBtn?.addEventListener("click",()=>{
+  const canvasArea=document.querySelector(".canvasArea");
+  if(canvasArea?.classList.contains("overviewMode")){
+    setToolStatus("請先選擇排列方案，再進入適合畫面。","warning");
+    return;
+  }
+
   if(document.body.classList.contains("mobileCanvasFullscreen")){
     resetCanvasZoom();
     setToolStatus("已將圖面調整為適合畫面。","success");
   }else{
     toggleMobileFullscreen(true);
+    requestAnimationFrame(resetCanvasZoom);
   }
   syncMobileModeUi();
 });
@@ -9852,9 +9908,16 @@ applyResponsiveInteractionMode();
 const mobileQuickToolbar=document.getElementById("mobileQuickToolbar");
 const mobileFreeDragBtn=document.getElementById("mobileFreeDragBtn");
 const mobileClearMeasurementsBtn=document.getElementById("mobileClearMeasurementsBtn");
+const mobileTraySettingsBtn=document.getElementById("mobileTraySettingsBtn");
 const mobileInsetBtn=document.getElementById("mobileInsetBtn");
 const mobilePrimarySettingsBtn=document.getElementById("mobilePrimarySettingsBtn");
 const mobileSecondarySettingsBtn=document.getElementById("mobileSecondarySettingsBtn");
+
+const mobileTrayPanel=document.getElementById("mobileTrayPanel");
+const mobileTrayLength=document.getElementById("mobileTrayLength");
+const mobileTrayWidth=document.getElementById("mobileTrayWidth");
+const mobileInch25Btn=document.getElementById("mobileInch25Btn");
+const mobileInch254Btn=document.getElementById("mobileInch254Btn");
 
 const mobileFineTuneBackdrop=document.getElementById("mobileFineTuneBackdrop");
 const mobileFineTuneSheet=document.getElementById("mobileFineTuneSheet");
@@ -9902,6 +9965,8 @@ const mobileSecondaryGridBtn=document.getElementById("mobileSecondaryGridBtn");
 const mobileSecondaryHoneyBtn=document.getElementById("mobileSecondaryHoneyBtn");
 
 const mobileFineTuneMap=[
+  [mobileTrayLength,document.getElementById("trayLength")],
+  [mobileTrayWidth,document.getElementById("trayWidth")],
   [mobileSafeX,document.getElementById("safeX")],
   [mobileSafeY,document.getElementById("safeY")],
   [mobilePartInches,document.getElementById("partInches")],
@@ -9925,7 +9990,7 @@ const mobileSnapTargetIds=[
 let mobileFreeDragEnabled=false;
 let mobileSavedSnapTargetState=null;
 let mobileFineTuneSyncing=false;
-let mobileActivePanel="inset";
+let mobileActivePanel="tray";
 
 function dispatchMobileControlChange(control){
   control.dispatchEvent(new Event("input",{bubbles:true}));
@@ -9960,16 +10025,22 @@ function syncMobileFineTuneFromMain(){
   mobileSecondaryGridBtn?.classList.toggle("active",document.getElementById("secondaryCircleGrid")?.checked);
   mobileSecondaryHoneyBtn?.classList.toggle("active",document.getElementById("secondaryCircleHoney")?.checked);
 
+  const inch25Active=!!document.getElementById("inchFactor25")?.checked;
+  mobileInch25Btn?.classList.toggle("active",inch25Active);
+  mobileInch254Btn?.classList.toggle("active",!inch25Active);
+
   mobileFineTuneSyncing=false;
 }
 
 function showMobilePanel(panel){
   mobileActivePanel=panel;
+  mobileTrayPanel.hidden=panel!=="tray";
   mobileInsetPanel.hidden=panel!=="inset";
   mobilePrimaryPanel.hidden=panel!=="primary";
   mobileSecondaryPanel.hidden=panel!=="secondary";
 
   const meta={
+    tray:["載盤設定","載盤尺寸與吋數換算"],
     inset:["安全設定","安全範圍 X／Y 方向內縮"],
     primary:["工件設定","主要工件形狀、尺寸、間距與交換"],
     secondary:["追加工件","追加工件形狀、尺寸、間距與排列"]
@@ -9978,6 +10049,7 @@ function showMobilePanel(panel){
   mobileFineTuneTitle.textContent=meta[0];
   mobileFineTuneSubtitle.textContent=meta[1];
 
+  mobileTraySettingsBtn?.classList.toggle("active",panel==="tray"&&!mobileFineTuneSheet.hidden);
   mobileInsetBtn?.classList.toggle("active",panel==="inset"&&!mobileFineTuneSheet.hidden);
   mobilePrimarySettingsBtn?.classList.toggle("active",panel==="primary"&&!mobileFineTuneSheet.hidden);
   mobileSecondarySettingsBtn?.classList.toggle("active",panel==="secondary"&&!mobileFineTuneSheet.hidden);
@@ -9994,7 +10066,7 @@ function setMobileFineTuneOpen(open,panel=mobileActivePanel){
     showMobilePanel(panel);
     setToolStatus(`已開啟${mobileFineTuneTitle.textContent}。`,"success");
   }else{
-    [mobileInsetBtn,mobilePrimarySettingsBtn,mobileSecondarySettingsBtn]
+    [mobileTraySettingsBtn,mobileInsetBtn,mobilePrimarySettingsBtn,mobileSecondarySettingsBtn]
       .forEach(btn=>btn?.classList.remove("active"));
   }
 }
@@ -10114,6 +10186,23 @@ mobileSecondaryHoneyBtn?.addEventListener("click",()=>setRadioAndSync(document.g
   document.getElementById("secondaryCircleHoney")
 ].forEach(control=>control?.addEventListener("change",syncMobileFineTuneFromMain));
 
+
+mobileInch25Btn?.addEventListener("click",()=>{
+  const main=document.getElementById("inchFactor25");
+  if(!main)return;
+  main.checked=true;
+  main.dispatchEvent(new Event("change",{bubbles:true}));
+  syncMobileFineTuneFromMain();
+});
+mobileInch254Btn?.addEventListener("click",()=>{
+  const main=document.getElementById("inchFactor254");
+  if(!main)return;
+  main.checked=true;
+  main.dispatchEvent(new Event("change",{bubbles:true}));
+  syncMobileFineTuneFromMain();
+});
+
+mobileTraySettingsBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("tray"));
 mobileInsetBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("inset"));
 mobilePrimarySettingsBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("primary"));
 mobileSecondarySettingsBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("secondary"));
@@ -10162,7 +10251,7 @@ window.addEventListener("keydown",event=>{
 
 syncMobileFineTuneFromMain();
 syncMobileFreeDragAvailability();
-showMobilePanel("inset");
+showMobilePanel("tray");
 syncMobileModeUi();
 
 /* ===== V1.4 手機完整分類頁面 ===== */
@@ -10200,13 +10289,14 @@ const oldShowMobilePanelV14=showMobilePanel;
 showMobilePanel=function(panel){
   mobileActivePanel=panel;
   [
-    mobileInsetPanel,mobilePrimaryPanel,mobileSecondaryPanel,
+    mobileTrayPanel,mobileInsetPanel,mobilePrimaryPanel,mobileSecondaryPanel,
     mobileSnapPanel,mobileAlignPanel,mobileSystemPanel
   ].forEach(section=>{
     if(section)section.hidden=true;
   });
 
   const panelMap={
+    tray:mobileTrayPanel,
     inset:mobileInsetPanel,
     primary:mobilePrimaryPanel,
     secondary:mobileSecondaryPanel,
@@ -10217,6 +10307,7 @@ showMobilePanel=function(panel){
   if(panelMap[panel])panelMap[panel].hidden=false;
 
   const meta={
+    tray:["載盤設定","載盤尺寸與吋數換算"],
     inset:["安全設定","安全範圍 X／Y 方向內縮"],
     primary:["工件設定","主要工件形狀、尺寸、間距與交換"],
     secondary:["追加工件","追加工件形狀、尺寸、間距與排列"],
@@ -10229,6 +10320,7 @@ showMobilePanel=function(panel){
   mobileFineTuneSubtitle.textContent=meta[1];
 
   const buttons={
+    tray:mobileTraySettingsBtn,
     inset:mobileInsetBtn,
     primary:mobilePrimarySettingsBtn,
     secondary:mobileSecondarySettingsBtn,
@@ -10383,53 +10475,7 @@ toggleMobileFullscreen=function(force){
 syncMobileWorkspaceEntry();
 
 
-/* ===== V2.9 下排適合畫面：第一次點擊同步完成 ===== */
-mobileFitBtn?.addEventListener("click",event=>{
-  const touchUi=document.body.classList.contains("touchUiEnabled");
-  const canvasArea=document.querySelector(".canvasArea");
-  const isOverview=canvasArea?.classList.contains("overviewMode");
 
-  if(!touchUi)return;
-
-  /*
-    這是最早註冊的 capture 監聽器，而且原本會立即中止後續監聽器。
-    因此四方案專用布局必須直接在這裡同步套用，不能再交給後面的監聽器。
-  */
-  if(isOverview){
-    event.preventDefault();
-    event.stopImmediatePropagation();
-
-    document.body.classList.add("mobileOverviewFitMode");
-
-    if(!document.body.classList.contains("mobileCanvasFullscreen")){
-      toggleMobileFullscreen(true);
-    }else{
-      resetCanvasZoom();
-    }
-
-    requestAnimationFrame(()=>{
-      document.body.classList.add("mobileOverviewFitMode");
-      resetCanvasZoom();
-      syncMobileWorkspaceEntry();
-      syncMobileModeUi();
-      window.scrollTo({top:0,left:0,behavior:"auto"});
-    });
-
-    setToolStatus("已進入四方案適合畫面。","success");
-    return;
-  }
-
-  /* 詳細工程圖仍維持原本的工作區入口行為。 */
-  if(!document.body.classList.contains("mobileCanvasFullscreen")){
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    toggleMobileFullscreen(true);
-    requestAnimationFrame(()=>{
-      resetCanvasZoom();
-      syncMobileWorkspaceEntry();
-    });
-  }
-},true);
 
 function syncMobileToolbarFlow(){
   const inWorkspace=document.body.classList.contains("mobileCanvasFullscreen");
@@ -10831,9 +10877,7 @@ function deactivateMobileOverviewFitMode(){
   因而看起來與一般四方案頁完全相同。
   現在無論目前是否已全螢幕，都會進入四方案專用布局。
 */
-mobileFitBtn?.addEventListener("click",()=>{
-  requestAnimationFrame(activateMobileOverviewFitMode);
-});
+
 
 mobileCanvasExit?.addEventListener("click",()=>{
   deactivateMobileOverviewFitMode();
@@ -10988,6 +11032,25 @@ document.body.classList.remove("mobileOverviewFitMode");
 
 
 
+
+
+/* ===== V3.0 主頁只選方案，選好後才可進入詳細全螢幕 ===== */
+(function syncMobileFitAvailability(){
+  const canvasArea=document.querySelector(".canvasArea");
+  if(!canvasArea||!mobileFitBtn)return;
+
+  const update=()=>{
+    const overview=canvasArea.classList.contains("overviewMode");
+    mobileFitBtn.disabled=overview;
+    mobileFitBtn.title=overview?"請先選擇排列方案":"進入詳細全螢幕";
+  };
+
+  new MutationObserver(update).observe(canvasArea,{
+    attributes:true,
+    attributeFilter:["class"]
+  });
+  update();
+})();
 
 </script>
 </body>

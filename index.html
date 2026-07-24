@@ -4756,12 +4756,12 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </div>
 </div>
 <div aria-label="手機觸控工具列" class="mobileTouchToolbar" id="mobileTouchToolbar">
-<button id="mobileSnapBtn" type="button">拖曳<br/>模式</button>
-<button id="mobileFreeDragBtn" type="button">磁吸<br/>輔助</button>
 <button id="mobileMeasureBtn" type="button">量測<br/>模式</button>
+<button id="mobileSnapBtn" type="button">拖曳<br/>模式</button>
+<button id="mobileAlignSettingsBtn" type="button">對齊<br/>工具</button>
 <button id="mobileClearMeasurementsBtn" type="button">清除<br/>量測</button>
-<button id="mobileUndoBtn" type="button">復原<br/>操作</button>
 <button id="mobileDeleteBtn" type="button">刪除<br/>物件</button>
+<button id="mobileUndoBtn" type="button">復原<br/>操作</button>
 <button id="mobileSystemSettingsBtn" type="button">設定<br/>工具</button>
 </div>
 <button aria-label="離開全螢幕畫布" class="mobileCanvasExit" id="mobileCanvasExit" type="button">×</button>
@@ -4771,7 +4771,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <button id="mobilePrimarySettingsBtn" type="button">工件<br/>設定</button>
 <button id="mobileSecondarySettingsBtn" type="button">追加<br/>工件</button>
 <button id="mobileSnapSettingsBtn" type="button">輔助<br/>設定</button>
-<button id="mobileAlignSettingsBtn" type="button">對齊<br/>工具</button>
+<button class="active" id="mobileFreeDragBtn" aria-pressed="true" type="button">磁吸<br/>輔助</button>
 <button id="mobileFitBtn" type="button">適合<br/>畫面</button>
 </div>
 <button class="mobileEnterWorkspaceBtn" id="mobileEnterWorkspaceBtn" type="button">
@@ -10950,10 +10950,13 @@ const mobileCanvasExit=document.getElementById("mobileCanvasExit");
 const mobileModeBadge=document.getElementById("mobileModeBadge");
 
 [
-  mobileSnapBtn,
   mobileMeasureBtn,
-  mobileUndoBtn,
+  mobileSnapBtn,
+  document.getElementById("mobileAlignSettingsBtn"),
+  mobileClearMeasurementsBtn,
   mobileDeleteBtn,
+  mobileUndoBtn,
+  document.getElementById("mobileSystemSettingsBtn"),
   mobileFitBtn,
   mobileCanvasExit
 ].forEach(button=>{
@@ -11465,20 +11468,34 @@ function restoreMobileSnapTargets(){
 function setMobileFreeDrag(enabled){
   /*
     enabled=true 代表手機磁吸輔助 OFF。
-    這裡只切換觸控手勢映射，不再關閉任何吸附目標，
-    避免量測與桌面共用的吸附設定被手機按鈕破壞。
+    關閉時將所有吸附點取消勾選；開啟時將所有吸附點全部勾選。
+    預設 enabled=false，因此磁吸輔助預設開啟。
   */
   mobileFreeDragEnabled=enabled;
-  mobileFreeDragBtn?.classList.toggle("active",!enabled);
-  mobileFreeDragBtn.innerHTML=`磁吸<br/>輔助`;
-  mobileFreeDragBtn.setAttribute("aria-pressed",String(!enabled));
+  const snapOn=!enabled;
+
+  mobileSnapTargetIds.forEach(id=>{
+    const control=document.getElementById(id);
+    if(!control)return;
+    control.checked=snapOn;
+    control.dispatchEvent(new Event("change",{bubbles:true}));
+  });
+
+  syncSnapGroupStates();
+  syncExtendedMobilePanels?.();
+
+  mobileFreeDragBtn?.classList.toggle("active",snapOn);
+  if(mobileFreeDragBtn){
+    mobileFreeDragBtn.innerHTML=`磁吸<br/>輔助`;
+    mobileFreeDragBtn.setAttribute("aria-pressed",String(snapOn));
+  }
   syncMobileModeUi();
 
   setToolStatus(
-    enabled
-      ?"手機磁吸輔助已關閉：拖曳等同桌面右鍵，不吸附且不可穿透工件或越界。"
-      :"手機磁吸輔助已開啟：拖曳等同桌面左鍵，可拿起穿越並在放開時智慧落位。",
-    "success"
+    snapOn
+      ?"手機磁吸輔助已開啟：所有吸附點已全部開啟。"
+      :"手機磁吸輔助已關閉：所有吸附點已全部關閉。",
+    snapOn?"success":""
   );
 }
 

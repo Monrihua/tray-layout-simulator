@@ -4527,7 +4527,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
     </div>
 </div>
 </div></div>
-<div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="edit" data-default-collapsed="true" id="editSettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">輔助設定</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">拖曳：關</span><span class="sharedSummaryLine">吸力：15 mm</span><span class="sharedSummaryLine">量測：關</span></span></span></button><div class="sharedCollapseBody">
+<div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="edit" data-default-collapsed="true" id="editSettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">輔助設定</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">吸力半徑：15 mm</span><span class="sharedSummaryLine">量測模式：關</span><span class="sharedSummaryLine">拖曳模式：關</span></span></span></button><div class="sharedCollapseBody">
 
 <div class="sectionStepControl" data-step-section="editSettingsSection">
 <span>上下鍵微調量</span>
@@ -12309,9 +12309,9 @@ setMobileFineTuneOpen=function(open,panel=mobileActivePanel){
       ];
     },
     edit:()=>[
-      `磁吸：${checked("snapEnabled")?"開":"關"}`,
-      `吸力：${numberValue("snapStep")} mm`,
-      `量測：${document.getElementById("measureModeBtn")?.classList.contains("active")?"開":"關"}`
+      `吸力半徑：${numberValue("snapStep")} mm`,
+      `量測模式：${document.getElementById("measureModeBtn")?.classList.contains("active")?"開":"關"}`,
+      `拖曳模式：${checked("snapEnabled")?"開":"關"}`
     ]
   };
 
@@ -12740,3 +12740,5 @@ requestAnimationFrame(()=>{
 </script>
 </body>
 </html>
+
+<!-- v5: 磁吸輔助按鈕需求：預設開啟；開=吸附點全開；關=吸附點全關 -->

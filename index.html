@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.4 Beta 紅色非法工件與強制生成</title>
+<title>智慧載盤物理模擬器｜V4.5 Beta 拖曳模式與右鍵拒絕輔助</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -4151,7 +4151,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 
 /* ===== V4.3 全平台磁吸拿起搬移 ===== */
 /*
-  磁吸模式開啟時：
+  拖曳模式開啟時：
   - 桌面左鍵拖曳
   - 手機單指拖曳
   均使用相同的懸浮搬移與智慧落位流程。
@@ -4207,7 +4207,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
         量測模式 <kbd>M</kbd>
 </button>
 <button class="headerQuickButton" id="headerSnapToggle" type="button">
-        磁吸模式 <kbd>S</kbd>
+        拖曳模式 <kbd>S</kbd>
 </button>
 <button class="headerQuickButton" id="headerHelpBtn" type="button">
         操作說明 <kbd>?</kbd>
@@ -4224,7 +4224,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.4 Beta · 紅色非法工件與強制生成</div>
+<div class="headerBadge">V4.5 Beta · 拖曳模式與右鍵拒絕輔助</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -4427,7 +4427,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
     </div>
 </div>
 </div></div>
-<div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="edit" data-default-collapsed="true" id="editSettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">量測與編輯</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">磁吸：開</span><span class="sharedSummaryLine">吸力：15 mm</span><span class="sharedSummaryLine">量測：關</span></span></span></button><div class="sharedCollapseBody">
+<div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="edit" data-default-collapsed="true" id="editSettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">量測與編輯</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">拖曳：開</span><span class="sharedSummaryLine">吸力：15 mm</span><span class="sharedSummaryLine">量測：關</span></span></span></button><div class="sharedCollapseBody">
 
 <div class="sectionStepControl" data-step-section="editSettingsSection">
 <span>上下鍵微調量</span>
@@ -4446,12 +4446,15 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 <div class="toolStatus" id="measureStatus">量測模式未啟用</div>
 <div class="snapSettings">
 <label class="snapToggle">
-<input id="snapEnabled" type="checkbox"/>
-        啟用磁力吸附
+<input checked="" id="snapEnabled" type="checkbox"/>
+        啟用拖曳模式
       </label>
 <label>吸力半徑（mm）
         <input id="snapStep" min="0" step="1" type="number" value="15"/>
 </label>
+<div class="toolStatus dragModeHint">
+        拖曳模式預設開啟：左鍵／單指放開時自動尋找附近合法位置；電腦右鍵代表拒絕輔助，位置不合法時直接回原位。
+      </div>
 <div class="snapTypePanel">
 <div class="snapTypeTitle">──── 拖曳與量測共用吸附目標 ────</div>
 <label class="snapTargetStandalone">
@@ -4636,7 +4639,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </ul>
 </section>
 <section class="helpSection">
-<h3>磁吸模式</h3>
+<h3>拖曳模式</h3>
 <p><span class="helpKey">S</span>切換磁吸。啟用後左鍵拖曳工件，靠近候選位置時只顯示虛線預覽，放開才真正吸附。</p>
 <ul>
 <li>吸力半徑代表候選位置的偵測範圍</li>
@@ -4915,7 +4918,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 <div class="mobileSectionTitle">追加工件操作</div>
 <div class="mobileActionGridFour">
 <button id="mobileAddOneSecondaryBtn" type="button">生成 1 個</button>
-<button class="forceSecondaryButton" id="mobileForceAddOneSecondaryBtn" type="button">強制生成</button>
+<button class="forceSecondaryButton" id="mobileForceAddOneSecondaryBtn" type="button">強制生成 1 個</button>
 <button id="mobileClearSecondaryBtn" type="button">清除追加工件</button>
 <button id="mobileAdaptiveFillBtn" type="button">蜂巢自適應</button>
 </div>
@@ -4934,10 +4937,10 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 
 <div class="mobileSectionCard">
-<div class="mobileSectionTitle">吸附模式</div>
+<div class="mobileSectionTitle">拖曳模式</div>
 <label class="mobileSwitchRow">
-<input id="mobileSnapEnabledMirror" type="checkbox"/>
-<span>啟用磁吸模式</span>
+<input checked="" id="mobileSnapEnabledMirror" type="checkbox"/>
+<span>啟用拖曳模式</span>
 </label>
 <label class="mobileWideField">
 <span>吸力半徑</span>
@@ -9104,7 +9107,7 @@ function drawSnapDragPreview(item,candidate){
     class:"snapPreviewLine"
   });
 
-  // 磁吸模式也使用與量測一致的黑色資訊框，
+  // 拖曳模式也使用與量測一致的黑色資訊框，
   // 但只顯示目前候選位置與放開／略過吸力的操作提示。
   const labelWidth=224;
   const labelHeight=116;
@@ -9131,7 +9134,7 @@ function drawSnapDragPreview(item,candidate){
   create("text",{
     x:textX,y:boxY+12,
     class:"snapPreviewHintTitle snapPreviewHint"
-  },"磁吸位置預覽");
+  },"輔助落位預覽");
 
   create("text",{
     x:textX,y:boxY+35,
@@ -9146,12 +9149,12 @@ function drawSnapDragPreview(item,candidate){
   create("text",{
     x:textX,y:boxY+79,
     class:"snapPreviewHintHelp snapPreviewHint"
-  },"放開左鍵：套用吸附");
+  },"放開左鍵：使用落位輔助");
 
   create("text",{
     x:textX,y:boxY+99,
     class:"snapPreviewHintHelp snapPreviewHint"
-  },"右鍵拖曳：忽略吸力");
+  },"右鍵拖曳：拒絕輔助");
 }
 
 function startItemDrag(event){
@@ -9160,18 +9163,19 @@ function startItemDrag(event){
   if(!node)return;
   if(event.button!==0&&event.button!==2)return;
 
-  const bypassSnap=event.button===2;
+  const rejectAssist=event.button===2;
 
   /*
-    桌面與手機共用同一套操作：
-    磁吸模式開啟時，左鍵／單指拖曳都視為「拿起搬移」。
-    拖曳途中忽略碰撞與邊界，放開時才執行智慧落位。
+    桌面與手機共用拖曳模式：
+    - 左鍵／單指：拿起搬移，放開時提供吸附與附近合法位置輔助。
+    - 電腦右鍵：拒絕輔助，只接受使用者放下的目前位置；
+      若目前位置不合法，直接回到原位。
   */
   const liftPlacementMode=
     event.button===0 &&
     snapEnabled.checked;
 
-  if(!liftPlacementMode&&!bypassSnap)return;
+  if(!liftPlacementMode&&!rejectAssist)return;
 
   const ref=refFromPartNode(node);
   if(!ref)return;
@@ -9190,7 +9194,7 @@ function startItemDrag(event){
     lastPoint:point,
     moved:false,
     button:event.button,
-    bypassSnap,
+    rejectAssist,
     liftPlacementMode,
     previewCandidate:null,
     releasePoint:point
@@ -9327,7 +9331,7 @@ function moveItemDrag(event){
     return;
   }
 
-  if(state.bypassSnap){
+  if(state.rejectAssist){
     clearSnapDragPreview();
   }else if(snapEnabled.checked){
     const threshold=Math.max(0,Number(snapStep.value)||0);
@@ -9344,7 +9348,7 @@ function moveItemDrag(event){
     clearSnapDragPreview();
   }
 
-  if(!result.moved&&state.bypassSnap){
+  if(!result.moved&&state.rejectAssist){
     setHeaderHint(
       "正在忽略吸力拖曳：已貼近工件或安全邊界，可沿著可移動方向繼續滑動。",
       "warning"
@@ -9553,7 +9557,7 @@ function finishItemDrag(event){
       );
     }
   }else if(state.moved){
-    if(state.previewCandidate&&!state.bypassSnap){
+    if(state.previewCandidate&&!state.rejectAssist){
       translateItem(state.item,state.previewCandidate.dx,state.previewCandidate.dy);
     }
     moveHistory.push(state.before);
@@ -9564,9 +9568,9 @@ function finishItemDrag(event){
     reapplySelection([state.ref]);
     updateResultAfterManualChanges();
     setToolStatus(
-      state.previewCandidate&&!state.bypassSnap
+      state.previewCandidate&&!state.rejectAssist
         ? `已放開並吸附至${state.previewCandidate.label}。`
-        : state.bypassSnap
+        : state.rejectAssist
           ? "已完成忽略吸力拖曳；工件不會在放開時自動吸附。"
           : "已完成拖曳移動。",
       "success"
@@ -10545,8 +10549,8 @@ headerSnapToggle?.addEventListener("click",()=>{
   syncHeaderQuickTools();
   setToolStatus(
     snapEnabled.checked
-      ?"已開啟磁吸模式：左鍵按住工件拖曳，靠近候選位置會顯示吸附預覽，放開左鍵後才正式吸附；右鍵拖曳可暫時忽略吸力。"
-      :"已關閉磁吸模式",
+      ?"已開啟拖曳模式：左鍵按住工件拖曳，靠近候選位置會顯示吸附預覽，放開左鍵後才正式吸附；右鍵拖曳可暫時忽略吸力。"
+      :"已關閉拖曳模式",
     snapEnabled.checked?"success":""
   );
 });
@@ -10650,8 +10654,8 @@ document.addEventListener("keydown",event=>{
     syncHeaderQuickTools();
     setToolStatus(
       snapEnabled.checked
-        ?"已開啟磁吸模式：左鍵按住工件拖曳，靠近候選位置會顯示吸附預覽，放開左鍵後才正式吸附；右鍵拖曳可暫時忽略吸力。"
-        :"已關閉磁吸模式",
+        ?"已開啟拖曳模式：左鍵按住工件拖曳，靠近候選位置會顯示吸附預覽，放開左鍵後才正式吸附；右鍵拖曳可暫時忽略吸力。"
+        :"已關閉拖曳模式",
       snapEnabled.checked?"success":""
     );
     return;
@@ -10921,7 +10925,7 @@ mobileSnapBtn?.addEventListener("click",()=>{
   snapEnabled.dispatchEvent(new Event("change",{bubbles:true}));
   syncMobileModeUi();
   setToolStatus(
-    snapEnabled.checked?"已開啟磁吸模式。":"已關閉磁吸模式。",
+    snapEnabled.checked?"已開啟拖曳模式。":"已關閉拖曳模式。",
     snapEnabled.checked?"success":""
   );
 });

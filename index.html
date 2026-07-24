@@ -4456,6 +4456,11 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <button id="clearMeasurementsBtn" type="button">清除量測</button>
 </div>
 <div class="toolStatus" id="measureStatus">量測模式未啟用</div>
+<label class="snapToggle" style="margin-top:8px!important">
+<input id="measureConfirmOnRelease" type="checkbox"/>
+        放開後確定測量點
+      </label>
+<div class="hint">未勾選時維持原本「按一下確定一點」；勾選後改為按住移動、放開才確定該測量點。手機模式預設開啟。</div>
 <div class="snapSettings">
 <label class="snapToggle">
 <input id="snapEnabled" type="checkbox"/>
@@ -5062,6 +5067,7 @@ const statusZones=document.getElementById("statusZones");
 const measureModeBtn=document.getElementById("measureModeBtn");
 const clearMeasurementsBtn=document.getElementById("clearMeasurementsBtn");
 const measureStatus=document.getElementById("measureStatus");
+const measureConfirmOnRelease=document.getElementById("measureConfirmOnRelease");
 const snapEnabled=document.getElementById("snapEnabled");
 const headerMeasureToggle=document.getElementById("headerMeasureToggle");
 const headerSnapToggle=document.getElementById("headerSnapToggle");
@@ -5174,6 +5180,7 @@ let liveMeasureSnap=null;
 let measurements=[];
 let selectedMeasurementIndex=null;
 let measurementDragState=null;
+let measureReleaseState=null;
 let moveHistory=[];
 
 const CONFIG_DEFAULTS=Object.freeze({
@@ -5200,6 +5207,7 @@ const CONFIG_DEFAULTS=Object.freeze({
   SecondaryDirection:"Vertical",
   SecondaryCircleArrange:"Grid",
   SnapEnabled:"false",
+  MeasurementConfirmOnRelease:"false",
   SnapStep:"15",
   SnapTypeBoundary:"true",
   SnapRectCorners:"true",
@@ -5236,7 +5244,7 @@ const CONFIG_SECTION_KEYS=[
   },
   {
     title:"Editing, magnetic snap and analysis",
-    keys:["SnapEnabled","SnapStep","SnapTypeBoundary","SnapRectCorners","SnapRectMidpoints","SnapRectEdges","SnapCircleCenter","SnapTypeQuadrant","SnapTypeSingleCircle","SnapTypeDoubleCircle","SnapTypeCircleRect","ShowSpaceLabels"]
+    keys:["SnapEnabled","MeasurementConfirmOnRelease","SnapStep","SnapTypeBoundary","SnapRectCorners","SnapRectMidpoints","SnapRectEdges","SnapCircleCenter","SnapTypeQuadrant","SnapTypeSingleCircle","SnapTypeDoubleCircle","SnapTypeCircleRect","ShowSpaceLabels"]
   },
   {
     title:"Independent numeric steps",
@@ -5317,6 +5325,7 @@ function getCurrentConfig(){
     SecondaryDirection:secondaryHorizontal.checked?"Horizontal":"Vertical",
     SecondaryCircleArrange:secondaryCircleHoney.checked?"Honeycomb":"Grid",
     SnapEnabled:String(snapEnabled.checked),
+    MeasurementConfirmOnRelease:String(measureConfirmOnRelease.checked),
     SnapStep:snapStep.value,
     SnapTypeBoundary:String(snapTypeBoundary.checked),
     SnapRectCorners:String(snapRectCorners.checked),
@@ -5443,6 +5452,7 @@ function applyConfig(config){
   secondaryCircleGrid.checked=!secondaryCircleHoney.checked;
 
   snapEnabled.checked=parseConfigBoolean(config.SnapEnabled,false);
+  measureConfirmOnRelease.checked=parseConfigBoolean(config.MeasurementConfirmOnRelease,false);
   setNumericConfigValue(snapStep,config.SnapStep,CONFIG_DEFAULTS.SnapStep);
   snapTypeBoundary.checked=parseConfigBoolean(config.SnapTypeBoundary,true);
   snapRectCorners.checked=parseConfigBoolean(config.SnapRectCorners,parseConfigBoolean(config.SnapTypeRect,true));
@@ -7063,6 +7073,7 @@ function toggleMeasureMode(){
 
   // 切離量測模式時，未完成的第一／第二點預覽必須立即清除。
   pendingMeasurePoint=null;
+  measureReleaseState=null;
   liveMeasurePoint=null;
   liveMeasureSnap=null;
 
@@ -7411,7 +7422,7 @@ function updateLiveMeasurement(event){
 
   if(!pendingMeasurePoint){
     setToolStatus(
-      `第一點預覽：(${fmt(liveMeasurePoint.x)}, ${fmt(liveMeasurePoint.y)}) mm｜${snapped.label}｜左鍵設定第一點`,
+      `第一點預覽：(${fmt(liveMeasurePoint.x)}, ${fmt(liveMeasurePoint.y)}) mm｜${snapped.label}｜${measureConfirmOnRelease.checked?"按住移動、放開確定第一點":"左鍵設定第一點"}`,
       "success"
     );
     renderCurrent();
@@ -7473,7 +7484,7 @@ function drawFirstMeasurePointPreview(){
   create("text",{x:textX,y:boxY+12,class:"measurePreviewLabelTitle"},"第一點預覽");
   create("text",{x:textX,y:boxY+35,class:"measurePreviewLabelValue"},`X ${fmt(point.x)} mm　Y ${fmt(point.y)} mm`);
   create("text",{x:textX,y:boxY+57,class:"measurePreviewLabelSnap"},`吸附：${liveMeasureSnap?.label||"自由點"}`);
-  create("text",{x:textX,y:boxY+79,class:"measurePreviewLabelSnap"},"左鍵：設定第一點　Esc：取消");
+  create("text",{x:textX,y:boxY+79,class:"measurePreviewLabelSnap"},measureConfirmOnRelease.checked?"按住移動、放開：確定第一點":"左鍵：設定第一點　Esc：取消");
   create("text",{x:textX,y:boxY+99,class:"measurePreviewLabelSnap"},"右鍵拖曳：平移畫面");
 }
 
@@ -7615,6 +7626,38 @@ function drawLiveMeasurement(){
       class:"measurePreviewLabelSnap"
     },"右鍵拖曳：平移畫面");
   }
+}
+
+function beginReleaseMeasurement(event){
+  if(!measureMode||!measureConfirmOnRelease.checked)return false;
+  if(event.button!==0)return false;
+  if(event.target.closest("button,input,label,.measurementAnnotation"))return false;
+
+  measureReleaseState={pointerId:event.pointerId};
+  try{svg.setPointerCapture(event.pointerId)}catch{}
+  updateLiveMeasurement(event);
+  event.preventDefault();
+  event.stopPropagation();
+  return true;
+}
+
+function finishReleaseMeasurement(event){
+  if(!measureReleaseState||event.pointerId!==measureReleaseState.pointerId)return false;
+  try{svg.releasePointerCapture(event.pointerId)}catch{}
+  measureReleaseState=null;
+
+  if(!measureMode||!measureConfirmOnRelease.checked)return false;
+  updateLiveMeasurement(event);
+  addMeasurementPoint(event);
+  event.preventDefault();
+  event.stopPropagation();
+  return true;
+}
+
+function cancelReleaseMeasurement(event){
+  if(!measureReleaseState||event.pointerId!==measureReleaseState.pointerId)return;
+  try{svg.releasePointerCapture(event.pointerId)}catch{}
+  measureReleaseState=null;
 }
 
 function addMeasurementPoint(event){
@@ -8878,8 +8921,12 @@ function startMarquee(event){
   if(event.button!==0)return;
   if(event.target.closest(".measurementAnnotation"))return;
   if(measureMode){
-    addMeasurementPoint(event);
-    event.preventDefault();
+    if(measureConfirmOnRelease.checked){
+      beginReleaseMeasurement(event);
+    }else{
+      addMeasurementPoint(event);
+      event.preventDefault();
+    }
     return;
   }
   if(event.target.closest("button,input,label"))return;
@@ -10511,9 +10558,11 @@ canvasArea.addEventListener("dblclick",event=>{
   resetCanvasZoom();
 });
 
-svg.addEventListener("mousemove",event=>{
-  updateLiveMeasurement(event);
+svg.addEventListener("pointermove",event=>{
+  if(measureMode&&!panState)updateLiveMeasurement(event);
 });
+svg.addEventListener("pointerup",finishReleaseMeasurement,true);
+svg.addEventListener("pointercancel",cancelReleaseMeasurement,true);
 
 svg.addEventListener("mouseleave",()=>{
   if(measureMode&&!panState){
@@ -10657,6 +10706,16 @@ SNAP_TYPE_INPUTS.forEach(input=>{
 syncHeaderQuickTools();
 
 measureModeBtn.addEventListener("click",toggleMeasureMode);
+measureConfirmOnRelease?.addEventListener("change",()=>{
+  measureReleaseState=null;
+  setToolStatus(
+    measureConfirmOnRelease.checked
+      ?"量測取點方式：按住移動，放開後確定測量點。"
+      :"量測取點方式：按一下立即確定測量點。",
+    "success"
+  );
+  if(measureMode)renderCurrent();
+});
 clearMeasurementsBtn.addEventListener("click",clearMeasurements);
 snapSelectedBtn.addEventListener("click",snapSelectedItems);
 restorePositionsBtn.addEventListener("click",restoreLastMove);
@@ -10840,6 +10899,7 @@ function syncMobileModeUi(){
 
 function enableTouchUi(){
   document.body.classList.add("touchUiEnabled");
+  if(measureConfirmOnRelease)measureConfirmOnRelease.checked=true;
   requestAnimationFrame(syncMobileModeUi);
 }
 

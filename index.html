@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.5 Beta 拖曳模式與右鍵拒絕輔助</title>
+<title>智慧載盤物理模擬器｜V4.6.2 Beta 手機共用桌面拖曳核心</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -4193,6 +4193,18 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V4.6 手機拖曳模式與磁吸輔助 ===== */
+body.touchUiEnabled #mobileFreeDragBtn:disabled{
+  opacity:.45!important;
+}
+body.touchUiEnabled #mobileFreeDragBtn.active{
+  border-color:#2563eb!important;
+  background:#eff6ff!important;
+  color:#1d4ed8!important;
+  box-shadow:inset 0 0 0 2px rgba(37,99,235,.14)!important;
+}
+
 </style>
 </head>
 <body>
@@ -4224,7 +4236,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.5 Beta · 拖曳模式與右鍵拒絕輔助</div>
+<div class="headerBadge">V4.6.2 Beta · 手機共用桌面拖曳核心</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -4427,7 +4439,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
     </div>
 </div>
 </div></div>
-<div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="edit" data-default-collapsed="true" id="editSettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">量測與編輯</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">拖曳：開</span><span class="sharedSummaryLine">吸力：15 mm</span><span class="sharedSummaryLine">量測：關</span></span></span></button><div class="sharedCollapseBody">
+<div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="edit" data-default-collapsed="true" id="editSettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">量測與編輯</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">拖曳：關</span><span class="sharedSummaryLine">吸力：15 mm</span><span class="sharedSummaryLine">量測：關</span></span></span></button><div class="sharedCollapseBody">
 
 <div class="sectionStepControl" data-step-section="editSettingsSection">
 <span>上下鍵微調量</span>
@@ -4446,14 +4458,14 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 <div class="toolStatus" id="measureStatus">量測模式未啟用</div>
 <div class="snapSettings">
 <label class="snapToggle">
-<input checked="" id="snapEnabled" type="checkbox"/>
+<input id="snapEnabled" type="checkbox"/>
         啟用拖曳模式
       </label>
 <label>吸力半徑（mm）
         <input id="snapStep" min="0" step="1" type="number" value="15"/>
 </label>
 <div class="toolStatus dragModeHint">
-        拖曳模式預設開啟：左鍵／單指放開時自動尋找附近合法位置；電腦右鍵代表拒絕輔助，位置不合法時直接回原位。
+        拖曳模式預設關閉：開啟後左鍵拖曳會在放開時尋找附近合法位置；電腦右鍵代表拒絕輔助，位置不合法時直接回原位。
       </div>
 <div class="snapTypePanel">
 <div class="snapTypeTitle">──── 拖曳與量測共用吸附目標 ────</div>
@@ -4666,8 +4678,8 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 </div>
 <div aria-label="手機觸控工具列" class="mobileTouchToolbar" id="mobileTouchToolbar">
-<button id="mobileSnapBtn" type="button">磁吸<br/>模式</button>
-<button disabled="" id="mobileFreeDragBtn" type="button">自由<br/>拖曳</button>
+<button id="mobileSnapBtn" type="button">拖曳<br/>模式</button>
+<button id="mobileFreeDragBtn" type="button">磁吸<br/>輔助</button>
 <button id="mobileMeasureBtn" type="button">量測<br/>模式</button>
 <button id="mobileClearMeasurementsBtn" type="button">清除<br/>量測</button>
 <button id="mobileUndoBtn" type="button">復原<br/>操作</button>
@@ -4937,10 +4949,10 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 
 <div class="mobileSectionCard">
-<div class="mobileSectionTitle">拖曳模式</div>
+<div class="mobileSectionTitle">磁吸輔助設定</div>
 <label class="mobileSwitchRow">
 <input checked="" id="mobileSnapEnabledMirror" type="checkbox"/>
-<span>啟用拖曳模式</span>
+<span>啟用桌面拖曳／共用吸附引擎</span>
 </label>
 <label class="mobileWideField">
 <span>吸力半徑</span>
@@ -5187,7 +5199,7 @@ const CONFIG_DEFAULTS=Object.freeze({
   SecondaryGapY:"5",
   SecondaryDirection:"Vertical",
   SecondaryCircleArrange:"Grid",
-  SnapEnabled:"true",
+  SnapEnabled:"false",
   SnapStep:"15",
   SnapTypeBoundary:"true",
   SnapRectCorners:"true",
@@ -8875,6 +8887,18 @@ function startMarquee(event){
   const pressedNode=event.target.closest(
     ".part,.circlePart,.secondaryPart,.secondaryRect"
   );
+
+  // 手機拖曳模式開啟時，工件上的單指手勢必須完全交給工件拖曳核心。
+  // 即使瀏覽器的事件傳遞順序偶發不同，也不得建立框選框。
+  const isMobileTouchDragGesture=
+    document.body.classList.contains("touchUiEnabled") &&
+    event.pointerType==="touch" &&
+    mobileDragModeEnabled &&
+    pressedNode;
+  if(isMobileTouchDragGesture || (itemDragState&&itemDragState.pointerId===event.pointerId)){
+    return;
+  }
+
   const pressedRef=pressedNode?refFromPartNode(pressedNode):null;
 
   const start=svgPointFromClient(event.clientX,event.clientY);
@@ -9157,23 +9181,40 @@ function drawSnapDragPreview(item,candidate){
   },"右鍵拖曳：拒絕輔助");
 }
 
+function isMobileMagneticAssistEnabled(){
+  return document.body.classList.contains("touchUiEnabled") &&
+    !mobileFreeDragEnabled;
+}
+
+function isMobileTouchAssistActive(){
+  return document.body.classList.contains("touchUiEnabled") &&
+    mobileDragModeEnabled &&
+    isMobileMagneticAssistEnabled();
+}
+
 function startItemDrag(event){
   if(measureMode)return;
   const node=event.target.closest(".part,.circlePart,.secondaryPart,.secondaryRect");
   if(!node)return;
   if(event.button!==0&&event.button!==2)return;
 
-  const rejectAssist=event.button===2;
+  const isMobileTouch=
+    document.body.classList.contains("touchUiEnabled") &&
+    event.pointerType==="touch";
 
   /*
-    桌面與手機共用拖曳模式：
-    - 左鍵／單指：拿起搬移，放開時提供吸附與附近合法位置輔助。
-    - 電腦右鍵：拒絕輔助，只接受使用者放下的目前位置；
-      若目前位置不合法，直接回到原位。
+    V4.6.2：手機只映射桌面既有兩種拖曳行為，不另寫一套功能。
+    - 手機拖曳模式 + 磁吸輔助 ON ＝桌面左鍵：拿起、可穿透／越界、預覽與智慧落位。
+    - 手機拖曳模式 + 磁吸輔助 OFF＝桌面右鍵：不吸附、碰撞／邊界限制、沿障礙滑動。
+    - 桌面維持原本左鍵／右鍵行為。
   */
-  const liftPlacementMode=
-    event.button===0 &&
-    snapEnabled.checked;
+  const mobileAssistEnabled=isMobileTouch&&mobileDragModeEnabled&&!mobileFreeDragEnabled;
+  const mobileRejectAssist=isMobileTouch&&mobileDragModeEnabled&&mobileFreeDragEnabled;
+  const rejectAssist=event.button===2||mobileRejectAssist;
+  const liftPlacementMode=isMobileTouch
+    ? mobileAssistEnabled
+    : event.button===0&&snapEnabled.checked;
+  const assistEnabled=isMobileTouch?mobileAssistEnabled:(!rejectAssist&&snapEnabled.checked);
 
   if(!liftPlacementMode&&!rejectAssist)return;
 
@@ -9196,6 +9237,7 @@ function startItemDrag(event){
     button:event.button,
     rejectAssist,
     liftPlacementMode,
+    assistEnabled,
     previewCandidate:null,
     releasePoint:point
   };
@@ -9307,7 +9349,7 @@ function moveItemDrag(event){
     const valid=movedSelectionIsValid([state.ref]);
     state.node.classList.toggle("liftInvalidPreview",!valid);
 
-    if(snapEnabled.checked){
+    if(state.assistEnabled){
       const threshold=Math.max(0,Number(snapStep.value)||0);
       if(threshold>0){
         state.previewCandidate=findBestMagneticSnap(
@@ -9333,7 +9375,7 @@ function moveItemDrag(event){
 
   if(state.rejectAssist){
     clearSnapDragPreview();
-  }else if(snapEnabled.checked){
+  }else if(state.assistEnabled){
     const threshold=Math.max(0,Number(snapStep.value)||0);
     if(threshold>0){
       state.previewCandidate=findBestMagneticSnap(
@@ -9367,7 +9409,7 @@ function testLiftLanding(ref,dx=0,dy=0){
   return valid;
 }
 
-function findNearestLegalLiftLanding(ref,releasePoint){
+function findNearestLegalLiftLanding(ref,releasePoint,assistEnabled=true){
   const item=getMutableItem(ref.kind,ref.index);
   if(!item||!currentContext)return null;
 
@@ -9379,7 +9421,7 @@ function findNearestLegalLiftLanding(ref,releasePoint){
     return {dx:0,dy:0,label:"目前位置",distance:0};
   }
 
-  if(snapEnabled.checked&&threshold>0){
+  if(assistEnabled&&threshold>0){
     const snapCandidate=findBestMagneticSnap(
       [ref],
       threshold,
@@ -9433,7 +9475,7 @@ function findNearestLegalLiftLanding(ref,releasePoint){
       let label="附近合法位置";
       let snap=false;
 
-      if(snapEnabled.checked&&threshold>0){
+      if(assistEnabled&&threshold>0){
         const snapCandidate=findBestMagneticSnap(
           [ref],
           threshold,
@@ -9469,7 +9511,7 @@ function commitLiftLanding(state){
 
   if(movedSelectionIsValid([ref])){
     delete item.forcedIllegal;
-    if(state.previewCandidate&&snapEnabled.checked){
+    if(state.previewCandidate&&state.assistEnabled){
       const beforeSnap=capturePositions([ref]);
       translateItem(item,state.previewCandidate.dx,state.previewCandidate.dy);
       if(movedSelectionIsValid([ref])){
@@ -9484,7 +9526,7 @@ function commitLiftLanding(state){
     return {success:true,corrected:false,label:"目前位置"};
   }
 
-  const rescue=findNearestLegalLiftLanding(ref,state.releasePoint);
+  const rescue=findNearestLegalLiftLanding(ref,state.releasePoint,state.assistEnabled);
   if(rescue){
     translateItem(item,rescue.dx,rescue.dy);
     if(movedSelectionIsValid([ref])){
@@ -10758,6 +10800,8 @@ const mobileModeBadge=document.getElementById("mobileModeBadge");
 
 let mobileInteractionMode="select";
 let mobileTouchPanState=null;
+/* V4.6：手機拖曳模式獨立於桌面拖曳設定，預設關閉。 */
+let mobileDragModeEnabled=false;
 
 function shouldEnableTouchUi(){
   const saved=localStorage.getItem(MOBILE_MODE_KEY);
@@ -10770,14 +10814,27 @@ function syncMobileModeUi(){
   if(!document.body.classList.contains("touchUiEnabled"))return;
 
   mobileMeasureBtn?.classList.toggle("active",measureMode);
-  mobileSnapBtn?.classList.toggle("active",snapEnabled.checked);
+  mobileSnapBtn?.classList.toggle("active",mobileDragModeEnabled);
 
   document.body.classList.remove("mobilePanMode");
 
   if(mobileModeBadge){
-    const modeText=measureMode?"量測":"選取";
-    const snapText=snapEnabled.checked?"｜磁吸開":"｜磁吸關";
-    mobileModeBadge.textContent=`手機：${modeText}${snapText}｜磁吸開：拿起搬移｜雙指縮放及移動圖面`;
+    const parts=["手機："];
+    if(measureMode)parts.push("量測模式");
+
+    if(mobileDragModeEnabled){
+      parts.push("拖曳模式");
+      parts.push(`磁吸輔助：${mobileFreeDragEnabled?"關":"開"}`);
+      parts.push("單指按住拖動工件");
+    }else{
+      parts.push("選取模式");
+      parts.push(`磁吸輔助：${mobileFreeDragEnabled?"關":"開"}`);
+      parts.push("單指按住拖動框選");
+    }
+
+    parts.push("雙指縮放與移動圖面");
+    parts.push("雙擊空白復原縮放與位置");
+    mobileModeBadge.textContent=parts.join("｜");
   }
 }
 
@@ -10921,12 +10978,14 @@ function finishMobileTouchPan(event){
 }
 
 mobileSnapBtn?.addEventListener("click",()=>{
-  snapEnabled.checked=!snapEnabled.checked;
-  snapEnabled.dispatchEvent(new Event("change",{bubbles:true}));
+  mobileDragModeEnabled=!mobileDragModeEnabled;
+
   syncMobileModeUi();
   setToolStatus(
-    snapEnabled.checked?"已開啟拖曳模式。":"已關閉拖曳模式。",
-    snapEnabled.checked?"success":""
+    mobileDragModeEnabled
+      ?"已開啟手機拖曳模式。"
+      :"已關閉手機拖曳模式，恢復選取與框選。",
+    mobileDragModeEnabled?"success":""
   );
 });
 
@@ -11175,36 +11234,34 @@ function restoreMobileSnapTargets(){
 }
 
 function setMobileFreeDrag(enabled){
-  if(enabled&&!snapEnabled.checked)return;
-
-  if(enabled){
-    mobileSavedSnapTargetState={};
-    mobileSnapTargetIds.forEach(id=>{
-      const control=document.getElementById(id);
-      if(!control)return;
-      mobileSavedSnapTargetState[id]=control.checked;
-      control.checked=false;
-      control.dispatchEvent(new Event("change",{bubbles:true}));
-    });
-  }else{
-    restoreMobileSnapTargets();
-  }
-
+  /*
+    enabled=true 代表手機磁吸輔助 OFF。
+    這裡只切換觸控手勢映射，不再關閉任何吸附目標，
+    避免量測與桌面共用的吸附設定被手機按鈕破壞。
+  */
   mobileFreeDragEnabled=enabled;
-  mobileFreeDragBtn?.classList.toggle("active",enabled);
-  mobileFreeDragBtn.innerHTML=enabled?"恢復<br>吸附":"自由<br>拖曳";
+  mobileFreeDragBtn?.classList.toggle("active",!enabled);
+  mobileFreeDragBtn.innerHTML=`磁吸<br/>輔助`;
+  mobileFreeDragBtn.setAttribute("aria-pressed",String(!enabled));
   syncMobileModeUi();
 
   setToolStatus(
-    enabled?"已暫停全部吸附點，可自由拖曳。":"已恢復原本勾選的吸附點。",
+    enabled
+      ?"手機磁吸輔助已關閉：拖曳等同桌面右鍵，不吸附且不可穿透工件或越界。"
+      :"手機磁吸輔助已開啟：拖曳等同桌面左鍵，可拿起穿越並在放開時智慧落位。",
     "success"
   );
 }
 
 function syncMobileFreeDragAvailability(){
-  const available=!!snapEnabled.checked;
-  mobileFreeDragBtn.disabled=!available;
-  if(!available&&mobileFreeDragEnabled)setMobileFreeDrag(false);
+  /*
+    V4.6.1：磁吸輔助同時供拖曳與量測使用，
+    因此不再依賴手機拖曳模式，任何時候都可切換。
+  */
+  const available=true;
+  mobileFreeDragBtn.disabled=false;
+  mobileFreeDragBtn?.classList.toggle("active",!mobileFreeDragEnabled);
+  mobileFreeDragBtn?.setAttribute("aria-pressed",String(!mobileFreeDragEnabled));
 }
 
 mobileFineTuneMap.forEach(([mobileControl,mainControl])=>{
@@ -11299,12 +11356,6 @@ mobileFreeDragBtn?.addEventListener("click",()=>setMobileFreeDrag(!mobileFreeDra
 
 snapEnabled.addEventListener("change",()=>{
   syncMobileFreeDragAvailability();
-  if(!snapEnabled.checked&&mobileSavedSnapTargetState){
-    restoreMobileSnapTargets();
-    mobileFreeDragEnabled=false;
-    mobileFreeDragBtn?.classList.remove("active");
-    mobileFreeDragBtn.innerHTML="自由<br>拖曳";
-  }
 });
 
 [mobileQuickToolbar,mobileFineTuneSheet].forEach(container=>{
@@ -11316,9 +11367,6 @@ const previousSyncMobileModeUiV13=syncMobileModeUi;
 syncMobileModeUi=function(){
   previousSyncMobileModeUiV13();
   syncMobileFreeDragAvailability();
-  if(mobileModeBadge&&document.body.classList.contains("touchUiEnabled")&&mobileFreeDragEnabled){
-    mobileModeBadge.textContent+="｜自由拖曳";
-  }
 };
 
 window.addEventListener("keydown",event=>{

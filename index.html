@@ -4474,11 +4474,11 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="secondaryDimensionGrid">
 <label class="secondaryFieldCard">
 <span class="fieldCaption">X 方向間距（mm）</span>
-<input id="secondaryGapX" step="0.1" type="number" value="5"/>
+<input id="secondaryGapX" min="0" step="0.1" type="number" value="5"/>
 </label>
 <label class="secondaryFieldCard">
 <span class="fieldCaption">Y 方向間距（mm）</span>
-<input id="secondaryGapY" step="0.1" type="number" value="5"/>
+<input id="secondaryGapY" min="0" step="0.1" type="number" value="5"/>
 </label>
 </div>
 </div>
@@ -5599,16 +5599,20 @@ function formatConvertedMM(value){
 function updateInchPreview(input,preview){
   const inches=Number(input.value);
   if(!Number.isFinite(inches)||inches<=0){
-    preview.classList.remove("converted");
-    preview.textContent=input===partInches
-      ?"輸入後會同步設定長度與寬度"
-      :"不直接列入擺盤計算";
+    if(preview){
+      preview.classList.remove("converted");
+      preview.textContent=input===partInches
+        ?"輸入後會同步設定長度與寬度"
+        :"不直接列入擺盤計算";
+    }
     return null;
   }
 
   const mm=inches*getInchFactor();
-  preview.classList.add("converted");
-  preview.textContent=`${inches} 吋 × ${getInchFactor()} = ${formatConvertedMM(mm)} mm`;
+  if(preview){
+    preview.classList.add("converted");
+    preview.textContent=`${inches} 吋 × ${getInchFactor()} = ${formatConvertedMM(mm)} mm`;
+  }
   return mm;
 }
 
@@ -5629,6 +5633,8 @@ function applySecondaryInches(){
 
   secondaryLength.value=formatConvertedMM(mm);
   secondaryWidth.value=formatConvertedMM(mm);
+  secondaryLength.dispatchEvent(new Event("input",{bubbles:true}));
+  secondaryWidth.dispatchEvent(new Event("input",{bubbles:true}));
 }
 
 function reapplyAllInchHelpers(){
@@ -10580,8 +10586,19 @@ secondaryInches.addEventListener("change",()=>{
   secondaryGapX,
   secondaryGapY
 ].forEach(input=>{
-  input.addEventListener("input",()=>scheduleSecondaryAutoRefresh());
-  input.addEventListener("change",()=>scheduleSecondaryAutoRefresh(0));
+  const clampSecondaryValue=()=>{
+    if((input===secondaryGapX||input===secondaryGapY)&&Number(input.value)<0){
+      input.value="0";
+    }
+  };
+  input.addEventListener("input",()=>{
+    clampSecondaryValue();
+    scheduleSecondaryAutoRefresh();
+  });
+  input.addEventListener("change",()=>{
+    clampSecondaryValue();
+    scheduleSecondaryAutoRefresh(0);
+  });
 });
 
 [

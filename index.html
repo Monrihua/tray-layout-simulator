@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.2 Beta 拿起搬移與智慧落位</title>
+<title>智慧載盤物理模擬器｜V4.3 Beta 全平台磁吸拿起搬移</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -4139,6 +4139,18 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   stroke-dasharray:7 5!important;
 }
 
+
+/* ===== V4.3 全平台磁吸拿起搬移 ===== */
+/*
+  磁吸模式開啟時：
+  - 桌面左鍵拖曳
+  - 手機單指拖曳
+  均使用相同的懸浮搬移與智慧落位流程。
+*/
+.liftDraggingPart{
+  cursor:grabbing!important;
+}
+
 </style>
 </head>
 <body>
@@ -4170,7 +4182,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.2 Beta · 拿起搬移與智慧落位</div>
+<div class="headerBadge">V4.3 Beta · 全平台磁吸拿起搬移</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -9032,11 +9044,17 @@ function startItemDrag(event){
   if(event.button!==0&&event.button!==2)return;
 
   const bypassSnap=event.button===2;
+
+  /*
+    桌面與手機共用同一套操作：
+    磁吸模式開啟時，左鍵／單指拖曳都視為「拿起搬移」。
+    拖曳途中忽略碰撞與邊界，放開時才執行智慧落位。
+  */
   const liftPlacementMode=
     event.button===0 &&
-    document.body.classList.contains("touchUiEnabled");
+    snapEnabled.checked;
 
-  if(!liftPlacementMode&&!bypassSnap&&!snapEnabled.checked)return;
+  if(!liftPlacementMode&&!bypassSnap)return;
 
   const ref=refFromPartNode(node);
   if(!ref)return;
@@ -9185,7 +9203,7 @@ function moveItemDrag(event){
 
     setHeaderHint(
       valid
-        ?"工件已拿起；放開即可落位。"
+        ?"工件已拿起；放開即可執行合法落位。"
         :"工件已拿起；目前位置重疊或越界，放開後會自動尋找附近合法落點。",
       valid?"success":"warning"
     );
@@ -10635,7 +10653,7 @@ function syncMobileModeUi(){
   if(mobileModeBadge){
     const modeText=measureMode?"量測":"選取";
     const snapText=snapEnabled.checked?"｜磁吸開":"｜磁吸關";
-    mobileModeBadge.textContent=`手機：${modeText}${snapText}｜單指拿起搬移｜雙指縮放及移動圖面`;
+    mobileModeBadge.textContent=`手機：${modeText}${snapText}｜磁吸開：拿起搬移｜雙指縮放及移動圖面`;
   }
 }
 

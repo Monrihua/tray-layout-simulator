@@ -3653,6 +3653,25 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 }
 
 
+/* ===== V4.6.5 手機量測：隱藏跟隨黑框，資訊固定於底部狀態列 ===== */
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled .measurePreviewLabelBg,
+  body.touchUiEnabled .measurePreviewLabel,
+  body.touchUiEnabled .measurePreviewLabelTitle,
+  body.touchUiEnabled .measurePreviewLabelValue,
+  body.touchUiEnabled .measurePreviewLabelSnap{
+    display:none!important;
+  }
+
+  body.touchUiEnabled .mobileModeBadge.mobileMeasureInfo{
+    border-radius:18px!important;
+    padding:9px 13px!important;
+    white-space:normal!important;
+    text-align:left!important;
+    line-height:1.42!important;
+  }
+}
+
 /* ===== V3.5 手機詳細畫面資訊列排列 ===== */
 @media (pointer:coarse), (max-width:820px){
   body.touchUiEnabled:not(.mobileDetailMode) #activePlanLabel{
@@ -7477,6 +7496,7 @@ function updateLiveMeasurement(event){
       "success"
     );
     renderCurrent();
+    syncMobileModeUi();
     return;
   }
 
@@ -7491,6 +7511,7 @@ function updateLiveMeasurement(event){
   );
 
   renderCurrent();
+  syncMobileModeUi();
 }
 
 function cancelPendingMeasurement(message="已取消目前量測。"){
@@ -7506,6 +7527,7 @@ function cancelPendingMeasurement(message="已取消目前量測。"){
       :message,
     "warning"
   );
+  syncMobileModeUi();
   return true;
 }
 
@@ -7753,6 +7775,7 @@ function addMeasurementPoint(event){
     );
   }
 
+  syncMobileModeUi();
   return true;
 }
 
@@ -10929,9 +10952,34 @@ function syncMobileModeUi(){
   document.body.classList.remove("mobilePanMode");
 
   if(mobileModeBadge){
-    const parts=["手機："];
-    if(measureMode)parts.push("量測模式");
+    mobileModeBadge.classList.toggle("mobileMeasureInfo",measureMode);
 
+    if(measureMode){
+      const lines=["手機：｜量測模式｜"];
+
+      if(pendingMeasurePoint && liveMeasurePoint){
+        const dx=liveMeasurePoint.x-pendingMeasurePoint.x;
+        const dy=liveMeasurePoint.y-pendingMeasurePoint.y;
+        const distance=Math.hypot(dx,dy);
+        const angle=Math.atan2(-dy,dx)*180/Math.PI;
+        lines.push(`距離 ${fmt(distance)} mm`);
+        lines.push(`X ${dx>=0?"+":""}${fmt(dx)} mm｜Y ${dy>=0?"+":""}${fmt(dy)} mm`);
+        lines.push(`角度 ${fmt(angle)}°｜吸附：${liveMeasureSnap?.label||"自由點"}`);
+      }else if(liveMeasurePoint){
+        lines.push(`第一點 X ${fmt(liveMeasurePoint.x)} mm｜Y ${fmt(liveMeasurePoint.y)} mm`);
+        lines.push(`吸附：${liveMeasureSnap?.label||"自由點"}｜放開確定第一點`);
+      }else if(pendingMeasurePoint){
+        lines.push(`起點 X ${fmt(pendingMeasurePoint.x)} mm｜Y ${fmt(pendingMeasurePoint.y)} mm`);
+        lines.push("按住移動，放開確定第二點");
+      }else{
+        lines.push("按住並移動，放開確定第一點");
+      }
+
+      mobileModeBadge.textContent=lines.join("\n");
+      return;
+    }
+
+    const parts=["手機："];
     if(mobileDragModeEnabled){
       parts.push("拖曳模式");
       parts.push(`磁吸輔助：${mobileFreeDragEnabled?"關":"開"}`);

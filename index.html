@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.6.7 Beta 手機共用桌面拖曳核心</title>
+<title>智慧載盤物理模擬器｜V4.6.8 Beta 手機共用桌面拖曳核心</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -4224,6 +4224,22 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
   box-shadow:inset 0 0 0 2px rgba(37,99,235,.14)!important;
 }
 
+
+/* V4.6.8：設定文字與說明位置修正 */
+.desktopControlHint{
+  display:block;
+  flex:0 0 100%;
+  width:100%;
+  margin-top:3px;
+  color:#64748b;
+  font-size:10px;
+  font-weight:400;
+  line-height:1.4;
+}
+.inchHelperLabel > .desktopControlHint,
+.secondaryInchCard > .desktopControlHint{
+  margin-top:5px;
+}
 </style>
 </head>
 <body>
@@ -4255,7 +4271,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.6.7 Beta · 介面文字統一</div>
+<div class="headerBadge">V4.6.8 Beta · 介面文字統一</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -4271,13 +4287,14 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <h1>載盤工件排列模擬器</h1>
 <div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="tray" data-default-collapsed="true" id="traySettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">載盤設定</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">700 mm × 415 mm</span><span class="sharedSummaryLine">內縮 10 mm × 10 mm</span><span class="sharedSummaryLine">公司慣用：1 吋 = 25 mm</span></span></span></button><div class="sharedCollapseBody">
 <div class="sectionStepControl" data-step-section="traySettingsSection">
-<span>上下鍵微調量 ※此數值為全域設定，在其他設定項也會同步。</span>
+<span>上下鍵微調量</span>
 <div class="stepPresetGroup">
 <button class="active" data-step-value="1" type="button">1</button>
 <button class="" data-step-value="0.1" type="button">0.1</button>
 <button data-step-value="custom" type="button">自訂</button>
 </div>
 <input aria-label="自訂微調量" class="customStepInput" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
+<div class="desktopControlHint">此數值為全域設定，在其他設定項也會同步。</div>
 </div>
 <label>載盤長度（mm）</label><input id="trayLength" min="1" type="number" value="700"/>
 <label>載盤寬度（mm）</label><input id="trayWidth" min="1" type="number" value="415"/>
@@ -4294,13 +4311,14 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="section primaryWorkpieceSection stepManagedSection sharedCollapsibleSection" data-collapse-key="primary" data-default-collapsed="false" id="primarySettingsSection"><button aria-expanded="true" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▲</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">工件設定</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">矩形</span><span class="sharedSummaryLine">200 mm × 200 mm</span><span class="sharedSummaryLine">間距 40 mm × 20 mm</span></span></span></button><div class="sharedCollapseBody">
 
 <div class="sectionStepControl" data-step-section="primarySettingsSection">
-<span>上下鍵微調量 ※此數值為全域設定，在其他設定項也會同步。</span>
+<span>上下鍵微調量</span>
 <div class="stepPresetGroup">
 <button class="active" data-step-value="1" type="button">1</button>
 <button class="" data-step-value="0.1" type="button">0.1</button>
 <button data-step-value="custom" type="button">自訂</button>
 </div>
 <input aria-label="自訂微調量" class="customStepInput" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
+<div class="desktopControlHint">此數值為全域設定，在其他設定項也會同步。</div>
 </div>
 <div class="primaryShapeBlock" id="primaryShapeBlock">
 <div class="primaryFieldTitle">工件形狀</div>
@@ -4324,9 +4342,9 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </div>
 </div>
 <div class="primarySizeBlockTitle">尺寸</div>
-<label class="inchHelperLabel primaryInchFlat">輔助尺寸（吋） ※輸入的數值自動換算成 mm 填入長寬
+<label class="inchHelperLabel primaryInchFlat"><span>輔助尺寸（吋）</span>
         <input id="partInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
-
+        <small class="desktopControlHint">輸入的數值自動換算成mm填入長寬</small>
 </label>
 <div class="primaryDimensionGrid">
 <label class="dimensionField primaryDimensionField" id="partLengthField">
@@ -4339,7 +4357,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </label>
 </div>
 <div class="dimensionSwapRow">
-<button class="dimensionSwapButton" id="swapPrimaryDimensions" type="button">↔ 互換長度與寬度</button>
+<button class="dimensionSwapButton" id="swapPrimaryDimensions" type="button">↔ 交換長度與寬度</button>
 </div>
 <div class="primaryDimensionGrid">
 <label class="dimensionField primaryDimensionField">
@@ -4355,13 +4373,14 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="section secondarySection stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="secondary" data-default-collapsed="true" id="secondarySettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">追加工件設定</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">矩形</span><span class="sharedSummaryLine">26 mm × 76 mm</span><span class="sharedSummaryLine">已追加 0 個｜即時重畫：開</span></span></span></button><div class="sharedCollapseBody">
 
 <div class="sectionStepControl" data-step-section="secondarySettingsSection">
-<span>上下鍵微調量 ※此數值為全域設定，在其他設定項也會同步。</span>
+<span>上下鍵微調量</span>
 <div class="stepPresetGroup">
 <button class="active" data-step-value="1" type="button">1</button>
 <button class="" data-step-value="0.1" type="button">0.1</button>
 <button data-step-value="custom" type="button">自訂</button>
 </div>
 <input aria-label="自訂微調量" class="customStepInput" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
+<div class="desktopControlHint">此數值為全域設定，在其他設定項也會同步。</div>
 </div>
 <div class="secondaryPanelV2">
 <div class="secondaryBlock">
@@ -4382,22 +4401,22 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="secondaryBlock">
 <div class="secondaryBlockTitle">追加工件尺寸</div>
 <label class="secondaryInchCard">
-<span class="fieldCaption">輔助尺寸（吋） ※輸入的數值自動換算成 mm 填入長寬</span>
+<span class="fieldCaption">輔助尺寸（吋）</span>
 <input id="secondaryInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
-
+<small class="desktopControlHint">輸入的數值自動換算成mm填入長寬</small>
 </label>
 <div class="secondaryDimensionGrid">
 <label class="secondaryFieldCard" id="secondaryLengthField">
-<span class="fieldCaption" id="secondaryLengthLabel">工件長度（mm）</span>
+<span class="fieldCaption" id="secondaryLengthLabel">追加工件長度（mm）</span>
 <input id="secondaryLength" step="1" type="number" value="26"/>
 </label>
 <label class="secondaryFieldCard" id="secondaryWidthField">
-<span class="fieldCaption">工件寬度（mm）</span>
+<span class="fieldCaption">追加工件寬度（mm）</span>
 <input id="secondaryWidth" step="1" type="number" value="76"/>
 </label>
 </div>
 <div class="dimensionSwapRow">
-<button class="dimensionSwapButton" id="swapSecondaryDimensions" type="button">↔ 互換長度與寬度</button>
+<button class="dimensionSwapButton" id="swapSecondaryDimensions" type="button">↔ 交換長度與寬度</button>
 </div>
 </div>
 <div class="secondaryBlock">
@@ -4442,7 +4461,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <label class="secondaryAutoRedrawToggle">
 <input checked="" id="secondaryAutoRedraw" type="checkbox"/>
 <span>
-<b>更新方式：設定變更後立即重畫</b>
+<b>設定變更後立即重畫</b>
 <small>關閉後可保留既有追加工件，切換尺寸或形狀後再逐個生成。</small>
 </span>
 </label>
@@ -4461,13 +4480,14 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="edit" data-default-collapsed="true" id="editSettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">量測與編輯</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">拖曳：關</span><span class="sharedSummaryLine">吸力：15 mm</span><span class="sharedSummaryLine">量測：關</span></span></span></button><div class="sharedCollapseBody">
 
 <div class="sectionStepControl" data-step-section="editSettingsSection">
-<span>上下鍵微調量 ※此數值為全域設定，在其他設定項也會同步。</span>
+<span>上下鍵微調量</span>
 <div class="stepPresetGroup">
 <button class="active" data-step-value="1" type="button">1</button>
 <button class="" data-step-value="0.1" type="button">0.1</button>
 <button data-step-value="custom" type="button">自訂</button>
 </div>
 <input aria-label="自訂微調量" class="customStepInput" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
+<div class="desktopControlHint">此數值為全域設定，在其他設定項也會同步。</div>
 </div>
 <div class="editToolsPanel">
 <div class="toolRow">
@@ -4832,7 +4852,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="mobileSectionCard">
 <div class="mobileSectionTitle">尺寸</div>
 <label class="mobileWideField">
-<span>輔助尺寸（吋） ※輸入後會同步設定主要尺寸</span>
+<span>輔助尺寸（吋）※輸入的數值自動換算成mm填入長寬</span>
 <input id="mobilePartInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
 </label>
 <div class="mobileFineTuneGrid">
@@ -4910,12 +4930,12 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="mobileSectionCard">
 <div class="mobileSectionTitle">追加工件尺寸</div>
 <label class="mobileWideField">
-<span>輔助尺寸（吋） ※輸入後會同步設定主要尺寸</span>
+<span>輔助尺寸（吋）※輸入的數值自動換算成mm填入長寬</span>
 <input id="mobileSecondaryInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
 </label>
 <div class="mobileFineTuneGrid">
 <label>
-<span id="mobileSecondaryLengthLabel">工件長度（mm）</span>
+<span id="mobileSecondaryLengthLabel">追加工件長度（mm）</span>
 <div class="mobileNumberControl">
 <button data-mobile-step="-1" data-mobile-step-target="mobileSecondaryLength" type="button">−</button>
 <input id="mobileSecondaryLength" min="1" step="1" type="number"/>
@@ -4923,7 +4943,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </div>
 </label>
 <label id="mobileSecondaryWidthField">
-<span>工件寬度（mm）</span>
+<span>追加工件寬度（mm）</span>
 <div class="mobileNumberControl">
 <button data-mobile-step="-1" data-mobile-step-target="mobileSecondaryWidth" type="button">−</button>
 <input id="mobileSecondaryWidth" min="1" step="1" type="number"/>
@@ -10506,14 +10526,14 @@ function updatePrimaryModeUI(){
   }
 
   const isCircle=isHoneycomb||primaryCircleShape.checked;
-  partLengthLabel.textContent=isCircle?"圓直徑（mm）":"長度（mm）";
+  partLengthLabel.textContent=isCircle?"工件直徑（mm）":"工件長度（mm）";
   el.partWidth.disabled=isCircle;
   partWidthField.classList.toggle("hiddenByShape",isCircle);
 }
 
 function updateSecondaryModeUI(){
   const isCircle=secondaryCircleMode.checked;
-  secondaryLengthLabel.textContent=isCircle?"圓直徑（mm）":"長度（mm）";
+  secondaryLengthLabel.textContent=isCircle?"追加工件直徑（mm）":"追加工件長度（mm）";
   secondaryWidth.disabled=isCircle;
   secondaryWidthField.classList.toggle("hiddenByShape",isCircle);
   secondaryCircleArrangeBox.style.display=isCircle?"block":"none";
@@ -11339,13 +11359,13 @@ function syncMobileFineTuneFromMain(){
   const primaryCircle=!!primaryCircleShapeControl?.checked;
   mobileRectShapeBtn?.classList.toggle("active",!primaryCircle);
   mobileCircleShapeBtn?.classList.toggle("active",primaryCircle);
-  mobilePartLengthLabel.textContent=primaryCircle?"工件直徑":"工件長度";
+  mobilePartLengthLabel.textContent=primaryCircle?"工件直徑（mm）":"工件長度（mm）";
   mobilePartWidthField.classList.toggle("hiddenByShape",primaryCircle);
 
   const secondaryCircle=!!secondaryCircleShapeControl?.checked;
   mobileSecondaryRectBtn?.classList.toggle("active",!secondaryCircle);
   mobileSecondaryCircleBtn?.classList.toggle("active",secondaryCircle);
-  mobileSecondaryLengthLabel.textContent=secondaryCircle?"工件直徑":"工件長度";
+  mobileSecondaryLengthLabel.textContent=secondaryCircle?"追加工件直徑（mm）":"追加工件長度（mm）";
   mobileSecondaryWidthField.classList.toggle("hiddenByShape",secondaryCircle);
   mobileSecondaryCircleArrangeCard.hidden=!secondaryCircle;
 

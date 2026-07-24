@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.6.8 Beta 手機共用桌面拖曳核心</title>
+<title>智慧載盤物理模擬器｜V4.6.10 Beta 手機共用桌面拖曳核心</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -1651,6 +1651,21 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   font-size:10px;
   font-weight:900;
 }
+.sectionStepHint{
+  flex:1 0 100%;
+  color:#64748b;
+  font-size:10px;
+  font-weight:400;
+  line-height:1.35;
+}
+.inchInputHint{
+  display:block;
+  margin-top:5px;
+  color:#64748b;
+  font-size:10px;
+  font-weight:400;
+  line-height:1.35;
+}
 .stepPresetGroup{
   display:flex;
   gap:4px;
@@ -2925,10 +2940,12 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   line-height:1.4;
 }
 
-.secondaryAutoRedrawToggle b{
+.secondaryAutoRedrawName{
   display:block;
   margin-bottom:2px;
+  color:#31445f;
   font-size:12px;
+  font-weight:800;
 }
 
 .secondaryAutoRedrawToggle small{
@@ -4224,22 +4241,6 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
   box-shadow:inset 0 0 0 2px rgba(37,99,235,.14)!important;
 }
 
-
-/* V4.6.8：設定文字與說明位置修正 */
-.desktopControlHint{
-  display:block;
-  flex:0 0 100%;
-  width:100%;
-  margin-top:3px;
-  color:#64748b;
-  font-size:10px;
-  font-weight:400;
-  line-height:1.4;
-}
-.inchHelperLabel > .desktopControlHint,
-.secondaryInchCard > .desktopControlHint{
-  margin-top:5px;
-}
 </style>
 </head>
 <body>
@@ -4271,7 +4272,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.6.8 Beta · 介面文字統一</div>
+<div class="headerBadge">V4.6.10 Beta · 更新選項最終修正</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -4294,7 +4295,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <button data-step-value="custom" type="button">自訂</button>
 </div>
 <input aria-label="自訂微調量" class="customStepInput" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
-<div class="desktopControlHint">此數值為全域設定，在其他設定項也會同步。</div>
+<div class="sectionStepHint">※此數值為全域設定，在其他設定項也會同步。</div>
 </div>
 <label>載盤長度（mm）</label><input id="trayLength" min="1" type="number" value="700"/>
 <label>載盤寬度（mm）</label><input id="trayWidth" min="1" type="number" value="415"/>
@@ -4318,7 +4319,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <button data-step-value="custom" type="button">自訂</button>
 </div>
 <input aria-label="自訂微調量" class="customStepInput" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
-<div class="desktopControlHint">此數值為全域設定，在其他設定項也會同步。</div>
+<div class="sectionStepHint">※此數值為全域設定，在其他設定項也會同步。</div>
 </div>
 <div class="primaryShapeBlock" id="primaryShapeBlock">
 <div class="primaryFieldTitle">工件形狀</div>
@@ -4342,9 +4343,9 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </div>
 </div>
 <div class="primarySizeBlockTitle">尺寸</div>
-<label class="inchHelperLabel primaryInchFlat"><span>輔助尺寸（吋）</span>
+<label class="inchHelperLabel primaryInchFlat">輔助尺寸（吋）
         <input id="partInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
-        <small class="desktopControlHint">輸入的數值自動換算成mm填入長寬</small>
+        <span class="inchInputHint">※輸入的數值自動換算成 mm 填入長寬</span>
 </label>
 <div class="primaryDimensionGrid">
 <label class="dimensionField primaryDimensionField" id="partLengthField">
@@ -4380,7 +4381,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <button data-step-value="custom" type="button">自訂</button>
 </div>
 <input aria-label="自訂微調量" class="customStepInput" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
-<div class="desktopControlHint">此數值為全域設定，在其他設定項也會同步。</div>
+<div class="sectionStepHint">※此數值為全域設定，在其他設定項也會同步。</div>
 </div>
 <div class="secondaryPanelV2">
 <div class="secondaryBlock">
@@ -4403,7 +4404,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <label class="secondaryInchCard">
 <span class="fieldCaption">輔助尺寸（吋）</span>
 <input id="secondaryInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
-<small class="desktopControlHint">輸入的數值自動換算成mm填入長寬</small>
+<span class="inchInputHint">※輸入的數值自動換算成 mm 填入長寬</span>
 </label>
 <div class="secondaryDimensionGrid">
 <label class="secondaryFieldCard" id="secondaryLengthField">
@@ -4458,10 +4459,10 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </label>
 </div>
 </div>
-<label class="secondaryAutoRedrawToggle">
+<label class="secondaryAutoRedrawToggle" for="secondaryAutoRedraw">
 <input checked="" id="secondaryAutoRedraw" type="checkbox"/>
-<span>
-<b>設定變更後立即重畫</b>
+<span class="secondaryAutoRedrawContent">
+<span class="secondaryAutoRedrawName">設定變更後立即重畫</span>
 <small>關閉後可保留既有追加工件，切換尺寸或形狀後再逐個生成。</small>
 </span>
 </label>
@@ -4487,7 +4488,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <button data-step-value="custom" type="button">自訂</button>
 </div>
 <input aria-label="自訂微調量" class="customStepInput" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
-<div class="desktopControlHint">此數值為全域設定，在其他設定項也會同步。</div>
+<div class="sectionStepHint">※此數值為全域設定，在其他設定項也會同步。</div>
 </div>
 <div class="editToolsPanel">
 <div class="toolRow">
@@ -4852,7 +4853,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="mobileSectionCard">
 <div class="mobileSectionTitle">尺寸</div>
 <label class="mobileWideField">
-<span>輔助尺寸（吋）※輸入的數值自動換算成mm填入長寬</span>
+<span>輔助尺寸（吋） ※輸入的數值自動換算成 mm 填入長寬</span>
 <input id="mobilePartInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
 </label>
 <div class="mobileFineTuneGrid">
@@ -4910,17 +4911,6 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </div>
 
 <div class="mobileSectionCard">
-<div class="mobileSectionTitle">更新方式</div>
-<label class="mobileSwitchRow">
-<input checked="" id="mobileSecondaryAutoRedraw" type="checkbox"/>
-<span>設定變更後立即重畫</span>
-</label>
-<div class="mobilePanelHint">
-        關閉後，修改形狀、尺寸、間距或排列方式不會清除既有追加工件；
-        可使用「生成 1 個」混合加入不同尺寸與形狀。
-      </div>
-</div>
-<div class="mobileSectionCard">
 <div class="mobileSectionTitle">追加工件形狀</div>
 <div class="mobileShapeButtons">
 <button id="mobileSecondaryRectBtn" type="button">▭ 矩形</button>
@@ -4930,7 +4920,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="mobileSectionCard">
 <div class="mobileSectionTitle">追加工件尺寸</div>
 <label class="mobileWideField">
-<span>輔助尺寸（吋）※輸入的數值自動換算成mm填入長寬</span>
+<span>輔助尺寸（吋） ※輸入的數值自動換算成 mm 填入長寬</span>
 <input id="mobileSecondaryInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
 </label>
 <div class="mobileFineTuneGrid">
@@ -4988,7 +4978,14 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <button id="mobileSecondaryHoneyBtn" type="button">蜂巢排列</button>
 </div>
 </div>
-<div class="mobileSectionCard">
+<div class="mobileSectionCard" id="mobileSecondaryAutoRedrawCard">
+<label class="mobileSwitchRow" for="mobileSecondaryAutoRedraw">
+<input checked="" id="mobileSecondaryAutoRedraw" type="checkbox"/>
+<span>設定變更後立即重畫</span>
+</label>
+<div class="mobilePanelHint">關閉後可保留既有追加工件，切換尺寸或形狀後再逐個生成。</div>
+</div>
+<div class="mobileSectionCard" id="mobileSecondaryActionsCard">
 <div class="mobileSectionTitle">追加工件操作</div>
 <div class="mobileActionGridFour">
 <button id="mobileAddOneSecondaryBtn" type="button">生成 1 個</button>
@@ -11276,6 +11273,26 @@ const mobileFineTuneSubtitle=document.getElementById("mobileFineTuneSubtitle");
 
 const mobileInsetPanel=document.getElementById("mobileInsetPanel");
 const mobilePrimaryPanel=document.getElementById("mobilePrimaryPanel");
+function ensureMobileSecondaryAutoRedrawPosition(){
+  const panel=document.getElementById("mobileSecondaryPanel");
+  const arrange=document.getElementById("mobileSecondaryCircleArrangeCard");
+  const redraw=document.getElementById("mobileSecondaryAutoRedrawCard");
+  const actions=document.getElementById("mobileSecondaryActionsCard");
+  if(!panel||!arrange||!redraw||!actions)return;
+
+  // 必須位於「圓形排列方式」之後、「追加工件操作」之前。
+  arrange.insertAdjacentElement("afterend",redraw);
+  if(redraw.nextElementSibling!==actions){
+    panel.insertBefore(redraw,actions);
+  }
+
+  // 不保留「更新方式」標題，並統一桌機版與手機版說明。
+  redraw.querySelectorAll(".mobileSectionTitle").forEach(el=>el.remove());
+  const hint=redraw.querySelector(".mobilePanelHint");
+  if(hint)hint.textContent="關閉後可保留既有追加工件，切換尺寸或形狀後再逐個生成。";
+}
+
+
 const mobileSecondaryPanel=document.getElementById("mobileSecondaryPanel");
 
 const primaryRectShapeControl=document.getElementById("primaryRectShape");
@@ -12175,6 +12192,9 @@ secondaryAutoRedraw?.addEventListener("change",()=>{
     );
   }
 });
+
+ensureMobileSecondaryAutoRedrawPosition();
+document.addEventListener("DOMContentLoaded",ensureMobileSecondaryAutoRedrawPosition,{once:true});
 
 mobileSecondaryAutoRedraw?.addEventListener("change",()=>{
   syncSecondaryAutoRedrawControls(mobileSecondaryAutoRedraw);

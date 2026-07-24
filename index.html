@@ -4716,7 +4716,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <ul>
 <li><span class="helpKey">方向鍵</span>移動一個步距</li>
 <li><span class="helpKey">Shift</span>＋方向鍵：移動 10 倍步距</li>
-<li><span class="helpKey">Backspace</span>或 Ctrl＋Z：復原刪除</li>
+<li><span class="helpKey">Ctrl</span>＋<span class="helpKey">Z</span>：復原上一個操作</li>
 </ul>
 </section>
 <section class="helpSection">
@@ -5225,7 +5225,83 @@ let currentContext=null;
 let selectedIndex=null;
 let deletedPrimary=new Set();
 let secondaryItems=[];
-let undoStack=[];
+let undoStack=[]; // 舊刪除紀錄保留相容；完整復原改由 operationHistory 負責。
+let operationHistory=[];
+const OPERATION_HISTORY_LIMIT=100;
+
+function cloneUndoData(value){
+  return JSON.parse(JSON.stringify(value));
+}
+
+function captureOperationState(){
+  return {
+    planItems:cloneUndoData(currentPlan?.items||[]),
+    deletedPrimary:[...deletedPrimary],
+    secondaryItems:cloneUndoData(secondaryItems),
+    measurements:cloneUndoData(measurements),
+    selectedKind,
+    selectedIndex,
+    selectedItems:cloneUndoData(selectedItems),
+    selectedMeasurementIndex,
+    emptyZones:cloneUndoData(emptyZones),
+    analysisVisible
+  };
+}
+
+function pushOperationHistory(snapshot=captureOperationState()){
+  operationHistory.push(snapshot);
+  if(operationHistory.length>OPERATION_HISTORY_LIMIT){
+    operationHistory.splice(0,operationHistory.length-OPERATION_HISTORY_LIMIT);
+  }
+}
+
+function restoreOperationState(snapshot){
+  if(!snapshot||!currentPlan)return false;
+
+  currentPlan.items=cloneUndoData(snapshot.planItems||[]);
+  deletedPrimary=new Set(snapshot.deletedPrimary||[]);
+  secondaryItems=cloneUndoData(snapshot.secondaryItems||[]);
+  measurements=cloneUndoData(snapshot.measurements||[]);
+  selectedKind=snapshot.selectedKind||"primary";
+  selectedIndex=Number.isInteger(snapshot.selectedIndex)?snapshot.selectedIndex:null;
+  selectedItems=cloneUndoData(snapshot.selectedItems||[]);
+  selectedMeasurementIndex=Number.isInteger(snapshot.selectedMeasurementIndex)
+    ? snapshot.selectedMeasurementIndex
+    : null;
+  emptyZones=cloneUndoData(snapshot.emptyZones||[]);
+  analysisVisible=Boolean(snapshot.analysisVisible);
+
+  pendingMeasurePoint=null;
+  liveMeasurePoint=null;
+  liveMeasureSnap=null;
+  measurementDragState=null;
+  measureReleaseState=null;
+  itemDragState=null;
+
+  renderCurrent();
+  if(selectedItems.length){
+    applyMultiSelectionVisual();
+  }else if(selectedIndex!==null){
+    if(selectedKind==="primary")selectPart(selectedIndex);
+    else selectSecondary(selectedIndex);
+  }
+  updateResultAfterManualChanges();
+  updateAnalysisResults();
+  updateV5Status();
+  return true;
+}
+
+function undoOperation(){
+  const snapshot=operationHistory.pop();
+  if(!snapshot){
+    setToolStatus("目前沒有可復原的操作。","warning");
+    return false;
+  }
+  restoreOperationState(snapshot);
+  setToolStatus("已復原上一個操作。","success");
+  return true;
+}
+
 let selectedKind="primary";
 let selectedItems=[];
 let marqueeState=null;
@@ -6518,6 +6594,7 @@ function commitTransform(refs,transform,statusText){
     return false;
   }
 
+  const historyBefore=captureOperationState();
   const before=capturePositions(refs);
   transform();
 
@@ -6529,6 +6606,7 @@ function commitTransform(refs,transform,statusText){
     return false;
   }
 
+  pushOperationHistory(historyBefore);
   moveHistory.push(before);
   emptyZones=[];
   analysisVisible=false;
@@ -7116,6 +7194,7 @@ function snapSelectedItems(){
     return;
   }
 
+  const historyBefore=captureOperationState();
   const before=capturePositions(refs);
   const candidate=applyMagneticSnap(refs,threshold);
   if(!candidate){
@@ -7123,6 +7202,7 @@ function snapSelectedItems(){
     return;
   }
 
+  pushOperationHistory(historyBefore);
   moveHistory.push(before);
   emptyZones=[];analysisVisible=false;
   renderCurrent();reapplySelection(refs);updateResultAfterManualChanges();
@@ -7137,6 +7217,7 @@ function nudgeSelected(dx,dy){
   const refs=currentSelectedRefs();
   if(!refs.length)return;
 
+  const historyBefore=captureOperationState();
   const before=capturePositions(refs);
   tryTranslateFraction(refs,dx,dy,1);
 
@@ -7162,6 +7243,7 @@ function nudgeSelected(dx,dy){
 
   const snapCandidate=null;
 
+  pushOperationHistory(historyBefore);
   moveHistory.push(before);
   emptyZones=[];analysisVisible=false;
   renderCurrent();reapplySelection(refs);updateResultAfterManualChanges();
@@ -7777,6 +7859,7 @@ function addMeasurementPoint(event){
     const distance=Math.hypot(dx,dy);
     const angle=Math.atan2(-dy,dx)*180/Math.PI;
 
+    pushOperationHistory();
     measurements.push({
       start,
       end:point,
@@ -7916,6 +7999,7 @@ function deleteSelectedMeasurement(){
     !measurements[selectedMeasurementIndex]
   )return false;
 
+  pushOperationHistory();
   measurements.splice(selectedMeasurementIndex,1);
   selectedMeasurementIndex=null;
   measurementDragState=null;
@@ -7945,6 +8029,7 @@ function startMeasurementDrag(event){
     startPoint:point,
     originalOffsetX:measurement.labelOffsetX||0,
     originalOffsetY:measurement.labelOffsetY||0,
+    historyBefore:captureOperationState(),
     moved:false
   };
 
@@ -7981,6 +8066,7 @@ function finishMeasurementDrag(event){
 
   svg.releasePointerCapture?.(event.pointerId);
   measurementDragState=null;
+  if(state.moved)pushOperationHistory(state.historyBefore);
 
   setToolStatus(
     state.moved
@@ -7996,6 +8082,7 @@ svg.addEventListener("pointerup",finishMeasurementDrag,true);
 svg.addEventListener("pointercancel",finishMeasurementDrag,true);
 
 function clearMeasurements(){
+  if(measurements.length)pushOperationHistory();
   measurements=[];
   selectedMeasurementIndex=null;
   measurementDragState=null;
@@ -8091,6 +8178,7 @@ function renderCurrent(){
 
 function deleteSelected(){
   if(selectedIndex===null)return;
+  pushOperationHistory();
 
   if(selectedKind==="primary"){
     deletedPrimary.add(selectedIndex);
@@ -8482,6 +8570,7 @@ function chooseAdaptiveCirclePlan(plans){
 
 function adaptiveRuleFill(){
   if(!currentContext||!currentPlan)return;
+  const historyBefore=captureOperationState();
 
   clearTimeout(secondaryAutoRefreshTimer);
   secondaryAutoRefreshTimer=null;
@@ -8526,6 +8615,7 @@ function adaptiveRuleFill(){
         }
       }
 
+      pushOperationHistory(historyBefore);
       renderCurrent();
       updateResultAfterManualChanges(added);
       setAdaptiveFillStatus(
@@ -8559,6 +8649,7 @@ function adaptiveRuleFill(){
     secondaryItems=best?best.items:[];
     const added=secondaryItems.length;
 
+    pushOperationHistory(historyBefore);
     renderCurrent();
     updateResultAfterManualChanges(added);
 
@@ -8658,6 +8749,7 @@ function autoFillSecondary(){
 
 function addOneSecondary(){
   if(!currentContext||!currentPlan)return;
+  const historyBefore=captureOperationState();
 
   const c=currentContext;
   const isCircle=secondaryCircleMode.checked;
@@ -8755,6 +8847,7 @@ function addOneSecondary(){
     }
   }
 
+  if(added)pushOperationHistory(historyBefore);
   renderCurrent();
   updateResultAfterManualChanges(added);
 
@@ -8809,6 +8902,7 @@ function forceAddOneSecondary(){
     };
   }
 
+  pushOperationHistory();
   secondaryItems.push(item);
   const index=secondaryItems.length-1;
 
@@ -8837,6 +8931,7 @@ function clearSecondary(){
   secondaryAutoRefreshTimer=null;
 
   if(!secondaryItems.length)return;
+  pushOperationHistory();
   undoStack.push({type:"restoreAllSecondary",items:[...secondaryItems]});
   secondaryItems=[];
   renderCurrent();
@@ -8993,7 +9088,7 @@ function updateMultiSelectionInfo(){
       已框選 <strong>${selectedItems.length}</strong> 個工件
       <div class="hint">
         主要工件 ${primaryCount} 個；追加工件 ${secondaryCount} 個。
-        可按 Delete／Backspace，或使用下方按鈕刪除。
+        可按 Delete，或使用下方按鈕刪除。
       </div>
       <div class="selectionActions">
         <button class="danger" type="button" onclick="deleteSelectedItems()">刪除所選工件</button>
@@ -9172,6 +9267,7 @@ function finishMarquee(event){
 
 function deleteSelectedItems(){
   if(selectedItems.length===0)return;
+  const historyBefore=captureOperationState();
 
   const action={
     type:"restoreBatch",
@@ -9202,6 +9298,7 @@ function deleteSelectedItems(){
   }
 
   if(action.primary.length||action.secondary.length){
+    pushOperationHistory(historyBefore);
     undoStack.push(action);
   }
 
@@ -9387,6 +9484,7 @@ function startItemDrag(event){
   itemDragState={
     pointerId:event.pointerId,
     ref,node,item,before,
+    historyBefore:captureOperationState(),
     originAnchor,
     startPoint:point,
     lastPoint:point,
@@ -9737,6 +9835,7 @@ function finishItemDrag(event){
     suppressNextPartClick=true;
 
     if(landing.success){
+      pushOperationHistory(state.historyBefore);
       moveHistory.push(state.before);
       emptyZones=[];
       analysisVisible=false;
@@ -9763,6 +9862,7 @@ function finishItemDrag(event){
     if(state.previewCandidate&&!state.rejectAssist){
       translateItem(state.item,state.previewCandidate.dx,state.previewCandidate.dy);
     }
+    pushOperationHistory(state.historyBefore);
     moveHistory.push(state.before);
     emptyZones=[];
     analysisVisible=false;
@@ -9851,15 +9951,9 @@ document.addEventListener("keydown",event=>{
     return;
   }
 
-  if(event.key==="Backspace"){
-    event.preventDefault();
-    undoDelete();
-    return;
-  }
-
   if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="z"){
     event.preventDefault();
-    undoDelete();
+    undoOperation();
     return;
   }
 
@@ -10156,6 +10250,7 @@ function activateOverviewPlan(key){
   deletedPrimary=new Set();
   secondaryItems=[];
   undoStack=[];
+  operationHistory=[];
   emptyZones=[];
   analysisVisible=false;
   selectedIndex=null;
@@ -10261,6 +10356,7 @@ function draw(){
   deletedPrimary=new Set();
   secondaryItems=[];
   undoStack=[];
+  operationHistory=[];
   emptyZones=[];
   analysisVisible=false;
   selectedIndex=null;
@@ -11227,12 +11323,7 @@ mobileMeasureBtn?.addEventListener("click",()=>{
 });
 
 mobileUndoBtn?.addEventListener("click",()=>{
-  if(!undoStack.length){
-    setToolStatus("目前沒有可復原的刪除操作。","warning");
-    return;
-  }
-  undoDelete();
-  setToolStatus("已復原上一個刪除操作。","success");
+  undoOperation();
 });
 mobileDeleteBtn?.addEventListener("click",mobileDeleteSelection);
 mobileFitBtn?.addEventListener("click",()=>{

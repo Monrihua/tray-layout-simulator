@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤規劃系統｜V4.1 Beta 修正適合畫面圖面上飛</title>
+<title>智慧載盤物理模擬器｜V4.2 Beta 拿起搬移與智慧落位</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -4124,6 +4124,21 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
   }
 }
 
+
+/* ===== V4.2 拿起搬移與智慧落位 ===== */
+.liftDraggingPart{
+  opacity:.58!important;
+  filter:
+    drop-shadow(0 9px 8px rgba(15,23,42,.28))
+    drop-shadow(0 0 4px rgba(14,116,220,.55))!important;
+  pointer-events:none;
+}
+.liftInvalidPreview{
+  stroke:#ef4444!important;
+  stroke-width:2!important;
+  stroke-dasharray:7 5!important;
+}
+
 </style>
 </head>
 <body>
@@ -4155,7 +4170,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.1 Beta · 修正適合畫面圖面上飛</div>
+<div class="headerBadge">V4.2 Beta · 拿起搬移與智慧落位</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -5251,7 +5266,7 @@ function getCurrentConfig(){
 
 function buildConfigText(config){
   const lines=[
-    "# 智慧載盤規劃系統 V5.20 Beta",
+    "# 智慧載盤物理模擬器 V5.20 Beta",
     "# 格式：Key=Value；可使用記事本直接編輯",
     "# 空白行與 # 開頭的註解會忽略",
     ""
@@ -9017,7 +9032,11 @@ function startItemDrag(event){
   if(event.button!==0&&event.button!==2)return;
 
   const bypassSnap=event.button===2;
-  if(!bypassSnap&&!snapEnabled.checked)return;
+  const liftPlacementMode=
+    event.button===0 &&
+    document.body.classList.contains("touchUiEnabled");
+
+  if(!liftPlacementMode&&!bypassSnap&&!snapEnabled.checked)return;
 
   const ref=refFromPartNode(node);
   if(!ref)return;
@@ -9037,10 +9056,13 @@ function startItemDrag(event){
     moved:false,
     button:event.button,
     bypassSnap,
-    previewCandidate:null
+    liftPlacementMode,
+    previewCandidate:null,
+    releasePoint:point
   };
 
   node.classList.add("draggingPart");
+  if(liftPlacementMode)node.classList.add("liftDraggingPart");
   svg.setPointerCapture(event.pointerId);
 }
 
@@ -9119,24 +9141,58 @@ function moveItemDrag(event){
   const point=svgPointFromClient(event.clientX,event.clientY);
   const dx=point.x-state.lastPoint.x;
   const dy=point.y-state.lastPoint.y;
+  state.releasePoint=point;
 
   if(Math.hypot(point.x-state.startPoint.x,point.y-state.startPoint.y)>1.5){
     state.moved=true;
   }
 
-  const result=moveDraggedItemWithSliding(state,dx,dy);
+  let result={moved:false,dx:0,dy:0};
 
-  // Always consume the pointer delta. Otherwise a blocked horizontal component
-  // keeps accumulating and makes tangential movement feel sticky.
+  if(state.liftPlacementMode){
+    /*
+      手機單指拖曳視為將工件拿起來：
+      拖曳途中不檢查碰撞與安全邊界，可直接跨越其他工件。
+    */
+    translateItem(state.item,dx,dy);
+    result={moved:Math.abs(dx)>EPS||Math.abs(dy)>EPS,dx,dy};
+  }else{
+    result=moveDraggedItemWithSliding(state,dx,dy);
+  }
+
   state.lastPoint=point;
-
   updatePartNodeGeometry(state.node,state.item);
-
   state.previewCandidate=null;
 
+  if(state.liftPlacementMode){
+    const valid=movedSelectionIsValid([state.ref]);
+    state.node.classList.toggle("liftInvalidPreview",!valid);
+
+    if(snapEnabled.checked){
+      const threshold=Math.max(0,Number(snapStep.value)||0);
+      if(threshold>0){
+        state.previewCandidate=findBestMagneticSnap(
+          [state.ref],
+          threshold,
+          point,
+          state.previewCandidate
+        );
+      }
+      drawSnapDragPreview(state.item,state.previewCandidate);
+    }else{
+      clearSnapDragPreview();
+    }
+
+    setHeaderHint(
+      valid
+        ?"工件已拿起；放開即可落位。"
+        :"工件已拿起；目前位置重疊或越界，放開後會自動尋找附近合法落點。",
+      valid?"success":"warning"
+    );
+    return;
+  }
+
   if(state.bypassSnap){
-    // Right-drag is a true free-placement mode: no snap candidate, no ghost,
-    // and no snap is applied on pointer release.
     clearSnapDragPreview();
   }else if(snapEnabled.checked){
     const threshold=Math.max(0,Number(snapStep.value)||0);
@@ -9161,6 +9217,150 @@ function moveItemDrag(event){
   }
 }
 
+
+function testLiftLanding(ref,dx=0,dy=0){
+  const before=capturePositions([ref]);
+  if(Math.abs(dx)>EPS||Math.abs(dy)>EPS){
+    translateItem(getMutableItem(ref.kind,ref.index),dx,dy);
+  }
+  const valid=movedSelectionIsValid([ref]);
+  restoreCapturedPositions(before);
+  return valid;
+}
+
+function findNearestLegalLiftLanding(ref,releasePoint){
+  const item=getMutableItem(ref.kind,ref.index);
+  if(!item||!currentContext)return null;
+
+  const release=capturePositions([ref]);
+  const threshold=Math.max(0,Number(snapStep.value)||0);
+
+  // 先嘗試原位置與現有磁吸候選。
+  if(movedSelectionIsValid([ref])){
+    return {dx:0,dy:0,label:"目前位置",distance:0};
+  }
+
+  if(snapEnabled.checked&&threshold>0){
+    const snapCandidate=findBestMagneticSnap(
+      [ref],
+      threshold,
+      releasePoint||null,
+      null
+    );
+    if(snapCandidate){
+      return {
+        dx:snapCandidate.dx,
+        dy:snapCandidate.dy,
+        label:snapCandidate.label,
+        distance:Math.hypot(snapCandidate.dx,snapCandidate.dy),
+        snap:true
+      };
+    }
+  }
+
+  /*
+    補救搜尋：以放開點為中心向外作同心環搜尋。
+    搜尋距離兼顧吸力半徑與工件尺寸，避免只找極小範圍。
+  */
+  const g=itemGeometry(item);
+  const itemSize=Math.max(g.right-g.left,g.bottom-g.top);
+  const searchRadius=Math.max(
+    threshold*4,
+    itemSize*1.35,
+    50
+  );
+  const radialStep=Math.max(
+    2,
+    Math.min(8,itemSize/16),
+    threshold>0?threshold/3:4
+  );
+
+  let best=null;
+  const origin=capturePositions([ref]);
+
+  for(let radius=radialStep;radius<=searchRadius+EPS;radius+=radialStep){
+    const samples=Math.max(16,Math.ceil(2*Math.PI*radius/radialStep));
+    for(let i=0;i<samples;i++){
+      const angle=(i/samples)*Math.PI*2;
+      const dx=Math.cos(angle)*radius;
+      const dy=Math.sin(angle)*radius;
+
+      restoreCapturedPositions(origin);
+      translateItem(item,dx,dy);
+      if(!movedSelectionIsValid([ref]))continue;
+
+      let finalDx=dx;
+      let finalDy=dy;
+      let label="附近合法位置";
+      let snap=false;
+
+      if(snapEnabled.checked&&threshold>0){
+        const snapCandidate=findBestMagneticSnap(
+          [ref],
+          threshold,
+          releasePoint||null,
+          null
+        );
+        if(snapCandidate){
+          translateItem(item,snapCandidate.dx,snapCandidate.dy);
+          if(movedSelectionIsValid([ref])){
+            finalDx+=snapCandidate.dx;
+            finalDy+=snapCandidate.dy;
+            label=snapCandidate.label;
+            snap=true;
+          }
+        }
+      }
+
+      const distance=Math.hypot(finalDx,finalDy);
+      if(!best||distance<best.distance){
+        best={dx:finalDx,dy:finalDy,label,distance,snap};
+      }
+    }
+    if(best)break;
+  }
+
+  restoreCapturedPositions(release);
+  return best;
+}
+
+function commitLiftLanding(state){
+  const ref=state.ref;
+  const item=state.item;
+
+  if(movedSelectionIsValid([ref])){
+    if(state.previewCandidate&&snapEnabled.checked){
+      const beforeSnap=capturePositions([ref]);
+      translateItem(item,state.previewCandidate.dx,state.previewCandidate.dy);
+      if(movedSelectionIsValid([ref])){
+        return {
+          success:true,
+          corrected:true,
+          label:state.previewCandidate.label
+        };
+      }
+      restoreCapturedPositions(beforeSnap);
+    }
+    return {success:true,corrected:false,label:"目前位置"};
+  }
+
+  const rescue=findNearestLegalLiftLanding(ref,state.releasePoint);
+  if(rescue){
+    translateItem(item,rescue.dx,rescue.dy);
+    if(movedSelectionIsValid([ref])){
+      return {
+        success:true,
+        corrected:true,
+        label:rescue.label,
+        distance:rescue.distance
+      };
+    }
+  }
+
+  restoreCapturedPositions(state.before);
+  return {success:false,restored:true};
+}
+
 function finishItemDrag(event){
   const state=itemDragState;
   if(!state||event.pointerId!==state.pointerId)return;
@@ -9168,14 +9368,53 @@ function finishItemDrag(event){
   event.stopPropagation();
 
   clearSnapDragPreview();
-  state.node.classList.remove("draggingPart");
+  state.node.classList.remove(
+    "draggingPart",
+    "liftDraggingPart",
+    "liftInvalidPreview"
+  );
   try{svg.releasePointerCapture(event.pointerId)}catch{}
+
+  if(event.type==="pointercancel"){
+    restoreCapturedPositions(state.before);
+    renderCurrent();
+    reapplySelection([state.ref]);
+    itemDragState=null;
+    return;
+  }
 
   if(!state.moved&&state.button===0){
     selectedKind=state.ref.kind;
     if(state.ref.kind==="primary")selectPart(state.ref.index);
     else selectSecondary(state.ref.index);
     suppressNextPartClick=true;
+  }else if(state.moved&&state.liftPlacementMode){
+    const landing=commitLiftLanding(state);
+    suppressNextPartClick=true;
+
+    if(landing.success){
+      moveHistory.push(state.before);
+      emptyZones=[];
+      analysisVisible=false;
+      renderCurrent();
+      reapplySelection([state.ref]);
+      updateResultAfterManualChanges();
+
+      setToolStatus(
+        landing.corrected
+          ? `智慧落位完成：已修正至${landing.label}。`
+          : "已在目前位置放下工件。",
+        "success"
+      );
+    }else{
+      renderCurrent();
+      reapplySelection([state.ref]);
+      flashInvalidSelection();
+      setToolStatus(
+        "附近找不到合法落點，工件已回到拖曳前位置。",
+        "warning"
+      );
+    }
   }else if(state.moved){
     if(state.previewCandidate&&!state.bypassSnap){
       translateItem(state.item,state.previewCandidate.dx,state.previewCandidate.dy);
@@ -10396,7 +10635,7 @@ function syncMobileModeUi(){
   if(mobileModeBadge){
     const modeText=measureMode?"量測":"選取";
     const snapText=snapEnabled.checked?"｜磁吸開":"｜磁吸關";
-    mobileModeBadge.textContent=`手機：${modeText}${snapText}｜支援雙指縮放及移動圖面`;
+    mobileModeBadge.textContent=`手機：${modeText}${snapText}｜單指拿起搬移｜雙指縮放及移動圖面`;
   }
 }
 

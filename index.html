@@ -2930,15 +2930,23 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 }
 
 .secondaryAutoRedrawToggle{
-  display:flex;
-  align-items:flex-start;
-  gap:10px;
+  display:grid;
+  grid-template-columns:20px minmax(0,1fr);
+  align-items:start;
+  column-gap:10px;
+  width:100%;
   margin:12px 0;
   padding:11px 12px;
   border:1px solid #cfdcf5;
   border-radius:10px;
   background:#f7faff;
   cursor:pointer;
+  box-sizing:border-box;
+}
+.secondaryAutoRedrawContent{
+  display:block;
+  min-width:0;
+  width:100%;
 }
 
 .secondaryAutoRedrawToggle input{
@@ -4255,6 +4263,33 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
   box-shadow:inset 0 0 0 2px rgba(37,99,235,.14)!important;
 }
 
+
+/* ===== 介面精簡：隱藏重複的蜂巢提示與追加工件底部說明 ===== */
+#adaptiveFillStatus,
+.secondaryFooterHint{
+  display:none!important;
+}
+
+
+/* 修正：覆蓋 .controlPanel label 的 display:block，讓立即重畫選項真正左右排列 */
+.controlPanel label.secondaryAutoRedrawToggle{
+  display:grid!important;
+  grid-template-columns:20px minmax(0,1fr)!important;
+  align-items:start!important;
+  column-gap:10px!important;
+}
+.controlPanel label.secondaryAutoRedrawToggle > input{
+  grid-column:1!important;
+  grid-row:1!important;
+  margin:1px 0 0!important;
+}
+.controlPanel label.secondaryAutoRedrawToggle > .secondaryAutoRedrawContent{
+  grid-column:2!important;
+  grid-row:1!important;
+  min-width:0!important;
+  width:auto!important;
+}
+
 </style>
 </head>
 <body>
@@ -4356,7 +4391,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </label>
 </div>
 </div>
-<div class="primarySizeBlockTitle">尺寸</div>
+<div class="primarySizeBlockTitle">工件尺寸</div>
 <label class="inchHelperLabel primaryInchFlat">輔助尺寸（吋）
         <input id="partInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>
         <span class="inchInputHint">※輸入的數值自動換算成 mm 填入長寬</span>
@@ -4831,7 +4866,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </div>
 </div>
 <div class="mobileSectionCard">
-<div class="mobileSectionTitle">尺寸</div>
+<div class="mobileSectionTitle">工件尺寸</div>
 <label class="mobileWideField">
 <span>輔助尺寸（吋） ※輸入的數值自動換算成 mm 填入長寬</span>
 <input id="mobilePartInches" min="0" placeholder="例如 4、4.3" step="0.01" type="number"/>

@@ -10950,13 +10950,10 @@ const mobileCanvasExit=document.getElementById("mobileCanvasExit");
 const mobileModeBadge=document.getElementById("mobileModeBadge");
 
 [
-  mobileMeasureBtn,
   mobileSnapBtn,
-  document.getElementById("mobileAlignSettingsBtn"),
-  mobileClearMeasurementsBtn,
-  mobileDeleteBtn,
+  mobileMeasureBtn,
   mobileUndoBtn,
-  document.getElementById("mobileSystemSettingsBtn"),
+  mobileDeleteBtn,
   mobileFitBtn,
   mobileCanvasExit
 ].forEach(button=>{
@@ -10975,10 +10972,15 @@ let mobileTouchPanState=null;
 let mobileDragModeEnabled=false;
 
 function shouldEnableTouchUi(){
+  /*
+    真正的手機／窄螢幕永遠優先啟用手機介面。
+    避免舊版 localStorage 曾記錄 desktop，導致手機整套工具列消失。
+  */
+  if(coarsePointerQuery.matches||narrowScreenQuery.matches)return true;
   const saved=localStorage.getItem(MOBILE_MODE_KEY);
-  if(saved==="desktop")return false;
   if(saved==="touch")return true;
-  return coarsePointerQuery.matches||narrowScreenQuery.matches;
+  if(saved==="desktop")return false;
+  return false;
 }
 
 function syncMobileModeUi(){
@@ -11467,9 +11469,8 @@ function restoreMobileSnapTargets(){
 
 function setMobileFreeDrag(enabled){
   /*
-    enabled=true 代表手機磁吸輔助 OFF。
-    關閉時將所有吸附點取消勾選；開啟時將所有吸附點全部勾選。
-    預設 enabled=false，因此磁吸輔助預設開啟。
+    enabled=true 代表磁吸輔助關閉。
+    開啟＝所有吸附點全開；關閉＝所有吸附點全關。
   */
   mobileFreeDragEnabled=enabled;
   const snapOn=!enabled;
@@ -11482,15 +11483,14 @@ function setMobileFreeDrag(enabled){
   });
 
   syncSnapGroupStates();
-  syncExtendedMobilePanels?.();
 
-  mobileFreeDragBtn?.classList.toggle("active",snapOn);
   if(mobileFreeDragBtn){
+    mobileFreeDragBtn.classList.toggle("active",snapOn);
     mobileFreeDragBtn.innerHTML=`磁吸<br/>輔助`;
     mobileFreeDragBtn.setAttribute("aria-pressed",String(snapOn));
   }
-  syncMobileModeUi();
 
+  syncMobileModeUi();
   setToolStatus(
     snapOn
       ?"手機磁吸輔助已開啟：所有吸附點已全部開啟。"
@@ -11599,6 +11599,12 @@ mobileClearMeasurementsBtn?.addEventListener("click",()=>{
   setToolStatus("已清除全部量測線與標註。","success");
 });
 mobileFreeDragBtn?.addEventListener("click",()=>setMobileFreeDrag(!mobileFreeDragEnabled));
+/* 手機磁吸輔助預設開啟，並同步所有吸附點為全開。 */
+requestAnimationFrame(()=>{
+  if(document.body.classList.contains("touchUiEnabled")){
+    setMobileFreeDrag(false);
+  }
+});
 
 snapEnabled.addEventListener("change",()=>{
   syncMobileFreeDragAvailability();

@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.6.2 Beta 手機共用桌面拖曳核心</title>
+<title>智慧載盤物理模擬器｜V4.6.6 Beta 手機共用桌面拖曳核心</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -4255,7 +4255,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.6.2 Beta · 手機共用桌面拖曳核心</div>
+<div class="headerBadge">V4.6.6 Beta · 手機拖曳資訊固定底部</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -9216,6 +9216,12 @@ function updatePartNodeGeometry(node,item){
   }
 }
 
+function dragItemAnchor(item){
+  return item.type==="circle"
+    ? {x:item.cx,y:item.cy}
+    : {x:item.x+item.w/2,y:item.y+item.h/2};
+}
+
 function clearSnapDragPreview(){
   svg.querySelectorAll(".snapPreviewGhost,.snapPreviewLine,.snapPreviewHint").forEach(node=>node.remove());
 }
@@ -9251,6 +9257,12 @@ function drawSnapDragPreview(item,candidate){
     x2:targetX,y2:targetY,
     class:"snapPreviewLine"
   });
+
+  // 手機版只保留落位虛線與預覽工件；所有拖曳文字固定顯示於底部資訊欄。
+  if(document.body.classList.contains("touchUiEnabled")){
+    syncMobileModeUi();
+    return;
+  }
 
   // 拖曳模式也使用與量測一致的黑色資訊框，
   // 但只顯示目前候選位置與放開／略過吸力的操作提示。
@@ -9349,9 +9361,12 @@ function startItemDrag(event){
   const point=svgPointFromClient(event.clientX,event.clientY);
   const before=capturePositions([ref]);
 
+  const originAnchor=dragItemAnchor(item);
+
   itemDragState={
     pointerId:event.pointerId,
     ref,node,item,before,
+    originAnchor,
     startPoint:point,
     lastPoint:point,
     moved:false,
@@ -9366,6 +9381,7 @@ function startItemDrag(event){
   node.classList.add("draggingPart");
   if(liftPlacementMode)node.classList.add("liftDraggingPart");
   svg.setPointerCapture(event.pointerId);
+  syncMobileModeUi();
 }
 
 function moveDraggedItemWithSliding(state,dx,dy){
@@ -9491,6 +9507,7 @@ function moveItemDrag(event){
         :"工件已拿起；目前位置重疊或越界，放開後會自動尋找附近合法落點。",
       valid?"success":"warning"
     );
+    syncMobileModeUi();
     return;
   }
 
@@ -9517,6 +9534,7 @@ function moveItemDrag(event){
       "warning"
     );
   }
+  syncMobileModeUi();
 }
 
 
@@ -9684,6 +9702,7 @@ function finishItemDrag(event){
     renderCurrent();
     reapplySelection([state.ref]);
     itemDragState=null;
+    syncMobileModeUi();
     return;
   }
 
@@ -9741,6 +9760,7 @@ function finishItemDrag(event){
   }
 
   itemDragState=null;
+  syncMobileModeUi();
 }
 
 svg.addEventListener("pointerdown",startItemDrag,true);
@@ -10979,17 +10999,32 @@ function syncMobileModeUi(){
       return;
     }
 
-    const parts=["手機："];
     if(mobileDragModeEnabled){
-      parts.push("拖曳模式");
-      parts.push(`磁吸輔助：${mobileFreeDragEnabled?"關":"開"}`);
-      parts.push("單指按住拖動工件");
-    }else{
-      parts.push("選取模式");
-      parts.push(`磁吸輔助：${mobileFreeDragEnabled?"關":"開"}`);
-      parts.push("單指按住拖動框選");
+      const lines=["手機：｜拖曳模式｜"];
+      const dragState=itemDragState;
+
+      if(dragState){
+        const currentAnchor=dragItemAnchor(dragState.item);
+        const dx=currentAnchor.x-dragState.originAnchor.x;
+        const dy=currentAnchor.y-dragState.originAnchor.y;
+        const distance=Math.hypot(dx,dy);
+        const angle=distance>EPS?Math.atan2(-dy,dx)*180/Math.PI:0;
+        const snapLabel=dragState.previewCandidate?.label ||
+          (dragState.rejectAssist?"忽略吸力":"自由拖曳");
+
+        lines.push(`X ${dx>=0?"+":""}${fmt(dx)} mm｜Y ${dy>=0?"+":""}${fmt(dy)} mm`);
+        lines.push(`距離 ${fmt(distance)} mm｜角度 ${fmt(angle)}°`);
+        lines.push(`吸附：${snapLabel}｜放開確定位置`);
+      }else{
+        lines.push(`磁吸輔助：${mobileFreeDragEnabled?"關":"開"}｜單指按住拖動工件`);
+        lines.push("雙指縮放與移動圖面｜雙擊空白復原畫面");
+      }
+
+      mobileModeBadge.textContent=lines.join("\n");
+      return;
     }
 
+    const parts=["手機：","選取模式",`磁吸輔助：${mobileFreeDragEnabled?"關":"開"}`,"單指按住拖動框選"];
     parts.push("雙指縮放與移動圖面");
     parts.push("雙擊空白復原縮放與位置");
     mobileModeBadge.textContent=parts.join("｜");

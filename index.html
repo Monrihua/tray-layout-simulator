@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.3 Beta 全平台磁吸拿起搬移</title>
+<title>智慧載盤物理模擬器｜V4.4 Beta 紅色非法工件與強制生成</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -4133,10 +4133,19 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
     drop-shadow(0 0 4px rgba(14,116,220,.55))!important;
   pointer-events:none;
 }
-.liftInvalidPreview{
-  stroke:#ef4444!important;
-  stroke-width:2!important;
-  stroke-dasharray:7 5!important;
+.part.liftInvalidPreview,
+.circlePart.liftInvalidPreview,
+.secondaryPart.liftInvalidPreview,
+.secondaryRect.liftInvalidPreview,
+.secondaryPart.illegalSecondaryPlacement,
+.secondaryRect.illegalSecondaryPlacement{
+  fill:#ef4444!important;
+  stroke:#991b1b!important;
+  stroke-width:1.2!important;
+  stroke-dasharray:none!important;
+  filter:
+    drop-shadow(0 0 4px rgba(239,68,68,.75))
+    drop-shadow(0 5px 7px rgba(15,23,42,.24))!important;
 }
 
 
@@ -4149,6 +4158,39 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 */
 .liftDraggingPart{
   cursor:grabbing!important;
+}
+
+
+/* ===== V4.4 強制生成按鈕與手機操作排列 ===== */
+.secondaryActionsWithForce{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+}
+
+.forceSecondaryButton{
+  border-color:#dc2626!important;
+  background:#fff1f2!important;
+  color:#b91c1c!important;
+  font-weight:900!important;
+}
+
+.forceSecondaryButton:hover{
+  background:#ffe4e6!important;
+}
+
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled .mobileActionGridFour{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+  }
+
+  body.touchUiEnabled .mobileActionGridFour button{
+    min-height:44px!important;
+    margin:0!important;
+    border-radius:9px!important;
+    font-size:11px!important;
+    font-weight:900!important;
+  }
 }
 
 </style>
@@ -4182,7 +4224,7 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.3 Beta · 全平台磁吸拿起搬移</div>
+<div class="headerBadge">V4.4 Beta · 紅色非法工件與強制生成</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -4373,8 +4415,9 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 <small>關閉後可保留既有追加工件，切換尺寸或形狀後再逐個生成。</small>
 </span>
 </label>
-<div class="secondaryActionsV2">
+<div class="secondaryActionsV2 secondaryActionsWithForce">
 <button id="addOneSecondary" type="button">生成 1 個</button>
+<button class="forceSecondaryButton" id="forceAddOneSecondary" type="button">強制生成 1 個</button>
 <button id="clearSecondary" type="button">清除追加工件</button>
 </div>
 <button class="adaptiveFillButton" id="adaptiveFillBtn" type="button">蜂巢自適應填充(Beta)</button>
@@ -4870,8 +4913,9 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-height:20p
 </div>
 <div class="mobileSectionCard">
 <div class="mobileSectionTitle">追加工件操作</div>
-<div class="mobileActionGridThree">
+<div class="mobileActionGridFour">
 <button id="mobileAddOneSecondaryBtn" type="button">生成 1 個</button>
+<button class="forceSecondaryButton" id="mobileForceAddOneSecondaryBtn" type="button">強制生成</button>
 <button id="mobileClearSecondaryBtn" type="button">清除追加工件</button>
 <button id="mobileAdaptiveFillBtn" type="button">蜂巢自適應</button>
 </div>
@@ -5700,13 +5744,13 @@ function renderPlan(plan){
     if(item.type==="circle"){
       node=create("circle",{
         cx:item.cx,cy:item.cy,r:item.r,
-        class:"secondaryPart",
+        class:`secondaryPart${secondaryPlacementIsValid(index)?"":" illegalSecondaryPlacement"}`,
         "data-secondary-index":index
       });
     }else{
       node=create("rect",{
         x:item.x,y:item.y,width:item.w,height:item.h,
-        class:"secondaryRect",
+        class:`secondaryRect${secondaryPlacementIsValid(index)?"":" illegalSecondaryPlacement"}`,
         "data-secondary-index":index
       });
     }
@@ -6353,6 +6397,12 @@ function movedSelectionIsValid(refs){
   }
 
   return true;
+}
+
+
+function secondaryPlacementIsValid(index){
+  if(!secondaryItems[index])return false;
+  return movedSelectionIsValid([{kind:"secondary",index}]);
 }
 
 function commitTransform(refs,transform,statusText){
@@ -8562,6 +8612,73 @@ function addOneSecondary(){
   }
 }
 
+
+function forceAddOneSecondary(){
+  if(!currentContext||!currentPlan){
+    setAdaptiveFillStatus("請先選擇一個方案，再使用強制生成。","warning");
+    return;
+  }
+
+  const c=currentContext;
+  const isCircle=secondaryCircleMode.checked;
+  const direction=secondaryHorizontal.checked?"horizontal":"vertical";
+  let length=Math.max(.1,Number(secondaryLength.value)||152.4);
+  let width=Math.max(.1,Number(secondaryWidth.value)||100);
+
+  if(!isCircle&&direction==="horizontal"){
+    [length,width]=[width,length];
+  }
+
+  /*
+    強制生成不檢查碰撞與安全邊界。
+    先放在安全範圍中央，讓使用者能立即拖曳到想測試的位置。
+  */
+  let item;
+  if(isCircle){
+    const diameter=length;
+    const r=diameter/2;
+    const cx=c.SX+c.UL/2;
+    const cy=c.SY+c.UW/2;
+    item={
+      type:"circle",
+      cx,cy,r,
+      x:cx-r,y:cy-r,
+      w:diameter,h:diameter,
+      forcedIllegal:true
+    };
+  }else{
+    item={
+      type:"rect",
+      x:c.SX+(c.UL-length)/2,
+      y:c.SY+(c.UW-width)/2,
+      w:length,h:width,
+      forcedIllegal:true
+    };
+  }
+
+  secondaryItems.push(item);
+  const index=secondaryItems.length-1;
+
+  renderCurrent();
+  updateResultAfterManualChanges(1);
+  selectedKind="secondary";
+  selectSecondary(index);
+
+  const legal=secondaryPlacementIsValid(index);
+  setAdaptiveFillStatus(
+    legal
+      ?"已強制生成 1 個追加工件；目前位置剛好合法，可直接使用或繼續移動。"
+      :"已強制生成 1 個紅色追加工件；目前位置為非法狀態，請用磁吸拖曳將它移到合法位置。",
+    legal?"success":"warning"
+  );
+  setToolStatus(
+    legal
+      ?"強制生成完成；工件目前位於合法位置。"
+      :"強制生成完成；紅色表示目前碰撞或越界，放開拖曳時會執行智慧落位。",
+    legal?"success":"warning"
+  );
+}
+
 function clearSecondary(){
   clearTimeout(secondaryAutoRefreshTimer);
   secondaryAutoRefreshTimer=null;
@@ -9347,6 +9464,7 @@ function commitLiftLanding(state){
   const item=state.item;
 
   if(movedSelectionIsValid([ref])){
+    delete item.forcedIllegal;
     if(state.previewCandidate&&snapEnabled.checked){
       const beforeSnap=capturePositions([ref]);
       translateItem(item,state.previewCandidate.dx,state.previewCandidate.dy);
@@ -9366,6 +9484,7 @@ function commitLiftLanding(state){
   if(rescue){
     translateItem(item,rescue.dx,rescue.dy);
     if(movedSelectionIsValid([ref])){
+      delete item.forcedIllegal;
       return {
         success:true,
         corrected:true,
@@ -10574,6 +10693,7 @@ document.querySelectorAll(".planCard").forEach(card=>{
 backToOverviewBtn.addEventListener("click",showPlanOverview);
 
 document.getElementById("addOneSecondary").addEventListener("click",addOneSecondary);
+document.getElementById("forceAddOneSecondary").addEventListener("click",forceAddOneSecondary);
 document.getElementById("clearSecondary").addEventListener("click",clearSecondary);
 adaptiveFillBtn.addEventListener("click",adaptiveRuleFill);
 
@@ -11365,6 +11485,9 @@ document.getElementById("mobileExportSvgBtn")?.addEventListener("click",()=>{
 
 document.getElementById("mobileAddOneSecondaryBtn")?.addEventListener("click",()=>{
   document.getElementById("addOneSecondary")?.click();
+});
+document.getElementById("mobileForceAddOneSecondaryBtn")?.addEventListener("click",()=>{
+  document.getElementById("forceAddOneSecondary")?.click();
 });
 document.getElementById("mobileClearSecondaryBtn")?.addEventListener("click",()=>{
   document.getElementById("clearSecondary")?.click();

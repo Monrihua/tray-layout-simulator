@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.6.10 Beta 手機共用桌面拖曳核心</title>
+<title>智慧載盤物理模擬器｜V4.6.11 Beta 輔助設定整合</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -847,6 +847,20 @@ body{padding:16px}
   font-size:9px;
   line-height:1.45;
 }
+
+.assistSubsection{
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid #dce5f1;
+}
+.assistSubsection:first-child{margin-top:0;padding-top:0;border-top:0}
+.assistSubsectionTitle{
+  margin:0 0 8px;
+  color:#334155;
+  font-size:12px;
+  font-weight:900;
+}
+.assistSubsection .hint{margin-bottom:8px}
 
 .alignTitle{
   margin:10px 0 6px;
@@ -4272,7 +4286,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.6.10 Beta · 更新選項最終修正</div>
+<div class="headerBadge">V4.6.11 Beta · 輔助設定整合</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -4478,7 +4492,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
     </div>
 </div>
 </div></div>
-<div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="edit" data-default-collapsed="true" id="editSettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">量測與編輯</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">拖曳：關</span><span class="sharedSummaryLine">吸力：15 mm</span><span class="sharedSummaryLine">量測：關</span></span></span></button><div class="sharedCollapseBody">
+<div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="edit" data-default-collapsed="true" id="editSettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">輔助設定</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">拖曳：關</span><span class="sharedSummaryLine">吸力：15 mm</span><span class="sharedSummaryLine">量測：關</span></span></span></button><div class="sharedCollapseBody">
 
 <div class="sectionStepControl" data-step-section="editSettingsSection">
 <span>上下鍵微調量</span>
@@ -4491,104 +4505,75 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="sectionStepHint">※此數值為全域設定，在其他設定項也會同步。</div>
 </div>
 <div class="editToolsPanel">
-<div class="toolRow">
-<button id="measureModeBtn" type="button">兩點量測</button>
-<button id="clearMeasurementsBtn" type="button">清除量測</button>
+<div class="assistSubsection">
+<div class="assistSubsectionTitle">上下鍵微調</div>
+<div class="hint">使用上方微調量設定；方向鍵移動一個步距，Shift＋方向鍵移動 10 倍步距。</div>
 </div>
-<div class="toolStatus" id="measureStatus">量測模式未啟用</div>
-<label class="snapToggle" style="margin-top:8px!important">
-<input id="measureConfirmOnRelease" type="checkbox"/>
-        放開後確定測量點
-      </label>
-<div class="hint">未勾選時維持原本「按一下確定一點」；勾選後改為按住移動、放開才確定該測量點。手機模式預設開啟。</div>
-<div class="snapSettings">
-<label class="snapToggle">
-<input id="snapEnabled" type="checkbox"/>
-        啟用拖曳模式
-      </label>
+<div class="assistSubsection">
+<div class="assistSubsectionTitle">磁吸輔助設定</div>
 <label>吸力半徑（mm）
-        <input id="snapStep" min="0" step="1" type="number" value="15"/>
+<input id="snapStep" min="0" step="1" type="number" value="15"/>
 </label>
-<div class="toolStatus dragModeHint">
-        拖曳模式預設關閉：開啟後左鍵拖曳會在放開時尋找附近合法位置；電腦右鍵代表拒絕輔助，位置不合法時直接回原位。
-      </div>
 <div class="snapTypePanel">
-<div class="snapTypeTitle">──── 拖曳與量測共用吸附目標 ────</div>
+<div class="snapTypeTitle">──── 吸附點設置 ────</div>
 <div class="snapTargetGroup">
-<label class="snapTargetHeader">
-<input checked="" id="snapGroupTray" type="checkbox"/>
-<span>載盤</span>
-</label>
+<label class="snapTargetHeader"><input checked="" id="snapGroupTray" type="checkbox"/><span>載盤</span></label>
 <div class="snapTargetChildren">
 <label><input checked="" id="snapTrayCorners" type="checkbox"/>載盤四角</label>
 <label><input checked="" id="snapTrayMidpoints" type="checkbox"/>載盤邊中點</label>
 <label><input checked="" id="snapTrayBoundary" type="checkbox"/>載盤邊界</label>
-</div>
-</div>
+</div></div>
 <div class="snapTargetGroup">
-<label class="snapTargetHeader">
-<input checked="" id="snapGroupSafe" type="checkbox"/>
-<span>安全範圍</span>
-</label>
+<label class="snapTargetHeader"><input checked="" id="snapGroupSafe" type="checkbox"/><span>安全範圍</span></label>
 <div class="snapTargetChildren">
 <label><input checked="" id="snapSafeCorners" type="checkbox"/>安全四角</label>
 <label><input checked="" id="snapSafeMidpoints" type="checkbox"/>安全邊中點</label>
 <label><input checked="" id="snapTypeBoundary" type="checkbox"/>安全邊界</label>
-</div>
-</div>
+</div></div>
 <div class="snapTargetGroup">
-<label class="snapTargetHeader">
-<input checked="" id="snapGroupRect" type="checkbox"/>
-<span>矩形</span>
-</label>
+<label class="snapTargetHeader"><input checked="" id="snapGroupRect" type="checkbox"/><span>矩形</span></label>
 <div class="snapTargetChildren">
 <label><input checked="" id="snapRectCorners" type="checkbox"/>四角</label>
 <label><input checked="" id="snapRectMidpoints" type="checkbox"/>邊中點</label>
 <label><input checked="" id="snapRectEdges" type="checkbox"/>邊緣相切</label>
-</div>
-</div>
+</div></div>
 <div class="snapTargetGroup">
-<label class="snapTargetHeader">
-<input checked="" id="snapGroupCircle" type="checkbox"/>
-<span>圓形</span>
-</label>
+<label class="snapTargetHeader"><input checked="" id="snapGroupCircle" type="checkbox"/><span>圓形</span></label>
 <div class="snapTargetChildren">
 <label><input checked="" id="snapCircleCenter" type="checkbox"/>圓心</label>
 <label><input checked="" id="snapTypeQuadrant" type="checkbox"/>四分點</label>
-</div>
-</div>
+</div></div>
 <div class="snapTargetGroup">
-<label class="snapTargetHeader">
-<input checked="" id="snapGroupTangent" type="checkbox"/>
-<span>相切</span>
-</label>
+<label class="snapTargetHeader"><input checked="" id="snapGroupTangent" type="checkbox"/><span>相切</span></label>
 <div class="snapTargetChildren">
 <label><input checked="" id="snapTypeSingleCircle" type="checkbox"/>單圓相切</label>
 <label><input checked="" id="snapTypeDoubleCircle" type="checkbox"/>雙圓相切</label>
 <label><input checked="" id="snapTypeCircleRect" type="checkbox"/>圓矩相切</label>
+</div></div>
+<div class="snapTypeActions"><button id="snapTypesAllBtn" type="button">全開</button><button id="snapTypesNoneBtn" type="button">全關</button></div>
+<div class="snapTypeNote">拖曳模式依照此處開關；量測模式可選擇忽略這些開關並保持全部磁吸點可用。</div>
 </div>
 </div>
-<div class="snapTypeActions">
-<button id="snapTypesAllBtn" type="button">全開</button>
-<button id="snapTypesNoneBtn" type="button">全關</button>
+<div class="assistSubsection">
+<div class="assistSubsectionTitle">量測模式</div>
+<div class="toolRow"><button id="measureModeBtn" type="button">兩點量測</button><button id="clearMeasurementsBtn" type="button">清除量測</button></div>
+<div class="toolStatus" id="measureStatus">量測模式未啟用</div>
+<label class="snapToggle" style="margin-top:8px!important"><input id="measureConfirmOnRelease" type="checkbox"/>放開後確定測量點</label>
+<label class="snapToggle" style="margin-top:8px!important"><input checked="" id="measureIgnoreSnapSettings" type="checkbox"/>量測模式忽略吸附點設置，保持磁吸輔助全開</label>
+<div class="hint">勾選時，量測不受上方吸附點開關影響；取消勾選後，量測會與拖曳模式使用相同的吸附點設置。</div>
 </div>
-<div class="snapTypeNote">
-          下列開關同時控制拖曳磁吸與量測捕捉；需要尋找兩個圓的共同相切位置時，可先按「全關」，再只開啟「雙圓相切」。
-        </div>
+<div class="assistSubsection">
+<div class="assistSubsectionTitle">拖曳模式</div>
+<label class="snapToggle"><input id="snapEnabled" type="checkbox"/>啟用拖曳模式</label>
+<div class="toolStatus dragModeHint">拖曳模式預設關閉；開啟後會依照吸力半徑與吸附點設置尋找附近合法位置。</div>
 </div>
-</div>
-<div class="alignTitle">框選／選取工件對齊</div>
+<div class="assistSubsection">
+<div class="assistSubsectionTitle">對齊工具</div>
 <div class="alignGrid">
-<button data-align="left" type="button">靠左</button>
-<button data-align="right" type="button">靠右</button>
-<button data-align="top" type="button">靠上</button>
-<button data-align="bottom" type="button">靠下</button>
-<button data-align="centerX" type="button">水平置中</button>
-<button data-align="centerY" type="button">垂直置中</button>
+<button data-align="left" type="button">靠左</button><button data-align="right" type="button">靠右</button><button data-align="top" type="button">靠上</button><button data-align="bottom" type="button">靠下</button><button data-align="centerX" type="button">水平置中</button><button data-align="centerY" type="button">垂直置中</button>
 </div>
-<div class="toolRow" style="margin-top:7px">
-<button id="snapSelectedBtn" type="button">切換吸附點</button>
-<button id="restorePositionsBtn" type="button">還原本次移動</button>
+<div class="toolRow" style="margin-top:7px"><button id="snapSelectedBtn" type="button">切換吸附點</button><button id="restorePositionsBtn" type="button">還原本次移動</button></div>
+</div>
 </div>
 </div>
 </div></div>
@@ -4697,7 +4682,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </section>
 <section class="helpSection">
 <h3>移動與微調</h3>
-<p>選取工件後用方向鍵移動，步距由「量測與編輯」的微調量決定。</p>
+<p>選取工件後用方向鍵移動，步距由「輔助設定」的微調量決定。</p>
 <ul>
 <li><span class="helpKey">方向鍵</span>移動一個步距</li>
 <li><span class="helpKey">Shift</span>＋方向鍵：移動 10 倍步距</li>
@@ -4755,8 +4740,8 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <button id="mobileInsetBtn" type="button">安全<br/>設定</button>
 <button id="mobilePrimarySettingsBtn" type="button">工件<br/>設定</button>
 <button id="mobileSecondarySettingsBtn" type="button">追加<br/>工件</button>
-<button id="mobileSnapSettingsBtn" type="button">吸附<br/>設定</button>
-<button id="mobileAlignSettingsBtn" type="button">對齊<br/>工件</button>
+<button id="mobileSnapSettingsBtn" type="button">輔助<br/>設定</button>
+<button id="mobileAlignSettingsBtn" type="button">對齊<br/>工具</button>
 <button id="mobileFitBtn" type="button">適合<br/>畫面</button>
 </div>
 <button class="mobileEnterWorkspaceBtn" id="mobileEnterWorkspaceBtn" type="button">
@@ -4997,53 +4982,27 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </div>
 <div class="mobilePanelSection" hidden="" id="mobileSnapPanel">
 <div class="mobileSectionCard mobileGlobalStepCard" data-global-step-control>
-<div class="mobileSectionTitle">上下鍵微調量</div>
-<div class="mobileGlobalStepRow">
-<button class="active" data-global-step-value="1" type="button">1</button>
-<button data-global-step-value="0.1" type="button">0.1</button>
-<button data-global-step-value="custom" type="button">自訂</button>
-<input aria-label="自訂全域微調量" class="mobileGlobalStepCustom" hidden="" min="0.0001" step="0.0001" type="number" value="1"/>
-</div>
+<div class="mobileSectionTitle">上下鍵微調</div>
+<div class="mobileGlobalStepRow"><button class="active" data-global-step-value="1" type="button">1</button><button data-global-step-value="0.1" type="button">0.1</button><button data-global-step-value="custom" type="button">自訂</button><input aria-label="自訂全域微調量" class="mobileGlobalStepCustom" hidden="" min="0.0001" step="0.0001" type="number" value="1"/></div>
 <div class="mobilePanelHint">此數值為全域設定，在其他設定頁也會同步。</div>
 </div>
-
 <div class="mobileSectionCard">
 <div class="mobileSectionTitle">磁吸輔助設定</div>
-<label class="mobileSwitchRow">
-<input checked="" id="mobileSnapEnabledMirror" type="checkbox"/>
-<span>啟用桌面拖曳／共用吸附引擎</span>
-</label>
-<label class="mobileWideField">
-<span>吸力半徑</span>
-<div class="mobileNumberControl">
-<button data-mobile-step="-1" data-mobile-step-target="mobileSnapStepMirror" type="button">−</button>
-<input id="mobileSnapStepMirror" min="0" step="1" type="number"/>
-<button data-mobile-step="1" data-mobile-step-target="mobileSnapStepMirror" type="button">＋</button>
+<label class="mobileWideField"><span>吸力半徑</span><div class="mobileNumberControl"><button data-mobile-step="-1" data-mobile-step-target="mobileSnapStepMirror" type="button">−</button><input id="mobileSnapStepMirror" min="0" step="1" type="number"/><button data-mobile-step="1" data-mobile-step-target="mobileSnapStepMirror" type="button">＋</button></div></label>
+<div class="mobilePanelHint">以下為吸附點設置；拖曳模式會依照這些開關運作。</div>
 </div>
-</label>
-</div>
-<div class="mobileSectionCard">
-<div class="mobileSectionTitle">安全範圍</div>
-<label class="mobileSwitchRow"><input data-snap-mirror="snapTypeBoundary" type="checkbox"/><span>安全範圍</span></label>
-</div>
-<div class="mobileSectionCard">
-<div class="mobileSectionTitle">矩形吸附點</div>
-<label class="mobileSwitchRow"><input data-snap-mirror="snapRectCorners" type="checkbox"/><span>四角</span></label>
-<label class="mobileSwitchRow"><input data-snap-mirror="snapRectMidpoints" type="checkbox"/><span>邊中點</span></label>
-<label class="mobileSwitchRow"><input data-snap-mirror="snapRectEdges" type="checkbox"/><span>邊緣相切</span></label>
-</div>
-<div class="mobileSectionCard">
-<div class="mobileSectionTitle">圓形與相切吸附點</div>
-<label class="mobileSwitchRow"><input data-snap-mirror="snapCircleCenter" type="checkbox"/><span>圓心</span></label>
-<label class="mobileSwitchRow"><input data-snap-mirror="snapTypeQuadrant" type="checkbox"/><span>四分點</span></label>
-<label class="mobileSwitchRow"><input data-snap-mirror="snapTypeSingleCircle" type="checkbox"/><span>單圓相切</span></label>
-<label class="mobileSwitchRow"><input data-snap-mirror="snapTypeDoubleCircle" type="checkbox"/><span>雙圓相切</span></label>
-<label class="mobileSwitchRow"><input data-snap-mirror="snapTypeCircleRect" type="checkbox"/><span>圓矩相切</span></label>
-<div class="mobileTwoActions">
-<button id="mobileSnapAllBtn" type="button">全部開啟</button>
-<button id="mobileSnapNoneBtn" type="button">全部關閉</button>
-</div>
-</div>
+<div class="mobileSectionCard"><div class="mobileSectionTitle">載盤吸附點</div>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapTrayCorners" type="checkbox"/><span>載盤四角</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTrayMidpoints" type="checkbox"/><span>載盤邊中點</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTrayBoundary" type="checkbox"/><span>載盤邊界</span></label></div>
+<div class="mobileSectionCard"><div class="mobileSectionTitle">安全範圍吸附點</div>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapSafeCorners" type="checkbox"/><span>安全四角</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapSafeMidpoints" type="checkbox"/><span>安全邊中點</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeBoundary" type="checkbox"/><span>安全邊界</span></label></div>
+<div class="mobileSectionCard"><div class="mobileSectionTitle">矩形吸附點</div>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapRectCorners" type="checkbox"/><span>四角</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapRectMidpoints" type="checkbox"/><span>邊中點</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapRectEdges" type="checkbox"/><span>邊緣相切</span></label></div>
+<div class="mobileSectionCard"><div class="mobileSectionTitle">圓形與相切吸附點</div>
+<label class="mobileSwitchRow"><input data-snap-mirror="snapCircleCenter" type="checkbox"/><span>圓心</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeQuadrant" type="checkbox"/><span>四分點</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeSingleCircle" type="checkbox"/><span>單圓相切</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeDoubleCircle" type="checkbox"/><span>雙圓相切</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeCircleRect" type="checkbox"/><span>圓矩相切</span></label>
+<div class="mobileTwoActions"><button id="mobileSnapAllBtn" type="button">全部開啟</button><button id="mobileSnapNoneBtn" type="button">全部關閉</button></div></div>
+<div class="mobileSectionCard"><div class="mobileSectionTitle">量測模式</div>
+<label class="mobileSwitchRow"><input checked="" id="mobileMeasureIgnoreSnapSettings" type="checkbox"/><span>忽略吸附點設置，保持磁吸輔助全開</span></label>
+<div class="mobilePanelHint">取消勾選後，量測會遵守上方吸附點設置。</div></div>
 </div>
 <div class="mobilePanelSection" hidden="" id="mobileAlignPanel">
 <div class="mobileSectionCard">
@@ -5122,6 +5081,7 @@ const measureModeBtn=document.getElementById("measureModeBtn");
 const clearMeasurementsBtn=document.getElementById("clearMeasurementsBtn");
 const measureStatus=document.getElementById("measureStatus");
 const measureConfirmOnRelease=document.getElementById("measureConfirmOnRelease");
+const measureIgnoreSnapSettings=document.getElementById("measureIgnoreSnapSettings");
 const snapEnabled=document.getElementById("snapEnabled");
 const headerMeasureToggle=document.getElementById("headerMeasureToggle");
 const headerSnapToggle=document.getElementById("headerSnapToggle");
@@ -5276,6 +5236,7 @@ const CONFIG_DEFAULTS=Object.freeze({
   SecondaryCircleArrange:"Grid",
   SnapEnabled:"false",
   MeasurementConfirmOnRelease:"false",
+  MeasurementIgnoreSnapSettings:"true",
   SnapStep:"15",
   SnapTrayCorners:"true",
   SnapTrayMidpoints:"true",
@@ -5317,7 +5278,7 @@ const CONFIG_SECTION_KEYS=[
   },
   {
     title:"Editing, magnetic snap and analysis",
-    keys:["SnapEnabled","MeasurementConfirmOnRelease","SnapStep","SnapTrayCorners","SnapTrayMidpoints","SnapTrayBoundary","SnapSafeCorners","SnapSafeMidpoints","SnapTypeBoundary","SnapRectCorners","SnapRectMidpoints","SnapRectEdges","SnapCircleCenter","SnapTypeQuadrant","SnapTypeSingleCircle","SnapTypeDoubleCircle","SnapTypeCircleRect","ShowSpaceLabels"]
+    keys:["SnapEnabled","MeasurementConfirmOnRelease","MeasurementIgnoreSnapSettings","SnapStep","SnapTrayCorners","SnapTrayMidpoints","SnapTrayBoundary","SnapSafeCorners","SnapSafeMidpoints","SnapTypeBoundary","SnapRectCorners","SnapRectMidpoints","SnapRectEdges","SnapCircleCenter","SnapTypeQuadrant","SnapTypeSingleCircle","SnapTypeDoubleCircle","SnapTypeCircleRect","ShowSpaceLabels"]
   },
   {
     title:"Independent numeric steps",
@@ -5399,6 +5360,7 @@ function getCurrentConfig(){
     SecondaryCircleArrange:secondaryCircleHoney.checked?"Honeycomb":"Grid",
     SnapEnabled:String(snapEnabled.checked),
     MeasurementConfirmOnRelease:String(measureConfirmOnRelease.checked),
+    MeasurementIgnoreSnapSettings:String(measureIgnoreSnapSettings.checked),
     SnapStep:snapStep.value,
     SnapTrayCorners:String(snapTrayCorners.checked),
     SnapTrayMidpoints:String(snapTrayMidpoints.checked),
@@ -5531,6 +5493,7 @@ function applyConfig(config){
 
   snapEnabled.checked=parseConfigBoolean(config.SnapEnabled,false);
   measureConfirmOnRelease.checked=parseConfigBoolean(config.MeasurementConfirmOnRelease,false);
+  measureIgnoreSnapSettings.checked=parseConfigBoolean(config.MeasurementIgnoreSnapSettings,true);
   setNumericConfigValue(snapStep,config.SnapStep,CONFIG_DEFAULTS.SnapStep);
   snapTrayCorners.checked=parseConfigBoolean(config.SnapTrayCorners,true);
   snapTrayMidpoints.checked=parseConfigBoolean(config.SnapTrayMidpoints,true);
@@ -7219,6 +7182,11 @@ function clamp(value,min,max){
   return Math.max(min,Math.min(max,value));
 }
 
+
+function measurementSnapEnabled(input){
+  return Boolean(measureIgnoreSnapSettings?.checked||input?.checked);
+}
+
 function measureSnapCandidates(){
   const candidates=[];
   const c=currentContext;
@@ -7226,8 +7194,8 @@ function measureSnapCandidates(){
   // 固定錨點：載盤與安全範圍的四角、邊中點。
   if(c){
     const fixedSets=[
-      {left:0,right:c.TL,top:0,bottom:c.TW,prefix:"載盤",corners:snapTrayCorners.checked,midpoints:snapTrayMidpoints.checked},
-      {left:c.SX,right:c.SX+c.UL,top:c.SY,bottom:c.SY+c.UW,prefix:"安全範圍",corners:snapSafeCorners.checked,midpoints:snapSafeMidpoints.checked}
+      {left:0,right:c.TL,top:0,bottom:c.TW,prefix:"載盤",corners:measurementSnapEnabled(snapTrayCorners),midpoints:measurementSnapEnabled(snapTrayMidpoints)},
+      {left:c.SX,right:c.SX+c.UL,top:c.SY,bottom:c.SY+c.UW,prefix:"安全範圍",corners:measurementSnapEnabled(snapSafeCorners),midpoints:measurementSnapEnabled(snapSafeMidpoints)}
     ];
     for(const boundary of fixedSets){
       const cx=(boundary.left+boundary.right)/2,cy=(boundary.top+boundary.bottom)/2;
@@ -7250,7 +7218,7 @@ function measureSnapCandidates(){
 
   for(const {item} of entries){
     if(item.type==="circle"){
-      if(snapCircleCenter.checked){
+      if(measurementSnapEnabled(snapCircleCenter)){
         candidates.push({
           x:item.cx,
           y:item.cy,
@@ -7258,7 +7226,7 @@ function measureSnapCandidates(){
         });
       }
 
-      if(snapTypeQuadrant.checked){
+      if(measurementSnapEnabled(snapTypeQuadrant)){
         candidates.push(
           {x:item.cx,y:item.cy-item.r,label:"圓形四分點（上）"},
           {x:item.cx+item.r,y:item.cy,label:"圓形四分點（右）"},
@@ -7274,7 +7242,7 @@ function measureSnapCandidates(){
       const cx=(left+right)/2;
       const cy=(top+bottom)/2;
 
-      if(snapRectCorners.checked){
+      if(measurementSnapEnabled(snapRectCorners)){
         candidates.push(
           {x:left,y:top,label:"矩形四角",priority:10},
           {x:right,y:top,label:"矩形四角",priority:10},
@@ -7283,7 +7251,7 @@ function measureSnapCandidates(){
         );
       }
 
-      if(snapRectMidpoints.checked){
+      if(measurementSnapEnabled(snapRectMidpoints)){
         candidates.push(
           {x:cx,y:top,label:"矩形邊中點",priority:10},
           {x:cx,y:bottom,label:"矩形邊中點",priority:10},
@@ -7295,7 +7263,7 @@ function measureSnapCandidates(){
   }
 
   // 已經實際相切的兩圓，其接觸點可供量測捕捉。
-  if(snapTypeDoubleCircle.checked){
+  if(measurementSnapEnabled(snapTypeDoubleCircle)){
     const circles=entries
       .map(entry=>entry.item)
       .filter(item=>item.type==="circle");
@@ -7321,7 +7289,7 @@ function measureSnapCandidates(){
   }
 
   // 已經實際相切的圓與矩形，其接觸點可供量測捕捉。
-  if(snapTypeCircleRect.checked){
+  if(measurementSnapEnabled(snapTypeCircleRect)){
     const circles=entries
       .map(entry=>entry.item)
       .filter(item=>item.type==="circle");
@@ -11618,12 +11586,12 @@ const mobileSnapPanel=document.getElementById("mobileSnapPanel");
 const mobileAlignPanel=document.getElementById("mobileAlignPanel");
 const mobileSystemPanel=document.getElementById("mobileSystemPanel");
 
-const mobileSnapEnabledMirror=document.getElementById("mobileSnapEnabledMirror");
+const mobileMeasureIgnoreSnapSettings=document.getElementById("mobileMeasureIgnoreSnapSettings");
 const mobileSnapStepMirror=document.getElementById("mobileSnapStepMirror");
 const mobileShowSpaceLabels=document.getElementById("mobileShowSpaceLabels");
 
 function syncExtendedMobilePanels(){
-  if(mobileSnapEnabledMirror)mobileSnapEnabledMirror.checked=snapEnabled.checked;
+  if(mobileMeasureIgnoreSnapSettings)mobileMeasureIgnoreSnapSettings.checked=measureIgnoreSnapSettings.checked;
   const snapStepMain=document.getElementById("snapStep");
   if(mobileSnapStepMirror&&snapStepMain&&document.activeElement!==mobileSnapStepMirror){
     mobileSnapStepMirror.value=snapStepMain.value;
@@ -11666,8 +11634,8 @@ showMobilePanel=function(panel){
     inset:["安全設定","設定 X／Y 方向內縮"],
     primary:["工件設定","主要工件形狀、尺寸、間距與交換"],
     secondary:["追加工件","追加工件形狀、尺寸、間距與排列"],
-    snap:["吸附設定","拖曳與量測共用吸附目標"],
-    align:["對齊工件","選取後進行對齊與位置操作"],
+    snap:["輔助設定","微調、磁吸與量測輔助"],
+    align:["對齊工具","選取後進行對齊與位置操作"],
     system:["設定工具","設定檔、V5 空間分析與輸出"]
   }[panel];
 
@@ -11695,11 +11663,12 @@ mobileSnapSettingsBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("sna
 mobileAlignSettingsBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("align"));
 mobileSystemSettingsBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("system"));
 
-mobileSnapEnabledMirror?.addEventListener("change",()=>{
-  snapEnabled.checked=mobileSnapEnabledMirror.checked;
-  snapEnabled.dispatchEvent(new Event("change",{bubbles:true}));
+mobileMeasureIgnoreSnapSettings?.addEventListener("change",()=>{
+  measureIgnoreSnapSettings.checked=mobileMeasureIgnoreSnapSettings.checked;
+  measureIgnoreSnapSettings.dispatchEvent(new Event("change",{bubbles:true}));
   syncExtendedMobilePanels();
 });
+measureIgnoreSnapSettings?.addEventListener("change",syncExtendedMobilePanels);
 
 mobileSnapStepMirror?.addEventListener("input",()=>{
   const main=document.getElementById("snapStep");

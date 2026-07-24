@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.6 Beta 手機拖曳模式與磁吸輔助</title>
+<title>智慧載盤物理模擬器｜V4.6.1 Beta 拖曳模式預設關閉與獨立磁吸輔助</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -4236,7 +4236,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.6 Beta · 手機拖曳模式與磁吸輔助</div>
+<div class="headerBadge">V4.6.1 Beta · 拖曳模式預設關閉與獨立磁吸輔助</div>
 </div>
 <div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
     設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
@@ -4439,7 +4439,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
     </div>
 </div>
 </div></div>
-<div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="edit" data-default-collapsed="true" id="editSettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">量測與編輯</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">拖曳：開</span><span class="sharedSummaryLine">吸力：15 mm</span><span class="sharedSummaryLine">量測：關</span></span></span></button><div class="sharedCollapseBody">
+<div class="section stepManagedSection sharedCollapsibleSection isCollapsed" data-collapse-key="edit" data-default-collapsed="true" id="editSettingsSection"><button aria-expanded="false" class="sharedCollapseHeader" type="button"><span class="sharedCollapseArrow">▼</span><span class="sharedCollapseText"><span class="sharedCollapseTitle">量測與編輯</span><span class="sharedCollapseSummary"><span class="sharedSummaryLine">拖曳：關</span><span class="sharedSummaryLine">吸力：15 mm</span><span class="sharedSummaryLine">量測：關</span></span></span></button><div class="sharedCollapseBody">
 
 <div class="sectionStepControl" data-step-section="editSettingsSection">
 <span>上下鍵微調量</span>
@@ -4458,14 +4458,14 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="toolStatus" id="measureStatus">量測模式未啟用</div>
 <div class="snapSettings">
 <label class="snapToggle">
-<input checked="" id="snapEnabled" type="checkbox"/>
+<input id="snapEnabled" type="checkbox"/>
         啟用拖曳模式
       </label>
 <label>吸力半徑（mm）
         <input id="snapStep" min="0" step="1" type="number" value="15"/>
 </label>
 <div class="toolStatus dragModeHint">
-        拖曳模式預設開啟：左鍵／單指放開時自動尋找附近合法位置；電腦右鍵代表拒絕輔助，位置不合法時直接回原位。
+        拖曳模式預設關閉：開啟後左鍵拖曳會在放開時尋找附近合法位置；電腦右鍵代表拒絕輔助，位置不合法時直接回原位。
       </div>
 <div class="snapTypePanel">
 <div class="snapTypeTitle">──── 拖曳與量測共用吸附目標 ────</div>
@@ -4679,7 +4679,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </div>
 <div aria-label="手機觸控工具列" class="mobileTouchToolbar" id="mobileTouchToolbar">
 <button id="mobileSnapBtn" type="button">拖曳<br/>模式</button>
-<button disabled="" id="mobileFreeDragBtn" type="button">磁吸<br/>輔助</button>
+<button id="mobileFreeDragBtn" type="button">磁吸<br/>輔助</button>
 <button id="mobileMeasureBtn" type="button">量測<br/>模式</button>
 <button id="mobileClearMeasurementsBtn" type="button">清除<br/>量測</button>
 <button id="mobileUndoBtn" type="button">復原<br/>操作</button>
@@ -5199,7 +5199,7 @@ const CONFIG_DEFAULTS=Object.freeze({
   SecondaryGapY:"5",
   SecondaryDirection:"Vertical",
   SecondaryCircleArrange:"Grid",
-  SnapEnabled:"true",
+  SnapEnabled:"false",
   SnapStep:"15",
   SnapTypeBoundary:"true",
   SnapRectCorners:"true",
@@ -9169,10 +9169,15 @@ function drawSnapDragPreview(item,candidate){
   },"右鍵拖曳：拒絕輔助");
 }
 
+function isMobileMagneticAssistEnabled(){
+  return document.body.classList.contains("touchUiEnabled") &&
+    !mobileFreeDragEnabled;
+}
+
 function isMobileTouchAssistActive(){
   return document.body.classList.contains("touchUiEnabled") &&
     mobileDragModeEnabled &&
-    !mobileFreeDragEnabled;
+    isMobileMagneticAssistEnabled();
 }
 
 function startItemDrag(event){
@@ -10801,14 +10806,17 @@ function syncMobileModeUi(){
   if(mobileModeBadge){
     const parts=["手機："];
     if(measureMode)parts.push("量測模式");
+
     if(mobileDragModeEnabled){
       parts.push("拖曳模式");
       parts.push(`磁吸輔助：${mobileFreeDragEnabled?"關":"開"}`);
       parts.push("單指按住拖動工件");
     }else{
       parts.push("選取模式");
+      parts.push(`磁吸輔助：${mobileFreeDragEnabled?"關":"開"}`);
       parts.push("單指按住拖動框選");
     }
+
     parts.push("雙指縮放與移動圖面");
     parts.push("雙擊空白復原縮放與位置");
     mobileModeBadge.textContent=parts.join("｜");
@@ -10957,17 +10965,10 @@ function finishMobileTouchPan(event){
 mobileSnapBtn?.addEventListener("click",()=>{
   mobileDragModeEnabled=!mobileDragModeEnabled;
 
-  if(mobileDragModeEnabled){
-    /* 每次開啟拖曳模式，磁吸輔助都預設開啟。 */
-    if(mobileFreeDragEnabled)setMobileFreeDrag(false);
-  }else{
-    if(mobileFreeDragEnabled)setMobileFreeDrag(false);
-  }
-
   syncMobileModeUi();
   setToolStatus(
     mobileDragModeEnabled
-      ?"已開啟手機拖曳模式，磁吸輔助預設開啟。"
+      ?"已開啟手機拖曳模式。"
       :"已關閉手機拖曳模式，恢復選取與框選。",
     mobileDragModeEnabled?"success":""
   );
@@ -11219,7 +11220,6 @@ function restoreMobileSnapTargets(){
 
 function setMobileFreeDrag(enabled){
   /* enabled=true 代表關閉磁吸輔助，保留舊變數名稱以降低改版風險。 */
-  if(enabled&&!mobileDragModeEnabled)return;
 
   if(enabled){
     mobileSavedSnapTargetState={};
@@ -11247,11 +11247,14 @@ function setMobileFreeDrag(enabled){
 }
 
 function syncMobileFreeDragAvailability(){
-  const available=mobileDragModeEnabled;
-  mobileFreeDragBtn.disabled=!available;
-  mobileFreeDragBtn?.classList.toggle("active",available&&!mobileFreeDragEnabled);
-  mobileFreeDragBtn?.setAttribute("aria-pressed",String(available&&!mobileFreeDragEnabled));
-  if(!available&&mobileFreeDragEnabled)setMobileFreeDrag(false);
+  /*
+    V4.6.1：磁吸輔助同時供拖曳與量測使用，
+    因此不再依賴手機拖曳模式，任何時候都可切換。
+  */
+  const available=true;
+  mobileFreeDragBtn.disabled=false;
+  mobileFreeDragBtn?.classList.toggle("active",!mobileFreeDragEnabled);
+  mobileFreeDragBtn?.setAttribute("aria-pressed",String(!mobileFreeDragEnabled));
 }
 
 mobileFineTuneMap.forEach(([mobileControl,mainControl])=>{

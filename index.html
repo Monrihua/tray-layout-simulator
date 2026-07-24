@@ -4474,10 +4474,28 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </div>
 <div class="snapTypePanel">
 <div class="snapTypeTitle">──── 拖曳與量測共用吸附目標 ────</div>
-<label class="snapTargetStandalone">
-<input checked="" id="snapTypeBoundary" type="checkbox"/>
-<span>安全邊界</span>
+<div class="snapTargetGroup">
+<label class="snapTargetHeader">
+<input checked="" id="snapGroupTray" type="checkbox"/>
+<span>載盤</span>
 </label>
+<div class="snapTargetChildren">
+<label><input checked="" id="snapTrayCorners" type="checkbox"/>載盤四角</label>
+<label><input checked="" id="snapTrayMidpoints" type="checkbox"/>載盤邊中點</label>
+<label><input checked="" id="snapTrayBoundary" type="checkbox"/>載盤邊界</label>
+</div>
+</div>
+<div class="snapTargetGroup">
+<label class="snapTargetHeader">
+<input checked="" id="snapGroupSafe" type="checkbox"/>
+<span>安全範圍</span>
+</label>
+<div class="snapTargetChildren">
+<label><input checked="" id="snapSafeCorners" type="checkbox"/>安全四角</label>
+<label><input checked="" id="snapSafeMidpoints" type="checkbox"/>安全邊中點</label>
+<label><input checked="" id="snapTypeBoundary" type="checkbox"/>安全邊界</label>
+</div>
+</div>
 <div class="snapTargetGroup">
 <label class="snapTargetHeader">
 <input checked="" id="snapGroupRect" type="checkbox"/>
@@ -5091,6 +5109,13 @@ function restoreContextHint(){
 }
 const snapStep=document.getElementById("snapStep");
 const snapTypeBoundary=document.getElementById("snapTypeBoundary");
+const snapGroupTray=document.getElementById("snapGroupTray");
+const snapTrayCorners=document.getElementById("snapTrayCorners");
+const snapTrayMidpoints=document.getElementById("snapTrayMidpoints");
+const snapTrayBoundary=document.getElementById("snapTrayBoundary");
+const snapGroupSafe=document.getElementById("snapGroupSafe");
+const snapSafeCorners=document.getElementById("snapSafeCorners");
+const snapSafeMidpoints=document.getElementById("snapSafeMidpoints");
 const snapGroupRect=document.getElementById("snapGroupRect");
 const snapRectCorners=document.getElementById("snapRectCorners");
 const snapRectMidpoints=document.getElementById("snapRectMidpoints");
@@ -5106,6 +5131,11 @@ const snapTypesAllBtn=document.getElementById("snapTypesAllBtn");
 const snapTypesNoneBtn=document.getElementById("snapTypesNoneBtn");
 
 const SNAP_TYPE_INPUTS=[
+  snapTrayCorners,
+  snapTrayMidpoints,
+  snapTrayBoundary,
+  snapSafeCorners,
+  snapSafeMidpoints,
   snapTypeBoundary,
   snapRectCorners,
   snapRectMidpoints,
@@ -5118,6 +5148,8 @@ const SNAP_TYPE_INPUTS=[
 ];
 
 const SNAP_GROUPS=[
+  {parent:snapGroupTray,children:[snapTrayCorners,snapTrayMidpoints,snapTrayBoundary]},
+  {parent:snapGroupSafe,children:[snapSafeCorners,snapSafeMidpoints,snapTypeBoundary]},
   {parent:snapGroupRect,children:[snapRectCorners,snapRectMidpoints,snapRectEdges]},
   {parent:snapGroupCircle,children:[snapCircleCenter,snapTypeQuadrant]},
   {parent:snapGroupTangent,children:[snapTypeSingleCircle,snapTypeDoubleCircle,snapTypeCircleRect]}
@@ -5209,6 +5241,11 @@ const CONFIG_DEFAULTS=Object.freeze({
   SnapEnabled:"false",
   MeasurementConfirmOnRelease:"false",
   SnapStep:"15",
+  SnapTrayCorners:"true",
+  SnapTrayMidpoints:"true",
+  SnapTrayBoundary:"true",
+  SnapSafeCorners:"true",
+  SnapSafeMidpoints:"true",
   SnapTypeBoundary:"true",
   SnapRectCorners:"true",
   SnapRectMidpoints:"true",
@@ -5244,7 +5281,7 @@ const CONFIG_SECTION_KEYS=[
   },
   {
     title:"Editing, magnetic snap and analysis",
-    keys:["SnapEnabled","MeasurementConfirmOnRelease","SnapStep","SnapTypeBoundary","SnapRectCorners","SnapRectMidpoints","SnapRectEdges","SnapCircleCenter","SnapTypeQuadrant","SnapTypeSingleCircle","SnapTypeDoubleCircle","SnapTypeCircleRect","ShowSpaceLabels"]
+    keys:["SnapEnabled","MeasurementConfirmOnRelease","SnapStep","SnapTrayCorners","SnapTrayMidpoints","SnapTrayBoundary","SnapSafeCorners","SnapSafeMidpoints","SnapTypeBoundary","SnapRectCorners","SnapRectMidpoints","SnapRectEdges","SnapCircleCenter","SnapTypeQuadrant","SnapTypeSingleCircle","SnapTypeDoubleCircle","SnapTypeCircleRect","ShowSpaceLabels"]
   },
   {
     title:"Independent numeric steps",
@@ -5327,6 +5364,11 @@ function getCurrentConfig(){
     SnapEnabled:String(snapEnabled.checked),
     MeasurementConfirmOnRelease:String(measureConfirmOnRelease.checked),
     SnapStep:snapStep.value,
+    SnapTrayCorners:String(snapTrayCorners.checked),
+    SnapTrayMidpoints:String(snapTrayMidpoints.checked),
+    SnapTrayBoundary:String(snapTrayBoundary.checked),
+    SnapSafeCorners:String(snapSafeCorners.checked),
+    SnapSafeMidpoints:String(snapSafeMidpoints.checked),
     SnapTypeBoundary:String(snapTypeBoundary.checked),
     SnapRectCorners:String(snapRectCorners.checked),
     SnapRectMidpoints:String(snapRectMidpoints.checked),
@@ -5454,6 +5496,11 @@ function applyConfig(config){
   snapEnabled.checked=parseConfigBoolean(config.SnapEnabled,false);
   measureConfirmOnRelease.checked=parseConfigBoolean(config.MeasurementConfirmOnRelease,false);
   setNumericConfigValue(snapStep,config.SnapStep,CONFIG_DEFAULTS.SnapStep);
+  snapTrayCorners.checked=parseConfigBoolean(config.SnapTrayCorners,true);
+  snapTrayMidpoints.checked=parseConfigBoolean(config.SnapTrayMidpoints,true);
+  snapTrayBoundary.checked=parseConfigBoolean(config.SnapTrayBoundary,true);
+  snapSafeCorners.checked=parseConfigBoolean(config.SnapSafeCorners,true);
+  snapSafeMidpoints.checked=parseConfigBoolean(config.SnapSafeMidpoints,true);
   snapTypeBoundary.checked=parseConfigBoolean(config.SnapTypeBoundary,true);
   snapRectCorners.checked=parseConfigBoolean(config.SnapRectCorners,parseConfigBoolean(config.SnapTypeRect,true));
   snapRectMidpoints.checked=parseConfigBoolean(config.SnapRectMidpoints,parseConfigBoolean(config.SnapTypeRect,true));
@@ -6631,19 +6678,58 @@ function magneticSnapCandidates(refs,threshold){
 
   const group=selectedBounds(refs);
   const selectedKeys=new Set(refs.map(ref=>`${ref.kind}:${ref.index}`));
-  const addCandidate=(dx,dy,label,contactCount=1)=>{
+  const addCandidate=(dx,dy,label,contactCount=1,priority=30)=>{
     if(!Number.isFinite(dx)||!Number.isFinite(dy))return;
     const distance=Math.hypot(dx,dy);
     if(distance<=threshold+EPS&&distance>EPS){
-      candidates.push({dx,dy,distance,label,contactCount});
+      candidates.push({dx,dy,distance,label,contactCount,priority});
     }
   };
 
+  const addBoundaryPointCandidates=(boundary,prefix,cornersEnabled,midpointsEnabled)=>{
+    const movingPoints=[];
+    if(cornersEnabled) movingPoints.push(
+      {x:group.left,y:group.top},{x:group.right,y:group.top},
+      {x:group.left,y:group.bottom},{x:group.right,y:group.bottom}
+    );
+    if(midpointsEnabled) movingPoints.push(
+      {x:group.centerX,y:group.top},{x:group.centerX,y:group.bottom},
+      {x:group.left,y:group.centerY},{x:group.right,y:group.centerY}
+    );
+    const targetPoints=[];
+    if(cornersEnabled) targetPoints.push(
+      {x:boundary.left,y:boundary.top,label:`${prefix}四角`},
+      {x:boundary.right,y:boundary.top,label:`${prefix}四角`},
+      {x:boundary.left,y:boundary.bottom,label:`${prefix}四角`},
+      {x:boundary.right,y:boundary.bottom,label:`${prefix}四角`}
+    );
+    if(midpointsEnabled){
+      const cx=(boundary.left+boundary.right)/2,cy=(boundary.top+boundary.bottom)/2;
+      targetPoints.push(
+        {x:cx,y:boundary.top,label:`${prefix}邊中點`},
+        {x:cx,y:boundary.bottom,label:`${prefix}邊中點`},
+        {x:boundary.left,y:cy,label:`${prefix}邊中點`},
+        {x:boundary.right,y:cy,label:`${prefix}邊中點`}
+      );
+    }
+    for(const moving of movingPoints) for(const target of targetPoints)
+      addCandidate(target.x-moving.x,target.y-moving.y,target.label,2,10);
+  };
+
+  addBoundaryPointCandidates({left:0,right:c.TL,top:0,bottom:c.TW},"載盤",snapTrayCorners.checked,snapTrayMidpoints.checked);
+  addBoundaryPointCandidates({left:c.SX,right:c.SX+c.UL,top:c.SY,bottom:c.SY+c.UW},"安全範圍",snapSafeCorners.checked,snapSafeMidpoints.checked);
+
+  if(snapTrayBoundary.checked){
+    addCandidate(-group.left,0,"載盤左邊",1,20);
+    addCandidate(c.TL-group.right,0,"載盤右邊",1,20);
+    addCandidate(0,-group.top,"載盤上邊",1,20);
+    addCandidate(0,c.TW-group.bottom,"載盤下邊",1,20);
+  }
   if(snapTypeBoundary.checked){
-    addCandidate(c.SX-group.left,0,"安全區左邊");
-    addCandidate(c.SX+c.UL-group.right,0,"安全區右邊");
-    addCandidate(0,c.SY-group.top,"安全區上邊");
-    addCandidate(0,c.SY+c.UW-group.bottom,"安全區下邊");
+    addCandidate(c.SX-group.left,0,"安全區左邊",1,20);
+    addCandidate(c.SX+c.UL-group.right,0,"安全區右邊",1,20);
+    addCandidate(0,c.SY-group.top,"安全區上邊",1,20);
+    addCandidate(0,c.SY+c.UW-group.bottom,"安全區下邊",1,20);
   }
 
   const entries=primaryOrSecondaryEntries().filter(
@@ -6796,12 +6882,12 @@ function magneticSnapCandidates(refs,threshold){
 
       if(snapRectEdges.checked){
         if(projectionOverlap(ig.top,ig.bottom,tg.top,tg.bottom,EPS)){
-          addCandidate(leftDx,0,"矩形邊緣相切");
-          addCandidate(rightDx,0,"矩形邊緣相切");
+          addCandidate(leftDx,0,"矩形邊緣相切",1,30);
+          addCandidate(rightDx,0,"矩形邊緣相切",1,30);
         }
         if(projectionOverlap(ig.left,ig.right,tg.left,tg.right,EPS)){
-          addCandidate(0,topDy,"矩形邊緣相切");
-          addCandidate(0,bottomDy,"矩形邊緣相切");
+          addCandidate(0,topDy,"矩形邊緣相切",1,30);
+          addCandidate(0,bottomDy,"矩形邊緣相切",1,30);
         }
       }
 
@@ -6809,7 +6895,7 @@ function magneticSnapCandidates(refs,threshold){
         for(const dx of [leftDx,rightDx]){
           for(const dy of [topDy,bottomDy]){
             if(Math.abs(dx)<=threshold+EPS&&Math.abs(dy)<=threshold+EPS){
-              addCandidate(dx,dy,"矩形四角貼合",2);
+              addCandidate(dx,dy,"矩形四角貼合",2,10);
             }
           }
         }
@@ -6821,10 +6907,10 @@ function magneticSnapCandidates(refs,threshold){
         const targetCx=(tg.left+tg.right)/2;
         const targetCy=(tg.top+tg.bottom)/2;
 
-        addCandidate(targetCx-itemCx,tg.top-ig.bottom,"矩形邊中點貼合",2);
-        addCandidate(targetCx-itemCx,tg.bottom-ig.top,"矩形邊中點貼合",2);
-        addCandidate(tg.left-ig.right,targetCy-itemCy,"矩形邊中點貼合",2);
-        addCandidate(tg.right-ig.left,targetCy-itemCy,"矩形邊中點貼合",2);
+        addCandidate(targetCx-itemCx,tg.top-ig.bottom,"矩形邊中點貼合",2,10);
+        addCandidate(targetCx-itemCx,tg.bottom-ig.top,"矩形邊中點貼合",2,10);
+        addCandidate(tg.left-ig.right,targetCy-itemCy,"矩形邊中點貼合",2,10);
+        addCandidate(tg.right-ig.left,targetCy-itemCy,"矩形邊中點貼合",2,10);
       }
       continue;
     }
@@ -6958,6 +7044,7 @@ function findBestMagneticSnap(refs,threshold,pointer=null,previousCandidate=null
   }
 
   validCandidates.sort((a,b)=>
+    (a.priority??30)-(b.priority??30) ||
     a.score-b.score ||
     (b.contactCount||1)-(a.contactCount||1) ||
     a.distance-b.distance
@@ -7100,38 +7187,25 @@ function measureSnapCandidates(){
   const candidates=[];
   const c=currentContext;
 
-  // 安全邊界：角點、邊中點與任意邊緣都共用同一個開關。
-  if(c&&snapTypeBoundary.checked){
-    const boundarySets=[
-      {
-        left:c.SX,
-        right:c.SX+c.UL,
-        top:c.SY,
-        bottom:c.SY+c.UW,
-        prefix:"安全範圍"
-      },
-      {
-        left:0,
-        right:c.TL,
-        top:0,
-        bottom:c.TW,
-        prefix:"載盤"
-      }
+  // 固定錨點：載盤與安全範圍的四角、邊中點。
+  if(c){
+    const fixedSets=[
+      {left:0,right:c.TL,top:0,bottom:c.TW,prefix:"載盤",corners:snapTrayCorners.checked,midpoints:snapTrayMidpoints.checked},
+      {left:c.SX,right:c.SX+c.UL,top:c.SY,bottom:c.SY+c.UW,prefix:"安全範圍",corners:snapSafeCorners.checked,midpoints:snapSafeMidpoints.checked}
     ];
-
-    for(const boundary of boundarySets){
-      const cx=(boundary.left+boundary.right)/2;
-      const cy=(boundary.top+boundary.bottom)/2;
-
-      candidates.push(
-        {x:boundary.left,y:boundary.top,label:`${boundary.prefix}角點`},
-        {x:boundary.right,y:boundary.top,label:`${boundary.prefix}角點`},
-        {x:boundary.left,y:boundary.bottom,label:`${boundary.prefix}角點`},
-        {x:boundary.right,y:boundary.bottom,label:`${boundary.prefix}角點`},
-        {x:cx,y:boundary.top,label:`${boundary.prefix}邊中點`},
-        {x:cx,y:boundary.bottom,label:`${boundary.prefix}邊中點`},
-        {x:boundary.left,y:cy,label:`${boundary.prefix}邊中點`},
-        {x:boundary.right,y:cy,label:`${boundary.prefix}邊中點`}
+    for(const boundary of fixedSets){
+      const cx=(boundary.left+boundary.right)/2,cy=(boundary.top+boundary.bottom)/2;
+      if(boundary.corners) candidates.push(
+        {x:boundary.left,y:boundary.top,label:`${boundary.prefix}四角`,priority:10},
+        {x:boundary.right,y:boundary.top,label:`${boundary.prefix}四角`,priority:10},
+        {x:boundary.left,y:boundary.bottom,label:`${boundary.prefix}四角`,priority:10},
+        {x:boundary.right,y:boundary.bottom,label:`${boundary.prefix}四角`,priority:10}
+      );
+      if(boundary.midpoints) candidates.push(
+        {x:cx,y:boundary.top,label:`${boundary.prefix}邊中點`,priority:10},
+        {x:cx,y:boundary.bottom,label:`${boundary.prefix}邊中點`,priority:10},
+        {x:boundary.left,y:cy,label:`${boundary.prefix}邊中點`,priority:10},
+        {x:boundary.right,y:cy,label:`${boundary.prefix}邊中點`,priority:10}
       );
     }
   }
@@ -7166,19 +7240,19 @@ function measureSnapCandidates(){
 
       if(snapRectCorners.checked){
         candidates.push(
-          {x:left,y:top,label:"矩形四角"},
-          {x:right,y:top,label:"矩形四角"},
-          {x:left,y:bottom,label:"矩形四角"},
-          {x:right,y:bottom,label:"矩形四角"}
+          {x:left,y:top,label:"矩形四角",priority:10},
+          {x:right,y:top,label:"矩形四角",priority:10},
+          {x:left,y:bottom,label:"矩形四角",priority:10},
+          {x:right,y:bottom,label:"矩形四角",priority:10}
         );
       }
 
       if(snapRectMidpoints.checked){
         candidates.push(
-          {x:cx,y:top,label:"矩形邊中點"},
-          {x:cx,y:bottom,label:"矩形邊中點"},
-          {x:left,y:cy,label:"矩形邊中點"},
-          {x:right,y:cy,label:"矩形邊中點"}
+          {x:cx,y:top,label:"矩形邊中點",priority:10},
+          {x:cx,y:bottom,label:"矩形邊中點",priority:10},
+          {x:left,y:cy,label:"矩形邊中點",priority:10},
+          {x:right,y:cy,label:"矩形邊中點",priority:10}
         );
       }
     }
@@ -7245,8 +7319,7 @@ function nearestMeasureSnap(rawPoint){
   const threshold=Math.max(0,Number(snapStep.value)||0);
   let best=null;
   let bestDistance=Infinity;
-  let quadrantBest=null;
-  let quadrantDistance=Infinity;
+  let bestPriority=Infinity;
 
   if(threshold<=0){
     return {point:rawPoint,label:"自由點",distance:Infinity};
@@ -7255,24 +7328,12 @@ function nearestMeasureSnap(rawPoint){
   for(const candidate of measureSnapCandidates()){
     const distance=Math.hypot(candidate.x-rawPoint.x,candidate.y-rawPoint.y);
 
-    // 四分點在相同吸力半徑內仍保有較高優先權。
-    if(candidate.label.startsWith("圓形四分點")){
-      if(distance<quadrantDistance&&distance<=threshold){
-        quadrantDistance=distance;
-        quadrantBest=candidate;
-      }
-      continue;
-    }
-
-    if(distance<bestDistance&&distance<=threshold){
+    const priority=candidate.priority ?? (candidate.label.startsWith("圓形四分點")?10:20);
+    if(distance<=threshold&&(priority<bestPriority||(priority===bestPriority&&distance<bestDistance))){
+      bestPriority=priority;
       bestDistance=distance;
       best=candidate;
     }
-  }
-
-  if(quadrantBest){
-    best=quadrantBest;
-    bestDistance=quadrantDistance;
   }
 
   // 「單圓相切」在量測模式代表圓周上的任意最近點。
@@ -7289,32 +7350,20 @@ function nearestMeasureSnap(rawPoint){
       const y=item.cy+dy/length*item.r;
       const distance=Math.hypot(x-rawPoint.x,y-rawPoint.y);
 
-      if(!quadrantBest&&distance<bestDistance&&distance<=threshold){
+      if(distance<=threshold&&(30<bestPriority||(30===bestPriority&&distance<bestDistance))){
         bestDistance=distance;
-        best={x,y,label:"圓周最近點"};
+        best={x,y,label:"圓周最近點",priority:30};
+        bestPriority=30;
       }
     }
   }
 
-  // 安全邊界開啟時，量測可捕捉任意邊緣位置。
-  if(snapTypeBoundary.checked&&currentContext){
+  // 載盤邊界與安全範圍邊界分別開關；優先級低於四角與邊中點。
+  if((snapTrayBoundary.checked||snapTypeBoundary.checked)&&currentContext){
     const c=currentContext;
-    const boundarySets=[
-      {
-        left:0,
-        right:c.TL,
-        top:0,
-        bottom:c.TW,
-        label:"載盤邊界"
-      },
-      {
-        left:c.SX,
-        right:c.SX+c.UL,
-        top:c.SY,
-        bottom:c.SY+c.UW,
-        label:"安全範圍邊界"
-      }
-    ];
+    const boundarySets=[];
+    if(snapTrayBoundary.checked)boundarySets.push({left:0,right:c.TL,top:0,bottom:c.TW,label:"載盤邊界"});
+    if(snapTypeBoundary.checked)boundarySets.push({left:c.SX,right:c.SX+c.UL,top:c.SY,bottom:c.SY+c.UW,label:"安全範圍邊界"});
 
     for(const boundary of boundarySets){
       const edgePoints=[
@@ -7342,9 +7391,10 @@ function nearestMeasureSnap(rawPoint){
 
       for(const candidate of edgePoints){
         const distance=Math.hypot(candidate.x-rawPoint.x,candidate.y-rawPoint.y);
-        if(distance<bestDistance&&distance<=threshold){
+        if(distance<=threshold&&(20<bestPriority||(20===bestPriority&&distance<bestDistance))){
+          bestPriority=20;
           bestDistance=distance;
-          best=candidate;
+          best={...candidate,priority:20};
         }
       }
     }
@@ -7369,9 +7419,10 @@ function nearestMeasureSnap(rawPoint){
 
       for(const candidate of edgePoints){
         const distance=Math.hypot(candidate.x-rawPoint.x,candidate.y-rawPoint.y);
-        if(distance<bestDistance&&distance<=threshold){
+        if(distance<=threshold&&(30<bestPriority||(30===bestPriority&&distance<bestDistance))){
+          bestPriority=30;
           bestDistance=distance;
-          best=candidate;
+          best={...candidate,priority:30};
         }
       }
     }
@@ -11177,7 +11228,7 @@ const mobileFineTuneMap=[
 ];
 
 const mobileSnapTargetIds=[
-  "snapTypeBoundary","snapRectCorners","snapRectMidpoints","snapRectEdges",
+  "snapTrayCorners","snapTrayMidpoints","snapTrayBoundary","snapSafeCorners","snapSafeMidpoints","snapTypeBoundary","snapRectCorners","snapRectMidpoints","snapRectEdges",
   "snapCircleCenter","snapTypeQuadrant","snapTypeSingleCircle",
   "snapTypeDoubleCircle","snapTypeCircleRect"
 ];

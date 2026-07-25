@@ -4653,6 +4653,22 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
   }
 }
 
+
+
+/* ===== V17 桌面／手機磁吸輔助主開關統一 ===== */
+.snapAssistMasterToggle{
+  margin:0 0 9px!important;
+  justify-content:flex-start!important;
+  border-color:#a9c2ef!important;
+  background:#edf4ff!important;
+  color:#174ea6!important;
+  font-weight:900!important;
+}
+.snapAssistMasterToggle input{
+  width:auto!important;
+  margin:0!important;
+}
+
 </style>
 </head>
 <body>
@@ -4910,6 +4926,10 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </label>
 <div class="snapTypePanel">
 <div class="snapTypeTitle">──── 吸附點設置 ────</div>
+<label class="snapToggle snapAssistMasterToggle">
+<input checked="" id="snapAssistMaster" type="checkbox"/>
+<span>磁吸輔助</span>
+</label>
 <div class="snapTargetGroup">
 <label class="snapTargetHeader"><input checked="" id="snapGroupTray" type="checkbox"/><span>載盤</span></label>
 <div class="snapTargetChildren">
@@ -4944,7 +4964,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <label><input checked="" id="snapTypeDoubleCircle" type="checkbox"/>雙圓相切</label>
 <label><input checked="" id="snapTypeCircleRect" type="checkbox"/>圓矩相切</label>
 </div></div>
-<div class="snapTypeActions"><button id="snapTypesAllBtn" type="button">全開</button><button id="snapTypesNoneBtn" type="button">全關</button></div>
+
 <div class="snapTypeNote">拖曳模式依照此處開關；量測模式可選擇忽略這些開關並保持全部磁吸點可用。</div>
 </div>
 </div>
@@ -5387,6 +5407,14 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <label class="mobileWideField"><span>吸力半徑</span><div class="mobileNumberControl"><button data-mobile-step="-1" data-mobile-step-target="mobileSnapStepMirror" type="button">−</button><input id="mobileSnapStepMirror" min="0" step="1" type="number"/><button data-mobile-step="1" data-mobile-step-target="mobileSnapStepMirror" type="button">＋</button></div></label>
 <div class="mobilePanelHint">以下為吸附點設置；拖曳模式會依照這些開關運作。</div>
 </div>
+<div class="mobileSectionCard">
+<div class="mobileSectionTitle">吸附點設置</div>
+<label class="mobileSwitchRow">
+<input checked="" id="mobileSnapAssistMaster" type="checkbox"/>
+<span>磁吸輔助</span>
+</label>
+<div class="mobilePanelHint">勾選時全部開啟；取消勾選時全部關閉。</div>
+</div>
 <div class="mobileSectionCard"><div class="mobileSectionTitle">載盤吸附點</div>
 <label class="mobileSwitchRow"><input data-snap-mirror="snapTrayCorners" type="checkbox"/><span>載盤四角</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTrayMidpoints" type="checkbox"/><span>載盤邊中點</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTrayBoundary" type="checkbox"/><span>載盤邊界</span></label></div>
 <div class="mobileSectionCard"><div class="mobileSectionTitle">安全範圍吸附點</div>
@@ -5395,7 +5423,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <label class="mobileSwitchRow"><input data-snap-mirror="snapRectCorners" type="checkbox"/><span>四角</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapRectMidpoints" type="checkbox"/><span>邊中點</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapRectEdges" type="checkbox"/><span>邊緣相切</span></label></div>
 <div class="mobileSectionCard"><div class="mobileSectionTitle">圓形與相切吸附點</div>
 <label class="mobileSwitchRow"><input data-snap-mirror="snapCircleCenter" type="checkbox"/><span>圓心</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeQuadrant" type="checkbox"/><span>四分點</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeSingleCircle" type="checkbox"/><span>單圓相切</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeDoubleCircle" type="checkbox"/><span>雙圓相切</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeCircleRect" type="checkbox"/><span>圓矩相切</span></label>
-<div class="mobileTwoActions"><button id="mobileSnapAllBtn" type="button">全部開啟</button><button id="mobileSnapNoneBtn" type="button">全部關閉</button></div></div>
+</div>
 <div class="mobileSectionCard"><div class="mobileSectionTitle">量測模式</div>
 <label class="mobileSwitchRow"><input checked="" id="mobileMeasureIgnoreSnapSettings" type="checkbox"/><span>忽略吸附點設置，保持磁吸輔助全開</span></label>
 <div class="mobilePanelHint">取消勾選後，量測會遵守上方吸附點設置。</div></div>
@@ -5519,8 +5547,7 @@ const snapGroupTangent=document.getElementById("snapGroupTangent");
 const snapTypeSingleCircle=document.getElementById("snapTypeSingleCircle");
 const snapTypeDoubleCircle=document.getElementById("snapTypeDoubleCircle");
 const snapTypeCircleRect=document.getElementById("snapTypeCircleRect");
-const snapTypesAllBtn=document.getElementById("snapTypesAllBtn");
-const snapTypesNoneBtn=document.getElementById("snapTypesNoneBtn");
+const snapAssistMaster=document.getElementById("snapAssistMaster");
 
 const SNAP_TYPE_INPUTS=[
   snapTrayCorners,
@@ -8460,7 +8487,7 @@ function clearMeasurements(){
 }
 
 
-const MOBILE_CANVAS_INITIAL_SHIFT_RATIO=0.025;
+const MOBILE_CANVAS_INITIAL_SHIFT_RATIO=-0.025;
 
 function getDefaultCanvasViewBox(){
   if(!baseViewBox)return null;
@@ -10903,6 +10930,11 @@ const editOnlyControlIds=new Set([
   "snapTypeSingleCircle",
   "snapTypeDoubleCircle",
   "snapTypeCircleRect",
+  "snapGroupTray",
+  "snapGroupSafe",
+  "snapAssistMaster",
+  "measureIgnoreSnapSettings",
+  "secondaryAutoRedraw",
   "showSpaceLabels"
 ]);
 
@@ -11282,32 +11314,61 @@ el.safeX.addEventListener("change",syncHeaderQuickTools);
 el.safeY.addEventListener("input",syncHeaderQuickTools);
 el.safeY.addEventListener("change",syncHeaderQuickTools);
 snapEnabled.addEventListener("change",syncHeaderQuickTools);
+function syncSnapAssistMasterState(){
+  const checkedCount=SNAP_TYPE_INPUTS.filter(input=>input.checked).length;
+  const allChecked=checkedCount===SNAP_TYPE_INPUTS.length;
+  const partiallyChecked=checkedCount>0&&!allChecked;
+
+  if(snapAssistMaster){
+    snapAssistMaster.checked=allChecked;
+    snapAssistMaster.indeterminate=partiallyChecked;
+  }
+
+  const mobileMaster=document.getElementById("mobileSnapAssistMaster");
+  if(mobileMaster){
+    mobileMaster.checked=allChecked;
+    mobileMaster.indeterminate=partiallyChecked;
+  }
+
+  mobileFreeDragEnabled=!allChecked;
+  if(mobileFreeDragBtn){
+    mobileFreeDragBtn.classList.toggle("active",allChecked);
+    mobileFreeDragBtn.setAttribute("aria-pressed",String(allChecked));
+  }
+}
+
 function syncSnapGroupStates(){
   for(const group of SNAP_GROUPS){
     const checkedCount=group.children.filter(input=>input.checked).length;
     group.parent.checked=checkedCount===group.children.length;
     group.parent.indeterminate=checkedCount>0&&checkedCount<group.children.length;
   }
+  syncSnapAssistMasterState();
 }
 
-function setAllSnapTypes(checked){
+function setAllSnapTypes(checked,{showStatus=true}={}){
   SNAP_TYPE_INPUTS.forEach(input=>input.checked=checked);
   syncSnapGroupStates();
-  setToolStatus(
-    checked
-      ?"已啟用全部磁吸候選點。"
-      :"已關閉全部磁吸候選點；可單獨開啟需要的類型。",
-    checked?"success":"warning"
-  );
+
+  if(showStatus){
+    setToolStatus(
+      checked
+        ?"磁吸輔助已開啟：全部吸附點已啟用。"
+        :"磁吸輔助已關閉：全部吸附點已停用。",
+      checked?"success":"warning"
+    );
+  }
 }
 
-snapTypesAllBtn.addEventListener("click",()=>setAllSnapTypes(true));
-snapTypesNoneBtn.addEventListener("click",()=>setAllSnapTypes(false));
+snapAssistMaster?.addEventListener("change",()=>{
+  setAllSnapTypes(snapAssistMaster.checked);
+});
 
 SNAP_GROUPS.forEach(group=>{
   group.parent.addEventListener("change",()=>{
     group.children.forEach(input=>input.checked=group.parent.checked);
     group.parent.indeterminate=false;
+    syncSnapAssistMasterState();
     const enabled=SNAP_TYPE_INPUTS.filter(item=>item.checked).length;
     setToolStatus(
       enabled?`目前啟用 ${enabled} 種磁吸候選點。`:"目前沒有啟用任何磁吸候選點。",
@@ -11329,6 +11390,7 @@ SNAP_TYPE_INPUTS.forEach(input=>{
   });
 });
 
+syncSnapGroupStates();
 syncHeaderQuickTools();
 
 measureModeBtn.addEventListener("click",toggleMeasureMode);
@@ -12062,21 +12124,8 @@ function restoreMobileSnapTargets(){
 }
 
 function setMobileFreeDrag(enabled){
-  /*
-    enabled=true 代表磁吸輔助關閉。
-    開啟＝所有吸附點全開；關閉＝所有吸附點全關。
-  */
-  mobileFreeDragEnabled=enabled;
   const snapOn=!enabled;
-
-  mobileSnapTargetIds.forEach(id=>{
-    const control=document.getElementById(id);
-    if(!control)return;
-    control.checked=snapOn;
-    control.dispatchEvent(new Event("change",{bubbles:true}));
-  });
-
-  syncSnapGroupStates();
+  setAllSnapTypes(snapOn,{showStatus:false});
 
   if(mobileFreeDragBtn){
     mobileFreeDragBtn.classList.toggle("active",snapOn);
@@ -12087,8 +12136,8 @@ function setMobileFreeDrag(enabled){
   syncMobileModeUi();
   setToolStatus(
     snapOn
-      ?"手機磁吸輔助已開啟：所有吸附點已全部開啟。"
-      :"手機磁吸輔助已關閉：所有吸附點已全部關閉。",
+      ?"磁吸輔助已開啟：所有吸附點已全部開啟。"
+      :"磁吸輔助已關閉：所有吸附點已全部關閉。",
     snapOn?"success":""
   );
 }
@@ -12234,11 +12283,13 @@ const mobileAlignPanel=document.getElementById("mobileAlignPanel");
 const mobileSystemPanel=document.getElementById("mobileSystemPanel");
 
 const mobileMeasureIgnoreSnapSettings=document.getElementById("mobileMeasureIgnoreSnapSettings");
+const mobileSnapAssistMaster=document.getElementById("mobileSnapAssistMaster");
 const mobileSnapStepMirror=document.getElementById("mobileSnapStepMirror");
 const mobileShowSpaceLabels=document.getElementById("mobileShowSpaceLabels");
 
 function syncExtendedMobilePanels(){
   if(mobileMeasureIgnoreSnapSettings)mobileMeasureIgnoreSnapSettings.checked=measureIgnoreSnapSettings.checked;
+  syncSnapAssistMasterState();
   const snapStepMain=document.getElementById("snapStep");
   if(mobileSnapStepMirror&&snapStepMain&&document.activeElement!==mobileSnapStepMirror){
     mobileSnapStepMirror.value=snapStepMain.value;
@@ -12338,12 +12389,8 @@ document.querySelectorAll("[data-snap-mirror]").forEach(mirror=>{
   });
 });
 
-document.getElementById("mobileSnapAllBtn")?.addEventListener("click",()=>{
-  document.getElementById("snapTypesAllBtn")?.click();
-  syncExtendedMobilePanels();
-});
-document.getElementById("mobileSnapNoneBtn")?.addEventListener("click",()=>{
-  document.getElementById("snapTypesNoneBtn")?.click();
+mobileSnapAssistMaster?.addEventListener("change",()=>{
+  setAllSnapTypes(mobileSnapAssistMaster.checked);
   syncExtendedMobilePanels();
 });
 
@@ -12799,18 +12846,12 @@ secondaryAutoRedraw?.addEventListener("change",()=>{
   clearTimeout(secondaryAutoRefreshTimer);
   secondaryAutoRefreshTimer=null;
 
-  if(secondaryAutoRedraw.checked){
-    scheduleSecondaryAutoRefresh(0);
-    setAdaptiveFillStatus(
-      "已開啟即時重畫：修改追加工件設定後會重新填補。",
-      "success"
-    );
-  }else{
-    setAdaptiveFillStatus(
-      "已關閉即時重畫：既有追加工件會保留，可切換尺寸或形狀後逐個生成。",
-      "success"
-    );
-  }
+  setAdaptiveFillStatus(
+    secondaryAutoRedraw.checked
+      ?"已開啟即時重畫：之後修改追加工件設定時會重新填補。"
+      :"已關閉即時重畫：既有追加工件會保留，可切換尺寸或形狀後逐個生成。",
+    "success"
+  );
 });
 
 ensureMobileSecondaryAutoRedrawPosition();

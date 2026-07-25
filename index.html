@@ -4957,7 +4957,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <button id="mobileSecondarySettingsBtn" type="button">追加<br/>工件</button>
 <button id="mobileSnapSettingsBtn" type="button">輔助<br/>設定</button>
 <button class="active" id="mobileFreeDragBtn" aria-pressed="true" type="button">磁吸<br/>輔助</button>
-<button id="mobileFitBtn" type="button">適合<br/>畫面</button>
+<button aria-pressed="false" id="mobileFitBtn" type="button">僅工程圖</button>
 </div>
 <button class="mobileEnterWorkspaceBtn" id="mobileEnterWorkspaceBtn" type="button">
   適合畫面
@@ -10395,6 +10395,7 @@ function showPlanOverview(){
   clearSelection();
   updateV5Status();
   renderOverviewResult();
+  syncMobileFitButtonState();
 }
 
 function activateOverviewPlan(key){
@@ -10404,6 +10405,7 @@ function activateOverviewPlan(key){
 
   overviewMode=false;
   setHeaderHint(DETAIL_HINT);
+  syncMobileFitButtonState();
   canvasArea.classList.remove("overviewMode");
   planOverview.classList.add("hidden");
   backToOverviewBtn.style.display="";
@@ -11273,6 +11275,16 @@ let mobileTouchPanState=null;
 /* V4.6：手機拖曳模式獨立於桌面拖曳設定，預設關閉。 */
 let mobileDragModeEnabled=false;
 
+function syncMobileFitButtonState(){
+  if(!mobileFitBtn)return;
+  const area=document.querySelector(".canvasArea");
+  const active=
+    document.body.classList.contains("mobileCanvasFullscreen") &&
+    !area?.classList.contains("overviewMode");
+  mobileFitBtn.classList.toggle("active",active);
+  mobileFitBtn.setAttribute("aria-pressed",String(active));
+}
+
 function shouldEnableTouchUi(){
   /*
     真正的手機／窄螢幕永遠優先啟用手機介面。
@@ -11443,14 +11455,15 @@ function toggleMobileFullscreen(force){
     : !document.body.classList.contains("mobileCanvasFullscreen");
 
   document.body.classList.toggle("mobileCanvasFullscreen",next);
+  syncMobileFitButtonState();
 
   if(next){
     requestAnimationFrame(()=>{
       resetCanvasZoom();
-      setToolStatus("已進入手機全螢幕畫布。","success");
+      setToolStatus("已進入僅工程圖模式。","success");
     });
   }else{
-    setToolStatus("已離開手機全螢幕畫布。","");
+    setToolStatus("已離開僅工程圖模式。","");
   }
 }
 
@@ -11565,13 +11578,13 @@ mobileDeleteBtn?.addEventListener("click",mobileDeleteSelection);
 mobileFitBtn?.addEventListener("click",()=>{
   const canvasArea=document.querySelector(".canvasArea");
   if(canvasArea?.classList.contains("overviewMode")){
-    setToolStatus("請先選擇排列方案，再進入適合畫面。","warning");
+    setToolStatus("請先選擇排列方案，再進入僅工程圖模式。","warning");
     return;
   }
 
   if(document.body.classList.contains("mobileCanvasFullscreen")){
     resetCanvasZoom();
-    setToolStatus("已將圖面調整為適合畫面。","success");
+    setToolStatus("僅工程圖模式已重新置中。","success");
   }else{
     toggleMobileFullscreen(true);
     requestAnimationFrame(resetCanvasZoom);
@@ -12794,7 +12807,8 @@ document.body.classList.remove("mobileOverviewFitMode");
   const update=()=>{
     const overview=canvasArea.classList.contains("overviewMode");
     mobileFitBtn.disabled=overview;
-    mobileFitBtn.title=overview?"請先選擇排列方案":"進入詳細全螢幕";
+    mobileFitBtn.title=overview?"請先選擇排列方案":"切換僅工程圖模式";
+    syncMobileFitButtonState();
   };
 
   new MutationObserver(update).observe(canvasArea,{

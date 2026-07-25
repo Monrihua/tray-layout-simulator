@@ -4669,6 +4669,69 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
   margin:0!important;
 }
 
+
+
+/* ===== V19 修正：工具頁開啟時，提示框維持共用固定兩行格式 ===== */
+/*
+  舊版針對 .mobileFineTuneOpen 的規則權重較高，
+  會覆蓋共用提示框的 flex、固定高度與寬度設定。
+  此處使用相同狀態選擇器統一覆蓋，避免開啟工具頁後格式改變。
+*/
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled.mobileDetailMode.mobileFineTuneOpen .mobileModeBadge{
+    position:relative!important;
+    order:initial!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    transform:none!important;
+
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 auto!important;
+
+    width:100%!important;
+    max-width:none!important;
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+
+    margin:8px 0 0!important;
+    padding:6px 10px!important;
+    box-sizing:border-box!important;
+
+    border-radius:14px!important;
+    font-size:10px!important;
+    line-height:1.35!important;
+    text-align:center!important;
+    white-space:normal!important;
+    overflow:hidden!important;
+    overflow-wrap:anywhere!important;
+
+    z-index:20!important;
+    box-shadow:0 4px 12px rgba(15,34,58,.18)!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode.mobileFineTuneOpen .mobileModeBadge.mobileMeasureInfo{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    max-width:none!important;
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    margin:8px 0 0!important;
+    padding:6px 10px!important;
+    border-radius:14px!important;
+    line-height:1.35!important;
+    text-align:center!important;
+    overflow:hidden!important;
+  }
+}
+
 </style>
 </head>
 <body>

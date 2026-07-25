@@ -9159,6 +9159,7 @@ function startMarquee(event){
   };
 
   canvasArea.classList.add("marqueeActive");
+  syncMobileModeUi();
   canvasArea.setPointerCapture(event.pointerId);
   event.preventDefault();
 }
@@ -9187,6 +9188,8 @@ function moveMarquee(event){
     marqueeState.rect.classList.toggle("windowSelection",mode==="window");
     marqueeState.rect.classList.toggle("crossingSelection",mode==="crossing");
   }
+
+  syncMobileModeUi();
 }
 
 function finishMarquee(event){
@@ -9208,6 +9211,7 @@ function finishMarquee(event){
   marqueeState.rect.remove();
   marqueeState=null;
   canvasArea.classList.remove("marqueeActive");
+  syncMobileModeUi();
 
   try{
     canvasArea.releasePointerCapture(event.pointerId);
@@ -11108,7 +11112,7 @@ function syncMobileModeUi(){
     mobileModeBadge.classList.toggle("mobileMeasureInfo",measureMode);
 
     if(measureMode){
-      const lines=["手機：｜量測模式｜"];
+      const lines=["｜量測模式｜"];
 
       if(pendingMeasurePoint && liveMeasurePoint){
         const dx=liveMeasurePoint.x-pendingMeasurePoint.x;
@@ -11125,7 +11129,11 @@ function syncMobileModeUi(){
         lines.push(`起點 X ${fmt(pendingMeasurePoint.x)} mm｜Y ${fmt(pendingMeasurePoint.y)} mm`);
         lines.push("按住移動，放開確定第二點");
       }else{
-        lines.push("按住並移動，放開確定第一點");
+        lines.push(
+          measureIgnoreSnapSettings.checked
+            ?"強制磁吸輔助全開｜按住拖動，放開時確定"
+            :"允許關閉磁吸輔助｜按住拖動，放開時確定"
+        );
       }
 
       mobileModeBadge.textContent=lines.join("\n");
@@ -11133,7 +11141,7 @@ function syncMobileModeUi(){
     }
 
     if(mobileDragModeEnabled){
-      const lines=["手機：｜拖曳模式｜"];
+      const lines=["｜拖曳模式｜"];
       const dragState=itemDragState;
 
       if(dragState){
@@ -11148,19 +11156,62 @@ function syncMobileModeUi(){
         lines.push(`X ${dx>=0?"+":""}${fmt(dx)} mm｜Y ${dy>=0?"+":""}${fmt(dy)} mm`);
         lines.push(`距離 ${fmt(distance)} mm｜角度 ${fmt(angle)}°`);
         lines.push(`吸附：${snapLabel}｜放開確定位置`);
+      }else if(!mobileFreeDragEnabled){
+        lines.push("單指按住拖動工件");
+        lines.push("磁吸輔助｜拖動過程允許穿透工件與邊界（標記為紅色）");
+        lines.push("預覽磁吸落點｜放開時吸附或無法吸附時回到原位");
       }else{
-        lines.push(`磁吸輔助：${mobileFreeDragEnabled?"關":"開"}｜單指按住拖動工件`);
-        lines.push("雙指縮放與移動圖面｜雙擊空白復原畫面");
+        lines.push("單指按住拖動工件");
+        lines.push("真實物理碰撞｜拖動過程禁止穿透工件與邊界");
+        lines.push("不重疊或越界的範圍內自由拖動");
       }
 
       mobileModeBadge.textContent=lines.join("\n");
       return;
     }
 
-    const parts=["手機：","選取模式",`磁吸輔助：${mobileFreeDragEnabled?"關":"開"}`,"單指按住拖動框選"];
-    parts.push("雙指縮放與移動圖面");
-    parts.push("雙擊空白復原縮放與位置");
-    mobileModeBadge.textContent=parts.join("｜");
+    if(marqueeState){
+      const start=marqueeState.start;
+      const end=marqueeState.current;
+      const selectionMode=marqueeState.mode||(end.x>=start.x?"window":"crossing");
+      const selectionRect={
+        left:Math.min(start.x,end.x),
+        right:Math.max(start.x,end.x),
+        top:Math.min(start.y,end.y),
+        bottom:Math.max(start.y,end.y)
+      };
+      let count=0;
+
+      currentPlan?.items?.forEach((item,index)=>{
+        if(deletedPrimary.has(index))return;
+        const bounds=itemBounds("primary",index);
+        const matched=bounds&&(
+          selectionMode==="window"
+            ? rectFullyContains(selectionRect,bounds)
+            : rectIntersects(selectionRect,bounds)
+        );
+        if(matched)count++;
+      });
+
+      secondaryItems.forEach((item,index)=>{
+        const bounds=itemBounds("secondary",index);
+        const matched=bounds&&(
+          selectionMode==="window"
+            ? rectFullyContains(selectionRect,bounds)
+            : rectIntersects(selectionRect,bounds)
+        );
+        if(matched)count++;
+      });
+
+      mobileModeBadge.textContent=
+        selectionMode==="window"
+          ? `｜藍色框選模式｜目前框到 ${count} 個工件`
+          : `｜綠色框選模式｜目前框到 ${count} 個工件`;
+      return;
+    }
+
+    mobileModeBadge.textContent=
+      "｜選取模式｜單指按住拖動框選｜雙指縮放與移動圖面｜雙擊空白復原縮放與位置";
   }
 }
 
@@ -11828,8 +11879,12 @@ mobileMeasureIgnoreSnapSettings?.addEventListener("change",()=>{
   measureIgnoreSnapSettings.checked=mobileMeasureIgnoreSnapSettings.checked;
   measureIgnoreSnapSettings.dispatchEvent(new Event("change",{bubbles:true}));
   syncExtendedMobilePanels();
+  syncMobileModeUi();
 });
-measureIgnoreSnapSettings?.addEventListener("change",syncExtendedMobilePanels);
+measureIgnoreSnapSettings?.addEventListener("change",()=>{
+  syncExtendedMobilePanels();
+  syncMobileModeUi();
+});
 
 mobileSnapStepMirror?.addEventListener("input",()=>{
   const main=document.getElementById("snapStep");

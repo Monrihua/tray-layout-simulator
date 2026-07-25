@@ -5425,8 +5425,9 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <label class="mobileSwitchRow"><input data-snap-mirror="snapCircleCenter" type="checkbox"/><span>圓心</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeQuadrant" type="checkbox"/><span>四分點</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeSingleCircle" type="checkbox"/><span>單圓相切</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeDoubleCircle" type="checkbox"/><span>雙圓相切</span></label><label class="mobileSwitchRow"><input data-snap-mirror="snapTypeCircleRect" type="checkbox"/><span>圓矩相切</span></label>
 </div>
 <div class="mobileSectionCard"><div class="mobileSectionTitle">量測模式</div>
+<label class="mobileSwitchRow"><input checked="" id="mobileMeasureConfirmOnRelease" type="checkbox"/><span>放開後確定測量點</span></label>
 <label class="mobileSwitchRow"><input checked="" id="mobileMeasureIgnoreSnapSettings" type="checkbox"/><span>忽略吸附點設置，保持磁吸輔助全開</span></label>
-<div class="mobilePanelHint">取消勾選後，量測會遵守上方吸附點設置。</div></div>
+<div class="mobilePanelHint">取消「放開後確定測量點」後，點一下就會立即取點；取消忽略吸附點後，量測會遵守上方吸附點設置。</div></div>
 </div>
 <div class="mobilePanelSection" hidden="" id="mobileAlignPanel">
 <div class="mobileSectionCard">
@@ -10915,46 +10916,29 @@ const inchHelperControlIds=new Set([
   "secondaryInches"
 ]);
 
-const editOnlyControlIds=new Set([
-  "snapEnabled",
-  "snapStep",
-  "snapTypeBoundary",
-  "snapGroupRect",
-  "snapRectCorners",
-  "snapRectMidpoints",
-  "snapRectEdges",
-  "snapGroupCircle",
-  "snapCircleCenter",
-  "snapTypeQuadrant",
-  "snapGroupTangent",
-  "snapTypeSingleCircle",
-  "snapTypeDoubleCircle",
-  "snapTypeCircleRect",
-  "snapGroupTray",
-  "snapGroupSafe",
-  "snapAssistMaster",
-  "measureIgnoreSnapSettings",
-  "secondaryAutoRedraw",
-  "showSpaceLabels"
+/*
+  主要工件即時重畫採用白名單：
+  只有「載盤設定」與「工件設定」內的主控制項會自動 draw()。
+
+  輔助設定、量測設定、磁吸設定、追加工件設定，以及未來新增的其他功能，
+  預設都不會觸發主要工件重畫；需要重畫的功能必須明確加入這兩個區域，
+  或自行綁定專屬更新邏輯。
+*/
+const primaryRedrawSectionIds=new Set([
+  "traySettingsSection",
+  "primarySettingsSection"
 ]);
 
 document.querySelectorAll("input").forEach(input=>{
-  /*
-    手機微調面板中的欄位只是桌面主控制項的鏡像。
-    它們必須先同步到對應主控制項，再由主控制項決定：
-    - 主要設定：完整 draw()
-    - 追加工件設定：只 scheduleSecondaryAutoRefresh()
-
-    若手機鏡像欄位也直接綁 draw()，調整追加工件尺寸或間距時
-    就會重建主要方案，讓已刪除的主要工件重新出現。
-  */
   if(
     input.closest(".mobileFineTuneSheet")||
     input.classList.contains("customStepInput")||
     secondaryControlIds.has(input.id)||
-    inchHelperControlIds.has(input.id)||
-    editOnlyControlIds.has(input.id)
+    inchHelperControlIds.has(input.id)
   )return;
+
+  const redrawSection=input.closest("#traySettingsSection,#primarySettingsSection");
+  if(!redrawSection||!primaryRedrawSectionIds.has(redrawSection.id))return;
 
   input.addEventListener("input",draw);
   input.addEventListener("change",draw);
@@ -12282,12 +12266,16 @@ const mobileSnapPanel=document.getElementById("mobileSnapPanel");
 const mobileAlignPanel=document.getElementById("mobileAlignPanel");
 const mobileSystemPanel=document.getElementById("mobileSystemPanel");
 
+const mobileMeasureConfirmOnRelease=document.getElementById("mobileMeasureConfirmOnRelease");
 const mobileMeasureIgnoreSnapSettings=document.getElementById("mobileMeasureIgnoreSnapSettings");
 const mobileSnapAssistMaster=document.getElementById("mobileSnapAssistMaster");
 const mobileSnapStepMirror=document.getElementById("mobileSnapStepMirror");
 const mobileShowSpaceLabels=document.getElementById("mobileShowSpaceLabels");
 
 function syncExtendedMobilePanels(){
+  if(mobileMeasureConfirmOnRelease){
+    mobileMeasureConfirmOnRelease.checked=measureConfirmOnRelease.checked;
+  }
   if(mobileMeasureIgnoreSnapSettings)mobileMeasureIgnoreSnapSettings.checked=measureIgnoreSnapSettings.checked;
   syncSnapAssistMasterState();
   const snapStepMain=document.getElementById("snapStep");
@@ -12360,6 +12348,17 @@ showMobilePanel=function(panel){
 mobileSnapSettingsBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("snap"));
 mobileAlignSettingsBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("align"));
 mobileSystemSettingsBtn?.addEventListener("click",()=>openOrSwitchMobilePanel("system"));
+
+mobileMeasureConfirmOnRelease?.addEventListener("change",()=>{
+  measureConfirmOnRelease.checked=mobileMeasureConfirmOnRelease.checked;
+  measureConfirmOnRelease.dispatchEvent(new Event("change",{bubbles:true}));
+  syncExtendedMobilePanels();
+  syncMobileModeUi();
+});
+measureConfirmOnRelease?.addEventListener("change",()=>{
+  syncExtendedMobilePanels();
+  syncMobileModeUi();
+});
 
 mobileMeasureIgnoreSnapSettings?.addEventListener("change",()=>{
   measureIgnoreSnapSettings.checked=mobileMeasureIgnoreSnapSettings.checked;

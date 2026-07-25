@@ -11390,7 +11390,6 @@ SNAP_TYPE_INPUTS.forEach(input=>{
   });
 });
 
-syncSnapGroupStates();
 syncHeaderQuickTools();
 
 measureModeBtn.addEventListener("click",toggleMeasureMode);
@@ -11992,6 +11991,7 @@ const mobileSnapTargetIds=[
 ];
 
 let mobileFreeDragEnabled=false;
+syncSnapGroupStates();
 let mobileSavedSnapTargetState=null;
 let mobileFineTuneSyncing=false;
 let mobileActivePanel="tray";

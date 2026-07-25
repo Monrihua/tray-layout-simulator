@@ -4414,6 +4414,67 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
   }
 }
 
+
+
+/* ===== V10 手機詳細畫面：提示永久統一於資訊區下方 ===== */
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled.mobileDetailMode .canvasArea{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #overviewToolbar{
+    order:0!important;
+    position:relative!important;
+    top:auto!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    flex:0 0 auto!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode .mobileModeBadge{
+    order:1!important;
+    position:relative!important;
+    top:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    right:auto!important;
+    transform:none!important;
+    display:block!important;
+    flex:0 0 auto!important;
+    width:calc(100% - 32px)!important;
+    max-width:620px!important;
+    min-height:0!important;
+    margin:4px auto 8px!important;
+    padding:7px 10px!important;
+    border-radius:14px!important;
+    font-size:10px!important;
+    line-height:1.35!important;
+    text-align:center!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    z-index:20!important;
+    box-shadow:0 4px 12px rgba(15,34,58,.18)!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #drawing{
+    order:2!important;
+    position:relative!important;
+    flex:1 1 auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:0!important;
+    object-position:center center!important;
+  }
+}
+
 </style>
 </head>
 <body>

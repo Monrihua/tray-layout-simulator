@@ -4286,6 +4286,56 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 }
 
 
+/* ===== V8 手機工具頁開啟時：提示改為資訊列與圖面之間的版面區塊 ===== */
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled.mobileDetailMode.mobileFineTuneOpen .canvasArea{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode.mobileFineTuneOpen #overviewToolbar{
+    order:0!important;
+    flex:0 0 auto!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode.mobileFineTuneOpen .mobileModeBadge{
+    order:1!important;
+    position:relative!important;
+    top:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    right:auto!important;
+    transform:none!important;
+    z-index:20!important;
+    display:block!important;
+    flex:0 0 auto!important;
+    width:calc(100% - 32px)!important;
+    max-width:620px!important;
+    min-height:0!important;
+    margin:2px auto 6px!important;
+    padding:7px 10px!important;
+    border-radius:14px!important;
+    font-size:10px!important;
+    line-height:1.35!important;
+    text-align:center!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    box-shadow:0 4px 12px rgba(15,34,58,.18)!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode.mobileFineTuneOpen #drawing{
+    order:2!important;
+    flex:1 1 auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:0!important;
+    object-position:center center!important;
+  }
+}
+
+
 /* 修正：覆蓋 .controlPanel label 的 display:block，讓立即重畫選項真正左右排列 */
 .controlPanel label.secondaryAutoRedrawToggle{
   display:grid!important;

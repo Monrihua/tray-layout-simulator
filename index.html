@@ -11205,13 +11205,13 @@ function syncMobileModeUi(){
 
       mobileModeBadge.textContent=
         selectionMode==="window"
-          ? `｜藍色框選模式｜目前框到 ${count} 個工件`
-          : `｜綠色框選模式｜目前框到 ${count} 個工件`;
+          ? `｜視窗框選｜完整包覆時選取｜目前框到 ${count} 個工件`
+          : `｜交集框選｜接觸工件時選取｜目前框到 ${count} 個工件`;
       return;
     }
 
     mobileModeBadge.textContent=
-      "｜選取模式｜單指按住拖動框選｜雙指縮放與移動圖面｜雙擊空白復原縮放與位置";
+      "｜選取模式｜單指按住拖動框選｜往➡️視窗框選｜往⬅️交集框選｜雙指縮放與移動圖面｜雙擊空白復原縮放與位置";
   }
 }
 

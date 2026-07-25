@@ -4271,6 +4271,21 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 }
 
 
+/* ===== V7 手機工具頁開啟時：提示移到上方資訊區下方 ===== */
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled.mobileDetailMode.mobileFineTuneOpen .mobileModeBadge{
+    position:fixed!important;
+    top:var(--mobile-mode-badge-top,132px)!important;
+    bottom:auto!important;
+    left:50%!important;
+    right:auto!important;
+    transform:translateX(-50%)!important;
+    max-width:calc(100vw - 32px)!important;
+    z-index:10004!important;
+  }
+}
+
+
 /* 修正：覆蓋 .controlPanel label 的 display:block，讓立即重畫選項真正左右排列 */
 .controlPanel label.secondaryAutoRedrawToggle{
   display:grid!important;
@@ -11585,6 +11600,23 @@ function showMobilePanel(panel){
   syncMobileFineTuneFromMain();
 }
 
+function syncMobileModeBadgePlacement(){
+  const shouldMoveToTop=
+    document.body.classList.contains("touchUiEnabled") &&
+    document.body.classList.contains("mobileDetailMode") &&
+    document.body.classList.contains("mobileFineTuneOpen");
+
+  if(!shouldMoveToTop){
+    document.body.style.removeProperty("--mobile-mode-badge-top");
+    return;
+  }
+
+  const toolbar=document.getElementById("overviewToolbar");
+  const toolbarRect=toolbar?.getBoundingClientRect();
+  const top=Math.max(8,Math.ceil((toolbarRect?.bottom||124)+8));
+  document.body.style.setProperty("--mobile-mode-badge-top",`${top}px`);
+}
+
 function setMobileFineTuneOpen(open,panel=mobileActivePanel){
   mobileFineTuneSheet.hidden=!open;
   mobileFineTuneBackdrop.hidden=!open;
@@ -11597,7 +11629,11 @@ function setMobileFineTuneOpen(open,panel=mobileActivePanel){
     [mobileTraySettingsBtn,mobileInsetBtn,mobilePrimarySettingsBtn,mobileSecondarySettingsBtn]
       .forEach(btn=>btn?.classList.remove("active"));
   }
+
+  requestAnimationFrame(syncMobileModeBadgePlacement);
 }
+
+window.addEventListener("resize",()=>requestAnimationFrame(syncMobileModeBadgePlacement));
 
 function openOrSwitchMobilePanel(panel){
   if(!mobileFineTuneSheet.hidden&&mobileActivePanel===panel){

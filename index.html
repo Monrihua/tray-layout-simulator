@@ -4475,6 +4475,149 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
   }
 }
 
+
+
+/* ===== V12 手機詳細資訊面板統一 ===== */
+/*
+  上方方案按鈕、統計資訊與操作提示共用同一個面板。
+  不再依「工具頁開啟／關閉」或「僅工程圖開啟／關閉」分別設計。
+*/
+.mobileDetailInfoPanel{
+  display:contents;
+}
+
+@media (pointer:coarse), (max-width:820px){
+  body.touchUiEnabled.mobileDetailMode .canvasArea{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode .mobileDetailInfoPanel{
+    order:0!important;
+    display:block!important;
+    flex:0 0 auto!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:10px 12px 8px!important;
+    box-sizing:border-box!important;
+    border-bottom:1px solid rgba(192,205,222,.72)!important;
+    background:rgba(247,250,254,.96)!important;
+    box-shadow:0 5px 14px rgba(35,55,82,.06)!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #overviewToolbar{
+    position:relative!important;
+    order:initial!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    display:grid!important;
+    grid-template-columns:auto minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-areas:
+      "back active recommended"
+      "status status status"!important;
+    align-items:center!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0 50px 0 0!important;
+    column-gap:7px!important;
+    row-gap:7px!important;
+    box-sizing:border-box!important;
+    overflow:visible!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #backToOverviewBtn{
+    grid-area:back!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #activePlanLabel{
+    grid-area:active!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #recommendedPlanLabel{
+    grid-area:recommended!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #v5StatusBar{
+    grid-area:status!important;
+    position:relative!important;
+    display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    gap:6px!important;
+    box-sizing:border-box!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode .mobileModeBadge{
+    position:relative!important;
+    order:initial!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    transform:none!important;
+    display:block!important;
+    width:100%!important;
+    max-width:none!important;
+    min-height:0!important;
+    margin:8px 0 0!important;
+    padding:7px 10px!important;
+    box-sizing:border-box!important;
+    border-radius:14px!important;
+    font-size:10px!important;
+    line-height:1.35!important;
+    text-align:center!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    z-index:20!important;
+    box-shadow:0 4px 12px rgba(15,34,58,.18)!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #drawing{
+    order:1!important;
+    position:relative!important;
+    flex:1 1 auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:0!important;
+    object-position:center center!important;
+  }
+
+  /* 工具頁開啟時只套用遮罩，不再改動上方資訊面板的版面。 */
+  body.touchUiEnabled.mobileDetailMode.mobileFineTuneOpen .mobileDetailInfoPanel,
+  body.touchUiEnabled.mobileDetailMode.mobileCanvasFullscreen .mobileDetailInfoPanel{
+    width:100%!important;
+    padding:10px 12px 8px!important;
+  }
+}
+
+@media (pointer:coarse) and (max-width:520px){
+  body.touchUiEnabled.mobileDetailMode .mobileDetailInfoPanel{
+    padding-left:8px!important;
+    padding-right:8px!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #overviewToolbar{
+    padding-right:48px!important;
+    column-gap:5px!important;
+    row-gap:6px!important;
+  }
+
+  body.touchUiEnabled.mobileDetailMode #v5StatusBar{
+    gap:4px!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4823,6 +4966,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <button class="secondaryBtn" id="exportBtn" type="button">↓ 匯出 SVG 工程圖</button>
 </aside>
 <main class="canvasArea overviewMode">
+<div class="mobileDetailInfoPanel">
 <div class="overviewToolbar" id="overviewToolbar">
 <button id="backToOverviewBtn" style="display:none" type="button">返回四方案總覽</button>
 <span id="activePlanLabel">目前：四方案總覽</span>
@@ -4839,6 +4983,8 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
           選擇方案後可選取或框選工件、磁吸或自由拖曳、量測、追加工件、對齊、平移及縮放圖面。
         </div>
 <div class="canvasZoomHint">滾輪縮放 · 以滑鼠位置為中心 · 雙擊空白處還原</div>
+</div>
+<div class="mobileModeBadge" id="mobileModeBadge">手機：選取</div>
 </div>
 <div class="planOverview" id="planOverview">
 <button class="planCard" data-plan-key="array-vertical" type="button">
@@ -4874,7 +5020,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="planCardFooter" id="footer-honey-horizontal">點擊進入詳細編輯</div>
 </button>
 </div>
-<svg aria-label="載盤排列工程圖" id="drawing" role="img"></svg><div class="mobileModeBadge" id="mobileModeBadge">手機：選取</div></main>
+<svg aria-label="載盤排列工程圖" id="drawing" role="img"></svg></main>
 <aside class="panel infoPanel"><h1>計算結果</h1><div id="result"></div><div id="selectionInfo"></div></aside>
 </div>
 <div aria-labelledby="helpModalTitle" aria-modal="true" class="helpModalBackdrop" id="helpModalBackdrop" role="dialog">

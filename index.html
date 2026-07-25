@@ -8425,10 +8425,30 @@ function clearMeasurements(){
 }
 
 
+function getDefaultCanvasViewBox(){
+  if(!baseViewBox)return null;
+
+  const next={...baseViewBox};
+  const isMobileDetail=
+    document.body.classList.contains("touchUiEnabled") &&
+    document.body.classList.contains("mobileDetailMode");
+
+  /*
+    手機詳細畫面的初始工程圖統一略微上移。
+    一般方案、僅工程圖、工具頁開啟或關閉都共用同一個偏移量，
+    避免不同狀態各自維護不同位置。
+  */
+  if(isMobileDetail){
+    next.y+=next.height*0.035;
+  }
+
+  return next;
+}
+
 function setBaseViewBox(x,y,width,height,resetZoom=true){
   baseViewBox={x,y,width,height};
   if(resetZoom||!currentViewBox){
-    currentViewBox={...baseViewBox};
+    currentViewBox=getDefaultCanvasViewBox();
   }
   applyCurrentViewBox();
 }
@@ -8444,12 +8464,12 @@ function applyCurrentViewBox(){
 
 function resetCanvasZoom(){
   if(!baseViewBox)return;
-  currentViewBox={...baseViewBox};
+  currentViewBox=getDefaultCanvasViewBox();
   applyCurrentViewBox();
 
   /*
-    手機雙擊與「適合畫面」共用此重設。
-    保持中央對齊，避免重設後工程圖貼到資訊列下方。
+    手機雙擊與「僅工程圖」共用同一個重設位置。
+    一般詳細畫面與僅工程圖模式都維持相同的略微上移效果。
   */
   svg.setAttribute("preserveAspectRatio","xMidYMid meet");
 }

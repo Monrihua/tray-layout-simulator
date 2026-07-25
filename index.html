@@ -8425,6 +8425,8 @@ function clearMeasurements(){
 }
 
 
+const MOBILE_CANVAS_INITIAL_SHIFT_RATIO=0.085;
+
 function getDefaultCanvasViewBox(){
   if(!baseViewBox)return null;
 
@@ -8434,12 +8436,11 @@ function getDefaultCanvasViewBox(){
     document.body.classList.contains("mobileDetailMode");
 
   /*
-    手機詳細畫面的初始工程圖統一略微上移。
-    一般方案、僅工程圖、工具頁開啟或關閉都共用同一個偏移量，
-    避免不同狀態各自維護不同位置。
+    手機詳細畫面的初始工程圖統一上移。
+    一般方案、僅工程圖、工具頁開啟或關閉都共用同一個偏移量。
   */
   if(isMobileDetail){
-    next.y+=next.height*0.035;
+    next.y+=next.height*MOBILE_CANVAS_INITIAL_SHIFT_RATIO;
   }
 
   return next;
@@ -10572,6 +10573,9 @@ function activateOverviewPlan(key){
   overviewMode=false;
   setHeaderHint(DETAIL_HINT);
   syncMobileFitButtonState();
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>resetCanvasZoom());
+  });
   canvasArea.classList.remove("overviewMode");
   planOverview.classList.add("hidden");
   backToOverviewBtn.style.display="";
@@ -11625,10 +11629,13 @@ function toggleMobileFullscreen(force){
 
   if(next){
     requestAnimationFrame(()=>{
-      resetCanvasZoom();
-      setToolStatus("已進入僅工程圖模式。","success");
+      requestAnimationFrame(()=>{
+        resetCanvasZoom();
+        setToolStatus("已進入僅工程圖模式。","success");
+      });
     });
   }else{
+    requestAnimationFrame(()=>resetCanvasZoom());
     setToolStatus("已離開僅工程圖模式。","");
   }
 }

@@ -4732,6 +4732,131 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
   }
 }
 
+
+
+/* ===== V23 電腦版：資訊區、提示框、圖面三區分離 ===== */
+@media (pointer:fine) and (min-width:821px){
+  .canvasArea{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    overflow:hidden!important;
+  }
+
+  .mobileDetailInfoPanel{
+    display:block!important;
+    flex:0 0 auto!important;
+    width:100%!important;
+    padding:12px 14px 10px!important;
+    box-sizing:border-box!important;
+    background:#f8fbff!important;
+    border-bottom:1px solid #d7e1ee!important;
+    box-shadow:0 4px 12px rgba(35,55,82,.06)!important;
+    z-index:12!important;
+  }
+
+  #overviewToolbar{
+    position:relative!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    display:grid!important;
+    grid-template-columns:auto minmax(0,1fr) minmax(0,1fr)!important;
+    grid-template-areas:
+      "back active recommended"
+      "status status status"!important;
+    align-items:center!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    gap:8px!important;
+    box-sizing:border-box!important;
+  }
+
+  #backToOverviewBtn{grid-area:back!important;}
+  #activePlanLabel{grid-area:active!important;}
+  #recommendedPlanLabel{grid-area:recommended!important;}
+
+  #v5StatusBar{
+    grid-area:status!important;
+    position:relative!important;
+    display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    width:100%!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    gap:8px!important;
+    box-sizing:border-box!important;
+  }
+
+  #overviewToolbar button,
+  #overviewToolbar > span,
+  #v5StatusBar .v5StatusChip{
+    min-height:34px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    box-sizing:border-box!important;
+  }
+
+  .mobileWorkspaceHint{
+    display:none!important;
+  }
+
+  .mobileModeBadge{
+    position:relative!important;
+    top:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    left:auto!important;
+    transform:none!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    width:100%!important;
+    max-width:none!important;
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    margin:8px 0 0!important;
+    padding:6px 14px!important;
+    box-sizing:border-box!important;
+    border-radius:14px!important;
+    background:#233f63!important;
+    color:#fff!important;
+    font-size:12px!important;
+    font-weight:800!important;
+    line-height:1.35!important;
+    text-align:center!important;
+    white-space:normal!important;
+    overflow:hidden!important;
+    overflow-wrap:anywhere!important;
+    box-shadow:0 4px 12px rgba(15,34,58,.16)!important;
+    z-index:20!important;
+  }
+
+  #drawing{
+    position:relative!important;
+    flex:1 1 auto!important;
+    width:100%!important;
+    height:auto!important;
+    min-height:0!important;
+    margin:0!important;
+  }
+
+  .planOverview{
+    top:0!important;
+    inset:0 16px 16px!important;
+  }
+
+  .canvasArea.overviewMode .mobileDetailInfoPanel{
+    display:none!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4747,6 +4872,9 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </button>
 <button class="headerQuickButton" id="headerSnapToggle" type="button">
         拖曳模式 <kbd>S</kbd>
+</button>
+<button aria-pressed="true" class="headerQuickButton active" id="headerMagnetAssistToggle" type="button">
+        磁吸輔助 <kbd>A</kbd>
 </button>
 <button class="headerQuickButton" id="headerHelpBtn" type="button">
         操作說明 <kbd>?</kbd>
@@ -4765,9 +4893,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </div>
 <div class="headerBadge">V4.6.11 Beta · 輔助設定整合</div>
 </div>
-<div aria-live="polite" class="headerLiveHint" id="headerLiveHint" role="status">
-    設定載盤長寬、內縮長寬（限制安全範圍）、工件長寬或直徑、XY 方向間距，可自動即時模擬呈現 4 種擺放方式並比較最佳方案；選擇方案後可單選或框選工件、方向鍵微調、刪除與復原、追加工件、量測距離、磁吸拖曳，以及平移與縮放圖面。
-  </div>
+
 </div>
 <input checked="" hidden="" id="arrayMode" name="mode" type="radio"/>
 <input hidden="" id="circleMode" name="mode" type="radio"/>
@@ -5100,7 +5226,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
           設定載盤長寬、安全範圍、工件尺寸與 XY 間距後，系統會即時比較排列方案。
           選擇方案後可選取或框選工件、磁吸或自由拖曳、量測、追加工件、對齊、平移及縮放圖面。
         </div>
-<div class="canvasZoomHint">滾輪縮放 · 以滑鼠位置為中心 · 雙擊空白處還原</div>
+
 </div>
 <div class="mobileModeBadge" id="mobileModeBadge">手機：選取</div>
 </div>
@@ -5546,8 +5672,8 @@ const NS="http://www.w3.org/2000/svg";
 const svg=document.getElementById("drawing");
 let baseViewBox=null;
 let currentViewBox=null;
-const MIN_ZOOM=0.45;
-const MAX_ZOOM=5;
+const MIN_ZOOM=0.25;
+const MAX_ZOOM=20;
 const ids=["trayLength","trayWidth","safeX","safeY","partLength","partWidth","gapX","gapY","arrayMode","circleMode","vertical","horizontal","autoCompare"];
 const el=Object.fromEntries(ids.map(id=>[id,document.getElementById(id)]));
 const result=document.getElementById("result");
@@ -5573,6 +5699,7 @@ const measureIgnoreSnapSettings=document.getElementById("measureIgnoreSnapSettin
 const snapEnabled=document.getElementById("snapEnabled");
 const headerMeasureToggle=document.getElementById("headerMeasureToggle");
 const headerSnapToggle=document.getElementById("headerSnapToggle");
+const headerMagnetAssistToggle=document.getElementById("headerMagnetAssistToggle");
 const headerSafeX=document.getElementById("headerSafeX");
 const headerSafeY=document.getElementById("headerSafeY");
 const headerHelpBtn=document.getElementById("headerHelpBtn");
@@ -8098,27 +8225,6 @@ function drawFirstMeasurePointPreview(){
   create("circle",{cx:point.x,cy:point.y,r:5,class:"measureSnapPoint"});
   create("line",{x1:point.x-9,y1:point.y,x2:point.x+9,y2:point.y,class:"measureSnapCross"});
   create("line",{x1:point.x,y1:point.y-9,x2:point.x,y2:point.y+9,class:"measureSnapCross"});
-
-  const labelWidth=224;
-  const labelHeight=116;
-  const gap=16;
-  let boxX=point.x+gap;
-  let boxY=point.y+gap;
-  const viewBox=svg.viewBox.baseVal;
-  const maxX=viewBox.x+viewBox.width;
-  const maxY=viewBox.y+viewBox.height;
-  if(boxX+labelWidth>maxX-8)boxX=point.x-labelWidth-gap;
-  if(boxY+labelHeight>maxY-8)boxY=point.y-labelHeight-gap;
-  boxX=Math.max(viewBox.x+8,boxX);
-  boxY=Math.max(viewBox.y+8,boxY);
-
-  create("rect",{x:boxX,y:boxY,width:labelWidth,height:labelHeight,rx:7,class:"measurePreviewLabelBg"});
-  const textX=boxX+12;
-  create("text",{x:textX,y:boxY+12,class:"measurePreviewLabelTitle"},"第一點預覽");
-  create("text",{x:textX,y:boxY+35,class:"measurePreviewLabelValue"},`X ${fmt(point.x)} mm　Y ${fmt(point.y)} mm`);
-  create("text",{x:textX,y:boxY+57,class:"measurePreviewLabelSnap"},`吸附：${liveMeasureSnap?.label||"自由點"}`);
-  create("text",{x:textX,y:boxY+79,class:"measurePreviewLabelSnap"},measureConfirmOnRelease.checked?"按住移動、放開：確定第一點":"左鍵：設定第一點　Esc：取消");
-  create("text",{x:textX,y:boxY+99,class:"measurePreviewLabelSnap"},"右鍵拖曳：平移畫面");
 }
 
 function drawLiveMeasurement(){
@@ -8180,85 +8286,7 @@ function drawLiveMeasurement(){
     class:"measureSnapCross"
   });
 
-  if(liveMeasurePoint){
-    const labelWidth=214;
-    const labelHeight=184;
-    const gap=16;
 
-    let boxX=end.x+gap;
-    let boxY=end.y+gap;
-
-    const viewBox=svg.viewBox.baseVal;
-    const maxX=viewBox.x+viewBox.width;
-    const maxY=viewBox.y+viewBox.height;
-
-    if(boxX+labelWidth>maxX-8){
-      boxX=end.x-labelWidth-gap;
-    }
-    if(boxY+labelHeight>maxY-8){
-      boxY=end.y-labelHeight-gap;
-    }
-    boxX=Math.max(viewBox.x+8,boxX);
-    boxY=Math.max(viewBox.y+8,boxY);
-
-    create("rect",{
-      x:boxX,
-      y:boxY,
-      width:labelWidth,
-      height:labelHeight,
-      rx:7,
-      class:"measurePreviewLabelBg"
-    });
-
-    const textX=boxX+12;
-    create("text",{
-      x:textX,
-      y:boxY+12,
-      class:"measurePreviewLabelTitle"
-    },`距離 ${fmt(distance)} mm`);
-
-    create("text",{
-      x:textX,
-      y:boxY+36,
-      class:"measurePreviewLabelValue"
-    },`X ${dx>=0?"+":""}${fmt(dx)} mm`);
-
-    create("text",{
-      x:textX,
-      y:boxY+58,
-      class:"measurePreviewLabelValue"
-    },`Y ${dy>=0?"+":""}${fmt(dy)} mm`);
-
-    create("text",{
-      x:textX,
-      y:boxY+80,
-      class:"measurePreviewLabelValue"
-    },`角度 ${fmt(angle)}°`);
-
-    create("text",{
-      x:textX,
-      y:boxY+102,
-      class:"measurePreviewLabelSnap"
-    },`吸附：${liveMeasureSnap?.label||"自由點"}`);
-
-    create("text",{
-      x:textX,
-      y:boxY+126,
-      class:"measurePreviewLabelSnap"
-    },"Esc：取消目前量測");
-
-    create("text",{
-      x:textX,
-      y:boxY+148,
-      class:"measurePreviewLabelSnap"
-    },"Shift：45° 極座標追蹤");
-
-    create("text",{
-      x:textX,
-      y:boxY+168,
-      class:"measurePreviewLabelSnap"
-    },"右鍵拖曳：平移畫面");
-  }
 }
 
 function beginReleaseMeasurement(event){
@@ -9866,60 +9894,9 @@ function drawSnapDragPreview(item,candidate){
     class:"snapPreviewLine"
   });
 
-  // 手機版只保留落位虛線與預覽工件；所有拖曳文字固定顯示於底部資訊欄。
   if(document.body.classList.contains("touchUiEnabled")){
     syncMobileModeUi();
-    return;
   }
-
-  // 拖曳模式也使用與量測一致的黑色資訊框，
-  // 但只顯示目前候選位置與放開／略過吸力的操作提示。
-  const labelWidth=224;
-  const labelHeight=116;
-  const gap=18;
-  let boxX=targetX+gap;
-  let boxY=targetY+gap;
-  const viewBox=svg.viewBox.baseVal;
-  const maxX=viewBox.x+viewBox.width;
-  const maxY=viewBox.y+viewBox.height;
-
-  if(boxX+labelWidth>maxX-8)boxX=targetX-labelWidth-gap;
-  if(boxY+labelHeight>maxY-8)boxY=targetY-labelHeight-gap;
-  boxX=Math.max(viewBox.x+8,boxX);
-  boxY=Math.max(viewBox.y+8,boxY);
-
-  create("rect",{
-    x:boxX,y:boxY,
-    width:labelWidth,height:labelHeight,
-    rx:7,
-    class:"measurePreviewLabelBg snapPreviewHint"
-  });
-
-  const textX=boxX+12;
-  create("text",{
-    x:textX,y:boxY+12,
-    class:"snapPreviewHintTitle snapPreviewHint"
-  },"輔助落位預覽");
-
-  create("text",{
-    x:textX,y:boxY+35,
-    class:"snapPreviewHintValue snapPreviewHint"
-  },`目標：${candidate.label||"可吸附位置"}`);
-
-  create("text",{
-    x:textX,y:boxY+57,
-    class:"snapPreviewHintValue snapPreviewHint"
-  },`移動距離：${fmt(candidate.distance??Math.hypot(candidate.dx,candidate.dy))} mm`);
-
-  create("text",{
-    x:textX,y:boxY+79,
-    class:"snapPreviewHintHelp snapPreviewHint"
-  },"放開左鍵：使用落位輔助");
-
-  create("text",{
-    x:textX,y:boxY+99,
-    class:"snapPreviewHintHelp snapPreviewHint"
-  },"右鍵拖曳：拒絕輔助");
 }
 
 function isMobileMagneticAssistEnabled(){
@@ -11326,6 +11303,10 @@ function syncHeaderQuickTools(){
 
   headerSnapToggle?.classList.toggle("active",snapEnabled.checked);
   headerSnapToggle?.setAttribute("aria-pressed",String(snapEnabled.checked));
+
+  const magnetAssistOn=SNAP_TYPE_INPUTS.every(input=>input.checked);
+  headerMagnetAssistToggle?.classList.toggle("active",magnetAssistOn);
+  headerMagnetAssistToggle?.setAttribute("aria-pressed",String(magnetAssistOn));
 }
 
 function setHeaderInset(source,target){
@@ -11350,6 +11331,16 @@ headerSnapToggle?.addEventListener("click",()=>{
     snapEnabled.checked?"success":""
   );
 });
+
+function toggleMagnetAssistFromHeader(){
+  const allChecked=SNAP_TYPE_INPUTS.every(input=>input.checked);
+  setAllSnapTypes(!allChecked);
+  syncHeaderQuickTools();
+  syncExtendedMobilePanels?.();
+  syncMobileModeUi?.();
+}
+
+headerMagnetAssistToggle?.addEventListener("click",toggleMagnetAssistFromHeader);
 
 headerSafeX?.addEventListener("input",()=>setHeaderInset(headerSafeX,el.safeX));
 headerSafeX?.addEventListener("change",()=>setHeaderInset(headerSafeX,el.safeX));
@@ -11382,6 +11373,9 @@ function syncSnapAssistMasterState(){
     mobileFreeDragBtn.classList.toggle("active",allChecked);
     mobileFreeDragBtn.setAttribute("aria-pressed",String(allChecked));
   }
+
+  headerMagnetAssistToggle?.classList.toggle("active",allChecked);
+  headerMagnetAssistToggle?.setAttribute("aria-pressed",String(allChecked));
 }
 
 function syncSnapGroupStates(){
@@ -11471,6 +11465,17 @@ document.addEventListener("keydown",event=>{
       ["text","search","email","tel","url","password"].includes(inputType)
     )
   );
+
+  if(
+    !event.ctrlKey &&
+    !event.metaKey &&
+    !event.altKey &&
+    (event.key==="a"||event.key==="A")
+  ){
+    event.preventDefault();
+    toggleMagnetAssistFromHeader();
+    return;
+  }
 
   if(event.key==="m"||event.key==="M"){
     if(textEditing)return;
@@ -11619,7 +11624,6 @@ function shouldEnableTouchUi(){
 }
 
 function syncMobileModeUi(){
-  if(!document.body.classList.contains("touchUiEnabled"))return;
 
   mobileMeasureBtn?.classList.toggle("active",measureMode);
   mobileSnapBtn?.classList.toggle("active",mobileDragModeEnabled);

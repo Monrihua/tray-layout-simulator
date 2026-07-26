@@ -4870,6 +4870,9 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <button class="headerQuickButton" id="headerMeasureToggle" type="button">
         量測模式 <kbd>M</kbd>
 </button>
+<button class="headerQuickButton" id="headerClearMeasurements" type="button">
+        清除量測 <kbd>C</kbd>
+</button>
 <button class="headerQuickButton" id="headerSnapToggle" type="button">
         拖曳模式 <kbd>S</kbd>
 </button>
@@ -5698,6 +5701,7 @@ const measureConfirmOnRelease=document.getElementById("measureConfirmOnRelease")
 const measureIgnoreSnapSettings=document.getElementById("measureIgnoreSnapSettings");
 const snapEnabled=document.getElementById("snapEnabled");
 const headerMeasureToggle=document.getElementById("headerMeasureToggle");
+const headerClearMeasurements=document.getElementById("headerClearMeasurements");
 const headerSnapToggle=document.getElementById("headerSnapToggle");
 const headerMagnetAssistToggle=document.getElementById("headerMagnetAssistToggle");
 const headerSafeX=document.getElementById("headerSafeX");
@@ -11320,6 +11324,7 @@ syncSnapGroupStates();
 }
 
 headerMeasureToggle?.addEventListener("click",toggleMeasureMode);
+headerClearMeasurements?.addEventListener("click",clearMeasurements);
 
 headerSnapToggle?.addEventListener("click",()=>{
   snapEnabled.checked=!snapEnabled.checked;
@@ -11395,6 +11400,7 @@ function syncSnapGroupStates(){
 function setAllSnapTypes(checked,{showStatus=true}={}){
   SNAP_TYPE_INPUTS.forEach(input=>input.checked=checked);
   syncSnapGroupStates();
+  syncMobileModeUi();
 
   if(showStatus){
     setToolStatus(
@@ -11408,6 +11414,7 @@ function setAllSnapTypes(checked,{showStatus=true}={}){
 
 snapAssistMaster?.addEventListener("change",()=>{
   setAllSnapTypes(snapAssistMaster.checked);
+  syncMobileModeUi();
 });
 
 SNAP_GROUPS.forEach(group=>{
@@ -11415,6 +11422,7 @@ SNAP_GROUPS.forEach(group=>{
     group.children.forEach(input=>input.checked=group.parent.checked);
     group.parent.indeterminate=false;
     syncSnapAssistMasterState();
+    syncMobileModeUi();
     const enabled=SNAP_TYPE_INPUTS.filter(item=>item.checked).length;
     setToolStatus(
       enabled?`目前啟用 ${enabled} 種磁吸候選點。`:"目前沒有啟用任何磁吸候選點。",
@@ -11426,6 +11434,7 @@ SNAP_GROUPS.forEach(group=>{
 SNAP_TYPE_INPUTS.forEach(input=>{
   input.addEventListener("change",()=>{
     syncSnapGroupStates();
+    syncMobileModeUi();
     const enabled=SNAP_TYPE_INPUTS.filter(item=>item.checked).length;
     setToolStatus(
       enabled
@@ -11488,6 +11497,14 @@ document.addEventListener("keydown",event=>{
     event.preventDefault();
     toggleMeasureMode();
     syncMobileModeUi();
+    return;
+  }
+
+  if(event.key==="c"||event.key==="C"){
+    if(textEditing)return;
+    if(active?.tagName==="INPUT"&&typeof active.blur==="function")active.blur();
+    event.preventDefault();
+    clearMeasurements();
     return;
   }
 

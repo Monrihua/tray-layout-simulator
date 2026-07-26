@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.6.11 Beta 輔助設定整合</title>
+<title>智慧載盤物理模擬器｜V4.6.12 Beta 拖曳與磁吸判定修正</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -4894,7 +4894,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.6.11 Beta · 輔助設定整合</div>
+<div class="headerBadge">V4.6.12 Beta · 拖曳與磁吸判定修正</div>
 </div>
 
 </div>
@@ -9924,6 +9924,10 @@ function startItemDrag(event){
     document.body.classList.contains("touchUiEnabled") &&
     event.pointerType==="touch";
 
+  // 電腦版左右鍵拖動工件都必須先啟用拖曳模式。
+  // 右鍵在拖曳模式關閉時仍保留空白處平移工程圖，但不能拖動工件。
+  if(!isMobileTouch&&!snapEnabled.checked)return;
+
   /*
     V4.6.2：手機只映射桌面既有兩種拖曳行為，不另寫一套功能。
     - 手機拖曳模式 + 磁吸輔助 ON ＝桌面左鍵：拿起、可穿透／越界、預覽與智慧落位。
@@ -11377,14 +11381,17 @@ function syncSnapAssistMasterState(){
     mobileMaster.indeterminate=partiallyChecked;
   }
 
-  mobileFreeDragEnabled=!allChecked;
+  // 手機磁吸是否可用應由「至少一個吸附點開啟」判定，
+  // 而不是要求主開關處於全部勾選狀態。
+  const anyChecked=checkedCount>0;
+  mobileFreeDragEnabled=!anyChecked;
   if(mobileFreeDragBtn){
-    mobileFreeDragBtn.classList.toggle("active",allChecked);
-    mobileFreeDragBtn.setAttribute("aria-pressed",String(allChecked));
+    mobileFreeDragBtn.classList.toggle("active",anyChecked);
+    mobileFreeDragBtn.setAttribute("aria-pressed",String(anyChecked));
   }
 
-  headerMagnetAssistToggle?.classList.toggle("active",allChecked);
-  headerMagnetAssistToggle?.setAttribute("aria-pressed",String(allChecked));
+  headerMagnetAssistToggle?.classList.toggle("active",anyChecked);
+  headerMagnetAssistToggle?.setAttribute("aria-pressed",String(anyChecked));
 }
 
 function syncSnapGroupStates(){

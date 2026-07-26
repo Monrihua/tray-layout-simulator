@@ -5159,7 +5159,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </div>
 <div class="assistSubsection">
 <div class="assistSubsectionTitle">量測模式</div>
-<div class="toolRow"><button id="measureModeBtn" type="button">兩點量測</button><button id="clearMeasurementsBtn" type="button">清除量測</button></div>
+<div class="toolRow"><button id="measureModeBtn" type="button">量測模式</button><button id="clearMeasurementsBtn" type="button">清除量測</button></div>
 <div class="toolStatus" id="measureStatus">量測模式未啟用</div>
 <label class="snapToggle" style="margin-top:8px!important"><input id="measureConfirmOnRelease" type="checkbox"/>放開後確定測量點</label>
 <label class="snapToggle" style="margin-top:8px!important"><input checked="" id="measureIgnoreSnapSettings" type="checkbox"/>量測模式忽略吸附點設置，保持磁吸輔助全開</label>
@@ -7877,6 +7877,7 @@ function toggleMeasureMode(){
       :"已關閉量測模式",
     measureMode?"success":""
   );
+  syncMobileModeUi();
 }
 
 
@@ -11324,6 +11325,7 @@ headerSnapToggle?.addEventListener("click",()=>{
   snapEnabled.checked=!snapEnabled.checked;
   snapEnabled.dispatchEvent(new Event("change",{bubbles:true}));
   syncHeaderQuickTools();
+  syncMobileModeUi();
   setToolStatus(
     snapEnabled.checked
       ?"已開啟拖曳模式：左鍵按住工件拖曳，靠近候選位置會顯示吸附預覽，放開左鍵後才正式吸附；右鍵拖曳可暫時忽略吸力。"
@@ -11351,7 +11353,10 @@ el.safeX.addEventListener("input",syncHeaderQuickTools);
 el.safeX.addEventListener("change",syncHeaderQuickTools);
 el.safeY.addEventListener("input",syncHeaderQuickTools);
 el.safeY.addEventListener("change",syncHeaderQuickTools);
-snapEnabled.addEventListener("change",syncHeaderQuickTools);
+snapEnabled.addEventListener("change",()=>{
+  syncHeaderQuickTools();
+  syncMobileModeUi();
+});
 function syncSnapAssistMasterState(){
   const checkedCount=SNAP_TYPE_INPUTS.filter(input=>input.checked).length;
   const allChecked=checkedCount===SNAP_TYPE_INPUTS.length;
@@ -11482,6 +11487,7 @@ document.addEventListener("keydown",event=>{
     if(active?.tagName==="INPUT"&&typeof active.blur==="function")active.blur();
     event.preventDefault();
     toggleMeasureMode();
+    syncMobileModeUi();
     return;
   }
 
@@ -11492,6 +11498,7 @@ document.addEventListener("keydown",event=>{
     snapEnabled.checked=!snapEnabled.checked;
     snapEnabled.dispatchEvent(new Event("change",{bubbles:true}));
     syncHeaderQuickTools();
+    syncMobileModeUi();
     setToolStatus(
       snapEnabled.checked
         ?"已開啟拖曳模式：左鍵按住工件拖曳，靠近候選位置會顯示吸附預覽，放開左鍵後才正式吸附；右鍵拖曳可暫時忽略吸力。"
@@ -11624,6 +11631,10 @@ function shouldEnableTouchUi(){
 }
 
 function syncMobileModeUi(){
+  const isTouchUi=document.body.classList.contains("touchUiEnabled");
+  const dragModeActive=isTouchUi
+    ? mobileDragModeEnabled
+    : Boolean(snapEnabled?.checked);
 
   mobileMeasureBtn?.classList.toggle("active",measureMode);
   mobileSnapBtn?.classList.toggle("active",mobileDragModeEnabled);
@@ -11662,7 +11673,7 @@ function syncMobileModeUi(){
       return;
     }
 
-    if(mobileDragModeEnabled){
+    if(dragModeActive){
       const lines=["｜拖曳模式｜"];
       const dragState=itemDragState;
 
@@ -11679,11 +11690,11 @@ function syncMobileModeUi(){
         lines.push(`距離 ${fmt(distance)} mm｜角度 ${fmt(angle)}°`);
         lines.push(`吸附：${snapLabel}｜放開確定位置`);
       }else if(!mobileFreeDragEnabled){
-        lines.push("單指按住拖動工件");
+        lines.push(isTouchUi?"單指按住拖動工件":"滑鼠左鍵按住拖動工件");
         lines.push("磁吸輔助｜拖動過程允許穿透工件與邊界（標記為紅色）");
         lines.push("預覽磁吸落點｜放開時吸附或無法吸附時回到原位");
       }else{
-        lines.push("單指按住拖動工件");
+        lines.push(isTouchUi?"單指按住拖動工件":"滑鼠左鍵按住拖動工件");
         lines.push("真實物理碰撞｜拖動過程禁止穿透工件與邊界");
         lines.push("不重疊或越界的範圍內自由拖動");
       }
@@ -11732,8 +11743,9 @@ function syncMobileModeUi(){
       return;
     }
 
-    mobileModeBadge.textContent=
-      "｜選取模式｜單指按住拖動框選｜往➡️視窗框選｜往⬅️交集框選｜雙指縮放與移動圖面｜雙擊空白復原縮放與位置";
+    mobileModeBadge.textContent=isTouchUi
+      ?"｜選取模式｜單指按住拖動框選｜往➡️視窗框選｜往⬅️交集框選｜雙指縮放與移動圖面｜雙擊空白復原縮放與位置"
+      :"｜選取模式｜滑鼠左鍵拖動框選｜往➡️視窗框選｜往⬅️交集框選｜滾輪縮放｜右鍵拖動畫面｜雙擊空白復原縮放與位置";
   }
 }
 

@@ -13738,6 +13738,34 @@ requestAnimationFrame(()=>{
   const controls=[...document.querySelectorAll('input[id],select[id]')].filter(isPersistentControl);
   const changed=[];
 
+  // 在讀取使用者紀錄之前，先保留程式原本的內建預設值。
+  // 「恢復預設值」會使用這份快照，而不是使用者最後一次儲存的內容。
+  const defaultControlValues=new Map(controls.map(element=>[element,{
+    value:String(element.value),
+    checked:Boolean(element.checked)
+  }]));
+
+  function applyControlValue(element,state){
+    if(!state)return;
+    if(element.type==="checkbox"||element.type==="radio"){
+      element.checked=state.checked;
+    }else{
+      element.value=state.value;
+    }
+  }
+
+  function dispatchPersistentControlEvents(elements){
+    const dispatchedRadioNames=new Set();
+    for(const element of elements){
+      if(element.type==="radio"){
+        if(!element.checked||dispatchedRadioNames.has(element.name))continue;
+        dispatchedRadioNames.add(element.name);
+      }
+      element.dispatchEvent(new Event("input",{bubbles:true}));
+      element.dispatchEvent(new Event("change",{bubbles:true}));
+    }
+  }
+
   // 先一次性還原全部數值，再觸發事件，避免欄位互相同步時讀到半套設定。
   for(const element of controls){
     try{
@@ -13760,15 +13788,36 @@ requestAnimationFrame(()=>{
   }
 
   // 讓既有的即時計算、桌機／手機同步與圖面重繪邏輯套用還原後的值。
-  const dispatchedRadioNames=new Set();
-  for(const element of changed){
-    if(element.type==="radio"){
-      if(!element.checked||dispatchedRadioNames.has(element.name))continue;
-      dispatchedRadioNames.add(element.name);
+  dispatchPersistentControlEvents(changed);
+
+  function restoreBuiltInDefaults(){
+    // 舊版 resetBtn 的處理程序會先完成工件清除與既有重設流程；
+    // 下一個事件循環再用完整快照補齊所有可記憶設定。
+    for(const element of controls){
+      applyControlValue(element,defaultControlValues.get(element));
     }
-    element.dispatchEvent(new Event("input",{bubbles:true}));
-    element.dispatchEvent(new Event("change",{bubbles:true}));
+
+    // 全域上下鍵微調量使用獨立儲存鍵，也一併恢復原始預設。
+    try{
+      localStorage.setItem("traySimulator.globalStep","1");
+      localStorage.setItem("traySimulator.globalStepMode","preset");
+    }catch(_error){}
+
+    dispatchPersistentControlEvents(controls);
+    controls.forEach(saveControl);
+
+    if(typeof updatePrimaryModeUI==="function")updatePrimaryModeUI();
+    if(typeof updateSecondaryModeUI==="function")updateSecondaryModeUI();
+    if(typeof renderCurrent==="function")renderCurrent();
+    if(typeof syncExtendedMobilePanels==="function")syncExtendedMobilePanels();
+    if(typeof syncMobileModeUi==="function")syncMobileModeUi();
+    if(typeof updateCurrentUtilization==="function")updateCurrentUtilization();
   }
+
+  const resetButton=document.getElementById("resetBtn");
+  resetButton?.addEventListener("click",()=>{
+    setTimeout(restoreBuiltInDefaults,0);
+  });
 
   if(typeof renderCurrent==="function")renderCurrent();
   if(typeof syncExtendedMobilePanels==="function")syncExtendedMobilePanels();

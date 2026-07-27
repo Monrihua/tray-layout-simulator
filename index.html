@@ -13703,16 +13703,30 @@ requestAnimationFrame(()=>{
   applyStep(initial,mode);
 })();
 
-/* ===== V4.6.19：統一設定記憶（修正 Radio 群組與初始化覆蓋） ===== */
+/* ===== V4.6.20：統一設定記憶（修正 X 內縮鏡像與輔助尺寸暫存） ===== */
 (function enablePersistentSettings(){
   const STORAGE_PREFIX="traySimulator.setting.";
+  // 頂部 X/Y 內縮只是 safeX/safeY 的操作鏡像，不能各自保存，否則載入時會以舊值反向覆蓋主欄位。
+  // 輔助尺寸屬於一次性換算輸入，每次開啟與恢復預設都應保持空白。
+  const NON_PERSISTENT_IDS=new Set(["headerSafeX","headerSafeY","partInches","secondaryInches"]);
+  const TRANSIENT_EMPTY_IDS=["partInches","secondaryInches"];
   let applyingSettings=false;
 
   function isPersistentControl(element){
     if(!element)return false;
+    if(NON_PERSISTENT_IDS.has(element.id))return false;
     // 手機控制項是桌面主控制項的鏡像，不另存一份，避免互相覆蓋。
     if(element.id?.startsWith("mobile")||element.name?.startsWith("mobile"))return false;
     return element.matches('input[type="number"],input[type="range"],input[type="checkbox"],input[type="radio"],select');
+  }
+
+  function clearTransientInputs(){
+    for(const id of TRANSIENT_EMPTY_IDS){
+      const element=document.getElementById(id);
+      if(element)element.value="";
+      // 清除舊版本留下的記憶，避免未來設定架構調整後再次復活。
+      try{localStorage.removeItem(`${STORAGE_PREFIX}${id}`);}catch(_error){}
+    }
   }
 
   const controls=[...document.querySelectorAll('input,select')].filter(isPersistentControl);
@@ -13832,13 +13846,19 @@ requestAnimationFrame(()=>{
 
   // 立即載入一次；再於兩次 requestAnimationFrame 後重套一次，
   // 蓋過手機磁吸預設開啟、模式 UI 初始化等較晚執行的既有程式。
+  clearTransientInputs();
   applyStateMap(savedControlValues);
+  clearTransientInputs();
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     applyStateMap(savedControlValues,{saveAfter:true});
+    clearTransientInputs();
+    if(typeof syncHeaderQuickTools==="function")syncHeaderQuickTools();
   }));
 
   function restoreBuiltInDefaults(){
     applyStateMap(defaultControlValues,{saveAfter:true});
+    clearTransientInputs();
+    if(typeof syncHeaderQuickTools==="function")syncHeaderQuickTools();
 
     try{
       localStorage.setItem("traySimulator.globalStep","1");

@@ -13703,60 +13703,92 @@ requestAnimationFrame(()=>{
   applyStep(initial,mode);
 })();
 
-/* ===== V4.6.18：所有設定值自動記憶於瀏覽器（包含暫時停用欄位） ===== */
+/* ===== V4.6.19：統一設定記憶（修正 Radio 群組與初始化覆蓋） ===== */
 (function enablePersistentSettings(){
   const STORAGE_PREFIX="traySimulator.setting.";
+  let applyingSettings=false;
 
   function isPersistentControl(element){
-    if(!element||!element.id)return false;
-    // 即使欄位目前因模式切換而 disabled，也仍然必須保存與還原。
-    // 否則像追加工件、形狀專屬參數等暫時停用的欄位，重新開啟網頁後就會遺失最後設定。
-    // 手機欄位多半只是桌面主欄位的鏡像，僅保存主欄位，避免兩份資料互相覆蓋。
-    if(element.id.startsWith("mobile"))return false;
-    if(element.matches('input[type="number"],input[type="range"],input[type="checkbox"],input[type="radio"],select'))return true;
-    return false;
+    if(!element)return false;
+    // 手機控制項是桌面主控制項的鏡像，不另存一份，避免互相覆蓋。
+    if(element.id?.startsWith("mobile")||element.name?.startsWith("mobile"))return false;
+    return element.matches('input[type="number"],input[type="range"],input[type="checkbox"],input[type="radio"],select');
   }
 
-  function storageKey(element){
-    if(element.type==="radio"&&element.name){
-      return `${STORAGE_PREFIX}radio.${element.name}`;
-    }
+  const controls=[...document.querySelectorAll('input,select')].filter(isPersistentControl);
+
+  function radioGroupKey(element){
+    return `${STORAGE_PREFIX}radio.${element.name||element.id}`;
+  }
+
+  function controlKey(element){
     return `${STORAGE_PREFIX}${element.id}`;
   }
 
+  // Radio 不再儲存 value="on"；優先儲存唯一 id，沒有 id 才使用 value。
+  // 這可修正寸數換算、形狀、排列等同組 Radio 全部被判定為同一值的問題。
+  function radioToken(element){
+    return element.id||element.value;
+  }
+
+  function readControlState(element){
+    if(element.type==="radio"){
+      return {kind:"radio",token:radioToken(element),checked:Boolean(element.checked)};
+    }
+    if(element.type==="checkbox"){
+      return {kind:"checkbox",checked:Boolean(element.checked)};
+    }
+    return {kind:"value",value:String(element.value)};
+  }
+
+  // 在載入使用者紀錄前，保留 HTML／程式原本的內建預設值。
+  const defaultControlValues=new Map(controls.map(element=>[element,readControlState(element)]));
+
   function saveControl(element){
-    if(!isPersistentControl(element))return;
+    if(applyingSettings||!isPersistentControl(element))return;
     try{
       if(element.type==="radio"){
-        if(element.checked)localStorage.setItem(storageKey(element),element.value);
+        if(element.checked)localStorage.setItem(radioGroupKey(element),radioToken(element));
       }else if(element.type==="checkbox"){
-        localStorage.setItem(storageKey(element),element.checked?"1":"0");
-      }else{
-        localStorage.setItem(storageKey(element),String(element.value));
+        if(element.id)localStorage.setItem(controlKey(element),element.checked?"1":"0");
+      }else if(element.id){
+        localStorage.setItem(controlKey(element),String(element.value));
       }
     }catch(_error){}
   }
 
-  const controls=[...document.querySelectorAll('input[id],select[id]')].filter(isPersistentControl);
-  const changed=[];
-
-  // 在讀取使用者紀錄之前，先保留程式原本的內建預設值。
-  // 「恢復預設值」會使用這份快照，而不是使用者最後一次儲存的內容。
-  const defaultControlValues=new Map(controls.map(element=>[element,{
-    value:String(element.value),
-    checked:Boolean(element.checked)
-  }]));
-
-  function applyControlValue(element,state){
-    if(!state)return;
-    if(element.type==="checkbox"||element.type==="radio"){
-      element.checked=state.checked;
-    }else{
-      element.value=state.value;
+  function getSavedState(element){
+    try{
+      if(element.type==="radio"){
+        const saved=localStorage.getItem(radioGroupKey(element));
+        if(saved===null)return null;
+        return {kind:"radio",token:saved,checked:radioToken(element)===saved};
+      }
+      if(!element.id)return null;
+      const saved=localStorage.getItem(controlKey(element));
+      if(saved===null)return null;
+      if(element.type==="checkbox")return {kind:"checkbox",checked:saved==="1"};
+      return {kind:"value",value:saved};
+    }catch(_error){
+      return null;
     }
   }
 
-  function dispatchPersistentControlEvents(elements){
+  // 先完整讀入記憶體。即使後續既有初始化程式暫時改值並寫回 localStorage，
+  // 最後仍可依這份快照恢復真正的使用者最後設定。
+  const savedControlValues=new Map();
+  controls.forEach(element=>{
+    const state=getSavedState(element);
+    if(state)savedControlValues.set(element,state);
+  });
+
+  function applyControlValue(element,state){
+    if(!state)return;
+    if(state.kind==="radio"||state.kind==="checkbox")element.checked=Boolean(state.checked);
+    else element.value=state.value;
+  }
+
+  function dispatchControlEvents(elements){
     const dispatchedRadioNames=new Set();
     for(const element of elements){
       if(element.type==="radio"){
@@ -13768,62 +13800,57 @@ requestAnimationFrame(()=>{
     }
   }
 
-  // 先一次性還原全部數值，再觸發事件，避免欄位互相同步時讀到半套設定。
-  for(const element of controls){
-    try{
-      const saved=localStorage.getItem(storageKey(element));
-      if(saved===null)continue;
-      if(element.type==="radio"){
-        element.checked=element.value===saved;
-      }else if(element.type==="checkbox"){
-        element.checked=saved==="1";
-      }else{
-        element.value=saved;
-      }
-      changed.push(element);
-    }catch(_error){}
-  }
-
-  for(const element of controls){
-    element.addEventListener("input",()=>saveControl(element));
-    element.addEventListener("change",()=>saveControl(element));
-  }
-
-  // 讓既有的即時計算、桌機／手機同步與圖面重繪邏輯套用還原後的值。
-  dispatchPersistentControlEvents(changed);
-
-  function restoreBuiltInDefaults(){
-    // 舊版 resetBtn 的處理程序會先完成工件清除與既有重設流程；
-    // 下一個事件循環再用完整快照補齊所有可記憶設定。
+  function applyStateMap(stateMap,{saveAfter=false}={}){
+    applyingSettings=true;
     for(const element of controls){
-      applyControlValue(element,defaultControlValues.get(element));
+      const state=stateMap.get(element);
+      if(state)applyControlValue(element,state);
+    }
+    applyingSettings=false;
+
+    // 先全部套用完再觸發事件，避免形狀／排列／模式互相同步時只讀到半套狀態。
+    dispatchControlEvents([...stateMap.keys()]);
+
+    if(saveAfter){
+      applyingSettings=false;
+      controls.forEach(saveControl);
     }
 
-    // 全域上下鍵微調量使用獨立儲存鍵，也一併恢復原始預設。
+    if(typeof updatePrimaryModeUI==="function")updatePrimaryModeUI();
+    if(typeof updateSecondaryModeUI==="function")updateSecondaryModeUI();
+    if(typeof syncExtendedMobilePanels==="function")syncExtendedMobilePanels();
+    if(typeof syncMobileFineTuneFromMain==="function")syncMobileFineTuneFromMain();
+    if(typeof syncMobileModeUi==="function")syncMobileModeUi();
+    if(typeof renderCurrent==="function")renderCurrent();
+    if(typeof updateCurrentUtilization==="function")updateCurrentUtilization();
+  }
+
+  controls.forEach(element=>{
+    element.addEventListener("input",()=>saveControl(element));
+    element.addEventListener("change",()=>saveControl(element));
+  });
+
+  // 立即載入一次；再於兩次 requestAnimationFrame 後重套一次，
+  // 蓋過手機磁吸預設開啟、模式 UI 初始化等較晚執行的既有程式。
+  applyStateMap(savedControlValues);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    applyStateMap(savedControlValues,{saveAfter:true});
+  }));
+
+  function restoreBuiltInDefaults(){
+    applyStateMap(defaultControlValues,{saveAfter:true});
+
     try{
       localStorage.setItem("traySimulator.globalStep","1");
       localStorage.setItem("traySimulator.globalStepMode","preset");
     }catch(_error){}
-
-    dispatchPersistentControlEvents(controls);
-    controls.forEach(saveControl);
-
-    if(typeof updatePrimaryModeUI==="function")updatePrimaryModeUI();
-    if(typeof updateSecondaryModeUI==="function")updateSecondaryModeUI();
-    if(typeof renderCurrent==="function")renderCurrent();
-    if(typeof syncExtendedMobilePanels==="function")syncExtendedMobilePanels();
-    if(typeof syncMobileModeUi==="function")syncMobileModeUi();
-    if(typeof updateCurrentUtilization==="function")updateCurrentUtilization();
   }
 
   const resetButton=document.getElementById("resetBtn");
   resetButton?.addEventListener("click",()=>{
+    // 讓原本 resetBtn 的工件清除與重畫先完成，再套回完整內建預設。
     setTimeout(restoreBuiltInDefaults,0);
   });
-
-  if(typeof renderCurrent==="function")renderCurrent();
-  if(typeof syncExtendedMobilePanels==="function")syncExtendedMobilePanels();
-  if(typeof syncMobileModeUi==="function")syncMobileModeUi();
 })();
 
 </script>

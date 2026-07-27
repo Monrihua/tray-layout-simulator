@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.6.12 Beta 拖曳與磁吸判定修正</title>
+<title>智慧載盤物理模擬器｜V4.6.13 Beta 量測輔助棒</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -1027,6 +1027,27 @@ body{padding:16px}
   font-size:10px;
   line-height:1.4;
 }
+
+.measureAssistRod{
+  stroke:#20c4ff;
+  stroke-width:3;
+  stroke-linecap:round;
+  filter:drop-shadow(0 0 2px rgba(0,0,0,.85));
+  pointer-events:none;
+}
+.measureAssistHandle{
+  fill:#16263b;
+  stroke:#20c4ff;
+  stroke-width:2;
+  pointer-events:none;
+}
+.measureAssistTip{
+  fill:#ffd400;
+  stroke:#111;
+  stroke-width:2;
+  pointer-events:none;
+}
+
 .measurePreviewLine{
   stroke:#ffd400;
   stroke-width:2.4;
@@ -4894,7 +4915,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.6.12 Beta · 拖曳與磁吸判定修正</div>
+<div class="headerBadge">V4.6.13 Beta · 量測輔助棒</div>
 </div>
 
 </div>
@@ -5165,6 +5186,10 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <div class="toolRow"><button id="measureModeBtn" type="button">量測模式</button><button id="clearMeasurementsBtn" type="button">清除量測</button></div>
 <div class="toolStatus" id="measureStatus">量測模式未啟用</div>
 <label class="snapToggle" style="margin-top:8px!important"><input id="measureConfirmOnRelease" type="checkbox"/>放開後確定測量點</label>
+<label class="snapToggle" style="margin-top:8px!important"><input id="measureAssistRodEnabled" type="checkbox"/>使用量測輔助棒</label>
+<label style="margin-top:8px!important">輔助棒長度（px）
+<input id="measureAssistRodLength" min="0" max="200" step="1" type="number" value="40"/>
+</label>
 <label class="snapToggle" style="margin-top:8px!important"><input checked="" id="measureIgnoreSnapSettings" type="checkbox"/>量測模式忽略吸附點設置，保持磁吸輔助全開</label>
 <div class="hint">勾選時，量測不受上方吸附點開關影響；取消勾選後，量測會與拖曳模式使用相同的吸附點設置。</div>
 </div>
@@ -5301,6 +5326,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <h3>量測模式</h3>
 <p><span class="helpKey">M</span> 切換量測模式。可搭配磁吸輔助，左鍵依序設定第一點與第二點。</p>
 <ul>
+<li>可開啟量測輔助棒，量測與磁吸偵測會改用輔助棒末端；棒長可在輔助設定中調整</li>
 <li>預設忽略吸附點設置，保持磁吸輔助全開；取消勾選後跟隨吸附點設置</li>
 <li>電腦版可按住 <span class="helpKey">Shift</span> 啟用 0°／45°／90° 極座標追蹤</li>
 <li><span class="helpKey">Esc</span>：取消目前未完成的量測</li>
@@ -5617,6 +5643,8 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 </div>
 <div class="mobileSectionCard"><div class="mobileSectionTitle">量測模式</div>
 <label class="mobileSwitchRow"><input checked="" id="mobileMeasureConfirmOnRelease" type="checkbox"/><span>放開後確定測量點</span></label>
+<label class="mobileSwitchRow"><input id="mobileMeasureAssistRodEnabled" type="checkbox"/><span>使用量測輔助棒</span></label>
+<label class="mobileWideField"><span>輔助棒長度（px）</span><div class="mobileNumberControl"><button data-mobile-step="-1" data-mobile-step-target="mobileMeasureAssistRodLength" type="button">−</button><input id="mobileMeasureAssistRodLength" min="0" max="200" step="1" type="number" value="40"/><button data-mobile-step="1" data-mobile-step-target="mobileMeasureAssistRodLength" type="button">＋</button></div></label>
 <label class="mobileSwitchRow"><input checked="" id="mobileMeasureIgnoreSnapSettings" type="checkbox"/><span>忽略吸附點設置，保持磁吸輔助全開</span></label>
 <div class="mobilePanelHint">取消「放開後確定測量點」後，點一下就會立即取點；取消忽略吸附點後，量測會遵守上方吸附點設置。</div></div>
 </div>
@@ -5697,6 +5725,8 @@ const measureModeBtn=document.getElementById("measureModeBtn");
 const clearMeasurementsBtn=document.getElementById("clearMeasurementsBtn");
 const measureStatus=document.getElementById("measureStatus");
 const measureConfirmOnRelease=document.getElementById("measureConfirmOnRelease");
+const measureAssistRodEnabled=document.getElementById("measureAssistRodEnabled");
+const measureAssistRodLength=document.getElementById("measureAssistRodLength");
 const measureIgnoreSnapSettings=document.getElementById("measureIgnoreSnapSettings");
 const snapEnabled=document.getElementById("snapEnabled");
 const headerMeasureToggle=document.getElementById("headerMeasureToggle");
@@ -5860,6 +5890,7 @@ function restoreOperationState(snapshot){
 
   pendingMeasurePoint=null;
   liveMeasurePoint=null;
+  liveMeasureHandlePoint=null;
   liveMeasureSnap=null;
   measurementDragState=null;
   measureReleaseState=null;
@@ -5897,6 +5928,7 @@ let analysisVisible=false;
 let measureMode=false;
 let pendingMeasurePoint=null;
 let liveMeasurePoint=null;
+let liveMeasureHandlePoint=null;
 let liveMeasureSnap=null;
 let measurements=[];
 let selectedMeasurementIndex=null;
@@ -5929,6 +5961,8 @@ const CONFIG_DEFAULTS=Object.freeze({
   SecondaryCircleArrange:"Grid",
   SnapEnabled:"false",
   MeasurementConfirmOnRelease:"false",
+  MeasurementAssistRodEnabled:"false",
+  MeasurementAssistRodLength:"40",
   MeasurementIgnoreSnapSettings:"true",
   SnapStep:"15",
   SnapTrayCorners:"true",
@@ -5971,7 +6005,7 @@ const CONFIG_SECTION_KEYS=[
   },
   {
     title:"Editing, magnetic snap and analysis",
-    keys:["SnapEnabled","MeasurementConfirmOnRelease","MeasurementIgnoreSnapSettings","SnapStep","SnapTrayCorners","SnapTrayMidpoints","SnapTrayBoundary","SnapSafeCorners","SnapSafeMidpoints","SnapTypeBoundary","SnapRectCorners","SnapRectMidpoints","SnapRectEdges","SnapCircleCenter","SnapTypeQuadrant","SnapTypeSingleCircle","SnapTypeDoubleCircle","SnapTypeCircleRect","ShowSpaceLabels"]
+    keys:["SnapEnabled","MeasurementConfirmOnRelease","MeasurementAssistRodEnabled","MeasurementAssistRodLength","MeasurementIgnoreSnapSettings","SnapStep","SnapTrayCorners","SnapTrayMidpoints","SnapTrayBoundary","SnapSafeCorners","SnapSafeMidpoints","SnapTypeBoundary","SnapRectCorners","SnapRectMidpoints","SnapRectEdges","SnapCircleCenter","SnapTypeQuadrant","SnapTypeSingleCircle","SnapTypeDoubleCircle","SnapTypeCircleRect","ShowSpaceLabels"]
   },
   {
     title:"Independent numeric steps",
@@ -6053,6 +6087,8 @@ function getCurrentConfig(){
     SecondaryCircleArrange:secondaryCircleHoney.checked?"Honeycomb":"Grid",
     SnapEnabled:String(snapEnabled.checked),
     MeasurementConfirmOnRelease:String(measureConfirmOnRelease.checked),
+    MeasurementAssistRodEnabled:String(measureAssistRodEnabled.checked),
+    MeasurementAssistRodLength:measureAssistRodLength.value,
     MeasurementIgnoreSnapSettings:String(measureIgnoreSnapSettings.checked),
     SnapStep:snapStep.value,
     SnapTrayCorners:String(snapTrayCorners.checked),
@@ -6186,6 +6222,8 @@ function applyConfig(config){
 
   snapEnabled.checked=parseConfigBoolean(config.SnapEnabled,false);
   measureConfirmOnRelease.checked=parseConfigBoolean(config.MeasurementConfirmOnRelease,false);
+  measureAssistRodEnabled.checked=parseConfigBoolean(config.MeasurementAssistRodEnabled,false);
+  setNumericConfigValue(measureAssistRodLength,config.MeasurementAssistRodLength,CONFIG_DEFAULTS.MeasurementAssistRodLength);
   measureIgnoreSnapSettings.checked=parseConfigBoolean(config.MeasurementIgnoreSnapSettings,true);
   setNumericConfigValue(snapStep,config.SnapStep,CONFIG_DEFAULTS.SnapStep);
   snapTrayCorners.checked=parseConfigBoolean(config.SnapTrayCorners,true);
@@ -7866,6 +7904,7 @@ function toggleMeasureMode(){
   pendingMeasurePoint=null;
   measureReleaseState=null;
   liveMeasurePoint=null;
+  liveMeasureHandlePoint=null;
   liveMeasureSnap=null;
 
   measureModeBtn.classList.toggle("active",measureMode);
@@ -8142,8 +8181,50 @@ function nearestMeasureSnap(rawPoint){
     ? {point:{x:best.x,y:best.y},label:best.label,distance:bestDistance}
     : {point:rawPoint,label:"自由點",distance:Infinity};
 }
+function getMeasureAssistGeometry(event){
+  const handle=svgPointFromClient(event.clientX,event.clientY);
+  if(!measureAssistRodEnabled?.checked){
+    return {handle,tip:handle,enabled:false};
+  }
+
+  const lengthPx=Math.max(0,Math.min(200,Number(measureAssistRodLength?.value)||0));
+  const rect=svg.getBoundingClientRect();
+  const viewBox=currentViewBox||baseViewBox||svg.viewBox?.baseVal;
+  const worldPerPixelY=(viewBox&&rect.height>0)?viewBox.height/rect.height:1;
+  return {
+    handle,
+    tip:{x:handle.x,y:handle.y-lengthPx*worldPerPixelY},
+    enabled:lengthPx>0
+  };
+}
+
+function drawMeasureAssistRod(){
+  if(!measureMode||!measureAssistRodEnabled?.checked||!liveMeasureHandlePoint||!liveMeasurePoint)return;
+  create("line",{
+    x1:liveMeasureHandlePoint.x,
+    y1:liveMeasureHandlePoint.y,
+    x2:liveMeasurePoint.x,
+    y2:liveMeasurePoint.y,
+    class:"measureAssistRod"
+  });
+  create("circle",{
+    cx:liveMeasureHandlePoint.x,
+    cy:liveMeasureHandlePoint.y,
+    r:4.5,
+    class:"measureAssistHandle"
+  });
+  create("circle",{
+    cx:liveMeasurePoint.x,
+    cy:liveMeasurePoint.y,
+    r:4.5,
+    class:"measureAssistTip"
+  });
+}
+
 function resolveMeasurePoint(event){
-  const raw=svgPointFromClient(event.clientX,event.clientY);
+  const assist=getMeasureAssistGeometry(event);
+  liveMeasureHandlePoint=assist.handle;
+  const raw=assist.tip;
   const snapped=nearestMeasureSnap(raw);
 
   // CAD 常稱為「極座標追蹤（Polar Tracking）」：
@@ -8210,6 +8291,7 @@ function cancelPendingMeasurement(message="已取消目前量測。"){
 
   pendingMeasurePoint=null;
   liveMeasurePoint=null;
+  liveMeasureHandlePoint=null;
   liveMeasureSnap=null;
   renderCurrent();
   setToolStatus(
@@ -8225,6 +8307,7 @@ function cancelPendingMeasurement(message="已取消目前量測。"){
 function drawFirstMeasurePointPreview(){
   if(!measureMode||pendingMeasurePoint||!liveMeasurePoint)return;
 
+  drawMeasureAssistRod();
   const point=liveMeasurePoint;
   create("circle",{cx:point.x,cy:point.y,r:5,class:"measureSnapPoint"});
   create("line",{x1:point.x-9,y1:point.y,x2:point.x+9,y2:point.y,class:"measureSnapCross"});
@@ -8234,6 +8317,7 @@ function drawFirstMeasurePointPreview(){
 function drawLiveMeasurement(){
   if(!pendingMeasurePoint)return;
 
+  drawMeasureAssistRod();
   const end=liveMeasurePoint||pendingMeasurePoint;
   const dx=end.x-pendingMeasurePoint.x;
   const dy=end.y-pendingMeasurePoint.y;
@@ -8360,6 +8444,7 @@ function addMeasurementPoint(event){
 
     pendingMeasurePoint=null;
     liveMeasurePoint=null;
+    liveMeasureHandlePoint=null;
     liveMeasureSnap=null;
     renderCurrent();
     setToolStatus(
@@ -8577,6 +8662,7 @@ function clearMeasurements(){
   measurementDragState=null;
   pendingMeasurePoint=null;
   liveMeasurePoint=null;
+  liveMeasureHandlePoint=null;
   liveMeasureSnap=null;
   renderCurrent();
   setToolStatus(measureMode?"量測已清除，請點第一點。":"量測已清除。","success");
@@ -11049,6 +11135,8 @@ document.getElementById("resetBtn").addEventListener("click",()=>{
   secondaryGapX.value=5;
   secondaryGapY.value=5;
   snapStep.value=15;
+  measureAssistRodEnabled.checked=false;
+  measureAssistRodLength.value=40;
 
   applySectionStep("traySettingsSection",1);
   applySectionStep("primarySettingsSection",1);
@@ -11257,6 +11345,7 @@ svg.addEventListener("pointercancel",cancelReleaseMeasurement,true);
 svg.addEventListener("mouseleave",()=>{
   if(measureMode&&!panState){
     liveMeasurePoint=null;
+    liveMeasureHandlePoint=null;
     liveMeasureSnap=null;
     renderCurrent();
     if(pendingMeasurePoint){
@@ -12369,6 +12458,8 @@ const mobileAlignPanel=document.getElementById("mobileAlignPanel");
 const mobileSystemPanel=document.getElementById("mobileSystemPanel");
 
 const mobileMeasureConfirmOnRelease=document.getElementById("mobileMeasureConfirmOnRelease");
+const mobileMeasureAssistRodEnabled=document.getElementById("mobileMeasureAssistRodEnabled");
+const mobileMeasureAssistRodLength=document.getElementById("mobileMeasureAssistRodLength");
 const mobileMeasureIgnoreSnapSettings=document.getElementById("mobileMeasureIgnoreSnapSettings");
 const mobileSnapAssistMaster=document.getElementById("mobileSnapAssistMaster");
 const mobileSnapStepMirror=document.getElementById("mobileSnapStepMirror");
@@ -12377,6 +12468,10 @@ const mobileShowSpaceLabels=document.getElementById("mobileShowSpaceLabels");
 function syncExtendedMobilePanels(){
   if(mobileMeasureConfirmOnRelease){
     mobileMeasureConfirmOnRelease.checked=measureConfirmOnRelease.checked;
+  }
+  if(mobileMeasureAssistRodEnabled)mobileMeasureAssistRodEnabled.checked=measureAssistRodEnabled.checked;
+  if(mobileMeasureAssistRodLength&&document.activeElement!==mobileMeasureAssistRodLength){
+    mobileMeasureAssistRodLength.value=measureAssistRodLength.value;
   }
   if(mobileMeasureIgnoreSnapSettings)mobileMeasureIgnoreSnapSettings.checked=measureIgnoreSnapSettings.checked;
   syncSnapAssistMasterState();
@@ -12460,6 +12555,30 @@ mobileMeasureConfirmOnRelease?.addEventListener("change",()=>{
 measureConfirmOnRelease?.addEventListener("change",()=>{
   syncExtendedMobilePanels();
   syncMobileModeUi();
+});
+
+mobileMeasureAssistRodEnabled?.addEventListener("change",()=>{
+  measureAssistRodEnabled.checked=mobileMeasureAssistRodEnabled.checked;
+  measureAssistRodEnabled.dispatchEvent(new Event("change",{bubbles:true}));
+  syncExtendedMobilePanels();
+});
+measureAssistRodEnabled?.addEventListener("change",()=>{
+  liveMeasureHandlePoint=null;
+  liveMeasurePoint=null;
+  liveMeasureSnap=null;
+  renderCurrent();
+  syncExtendedMobilePanels();
+  syncMobileModeUi();
+});
+mobileMeasureAssistRodLength?.addEventListener("input",()=>{
+  measureAssistRodLength.value=mobileMeasureAssistRodLength.value;
+  measureAssistRodLength.dispatchEvent(new Event("input",{bubbles:true}));
+});
+measureAssistRodLength?.addEventListener("input",()=>{
+  const value=Math.max(0,Math.min(200,Number(measureAssistRodLength.value)||0));
+  measureAssistRodLength.value=String(value);
+  syncExtendedMobilePanels();
+  renderCurrent();
 });
 
 mobileMeasureIgnoreSnapSettings?.addEventListener("change",()=>{

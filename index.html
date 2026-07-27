@@ -11003,6 +11003,9 @@ function draw(){
   );
 
   updateV5Status();
+  // 主要工件重畫只補算目前畫面利用率；不共用追加工件重畫流程，
+  // 因此不會重新建立已被手動刪除的主要工件。
+  updateCurrentUtilization();
 }
 
 

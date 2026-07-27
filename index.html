@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.6.14 Beta 量測輔助棒</title>
+<title>智慧載盤物理模擬器｜V4.6.15 Beta 吸力範圍與設定記憶</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -4933,7 +4933,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.6.14 Beta · 量測輔助棒</div>
+<div class="headerBadge">V4.6.15 Beta · 吸力範圍與設定記憶</div>
 </div>
 
 </div>
@@ -8233,11 +8233,14 @@ function getMeasureAssistGeometry(event){
 }
 
 function drawMeasureAssistRod(){
-  if(!measureMode||!measureAssistRodEnabled?.checked||!liveMeasureHandlePoint||!liveMeasurePoint)return;
+  // 量測模式下，不論是否開啟輔助棒，都顯示目前的吸力範圍。
+  // 關閉輔助棒時，搜尋中心就是滑鼠／手指位置；開啟時則位於棒尖。
+  if(!measureMode||!liveMeasureHandlePoint||!liveMeasurePoint)return;
   const rect=svg.getBoundingClientRect();
   const viewBox=currentViewBox||baseViewBox||svg.viewBox?.baseVal;
   const u=(viewBox&&rect.height>0)?viewBox.height/rect.height:1;
-  const lengthPx=Math.max(0,Math.min(200,Number(measureAssistRodLength?.value)||0));
+  const rodEnabled=Boolean(measureAssistRodEnabled?.checked);
+  const lengthPx=rodEnabled?Math.max(0,Math.min(200,Number(measureAssistRodLength?.value)||0)):0;
   const scanCenter={x:liveMeasureHandlePoint.x,y:liveMeasureHandlePoint.y-lengthPx*u};
   const radius=Math.max(0,Number(snapStep.value)||0);
   const style=measureProbeStyleInputs.find(input=>input.checked)?.value||"precision";
@@ -8246,6 +8249,14 @@ function drawMeasureAssistRod(){
 
   create("circle",{cx:scanCenter.x,cy:scanCenter.y,r:radius,class:"measureAssistScanRadius"});
   create("circle",{cx:scanCenter.x,cy:scanCenter.y,r:3.2*u,class:"measureAssistScanCenter"});
+
+  if(!rodEnabled){
+    const cx=liveMeasurePoint.x, cy=liveMeasurePoint.y, r=5.5*u, arm=10*u;
+    create("circle",{cx,cy,r,class:"measureAssistCrosshair"});
+    create("line",{x1:cx-arm,y1:cy,x2:cx+arm,y2:cy,class:"measureAssistCrosshair"});
+    create("line",{x1:cx,y1:cy-arm,x2:cx,y2:cy+arm,class:"measureAssistCrosshair"});
+    return;
+  }
 
   if(style==="barrel"){
     create("path",{d:`M ${x-6*u} ${bodyTop} L ${x+6*u} ${bodyTop} L ${x+4*u} ${bodyBottom-12*u} L ${x-4*u} ${bodyBottom-12*u} Z`,class:"measureAssistBody"});
@@ -13687,6 +13698,78 @@ requestAnimationFrame(()=>{
   }catch(_error){}
 
   applyStep(initial,mode);
+})();
+
+/* ===== V4.6.15：所有設定值自動記憶於瀏覽器 ===== */
+(function enablePersistentSettings(){
+  const STORAGE_PREFIX="traySimulator.setting.";
+
+  function isPersistentControl(element){
+    if(!element||!element.id||element.disabled)return false;
+    // 手機欄位多半只是桌面主欄位的鏡像，僅保存主欄位，避免兩份資料互相覆蓋。
+    if(element.id.startsWith("mobile"))return false;
+    if(element.matches('input[type="number"],input[type="range"],input[type="checkbox"],input[type="radio"],select'))return true;
+    return false;
+  }
+
+  function storageKey(element){
+    if(element.type==="radio"&&element.name){
+      return `${STORAGE_PREFIX}radio.${element.name}`;
+    }
+    return `${STORAGE_PREFIX}${element.id}`;
+  }
+
+  function saveControl(element){
+    if(!isPersistentControl(element))return;
+    try{
+      if(element.type==="radio"){
+        if(element.checked)localStorage.setItem(storageKey(element),element.value);
+      }else if(element.type==="checkbox"){
+        localStorage.setItem(storageKey(element),element.checked?"1":"0");
+      }else{
+        localStorage.setItem(storageKey(element),String(element.value));
+      }
+    }catch(_error){}
+  }
+
+  const controls=[...document.querySelectorAll('input[id],select[id]')].filter(isPersistentControl);
+  const changed=[];
+
+  // 先一次性還原全部數值，再觸發事件，避免欄位互相同步時讀到半套設定。
+  for(const element of controls){
+    try{
+      const saved=localStorage.getItem(storageKey(element));
+      if(saved===null)continue;
+      if(element.type==="radio"){
+        element.checked=element.value===saved;
+      }else if(element.type==="checkbox"){
+        element.checked=saved==="1";
+      }else{
+        element.value=saved;
+      }
+      changed.push(element);
+    }catch(_error){}
+  }
+
+  for(const element of controls){
+    element.addEventListener("input",()=>saveControl(element));
+    element.addEventListener("change",()=>saveControl(element));
+  }
+
+  // 讓既有的即時計算、桌機／手機同步與圖面重繪邏輯套用還原後的值。
+  const dispatchedRadioNames=new Set();
+  for(const element of changed){
+    if(element.type==="radio"){
+      if(!element.checked||dispatchedRadioNames.has(element.name))continue;
+      dispatchedRadioNames.add(element.name);
+    }
+    element.dispatchEvent(new Event("input",{bubbles:true}));
+    element.dispatchEvent(new Event("change",{bubbles:true}));
+  }
+
+  if(typeof renderCurrent==="function")renderCurrent();
+  if(typeof syncExtendedMobilePanels==="function")syncExtendedMobilePanels();
+  if(typeof syncMobileModeUi==="function")syncMobileModeUi();
 })();
 
 </script>

@@ -1028,6 +1028,24 @@ body{padding:16px}
   line-height:1.4;
 }
 
+
+.probeStyleTitle{margin:10px 0 7px;color:#334155;font-size:12px;font-weight:900}
+.probeStyleGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.probeStyleCard{position:relative;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:104px!important;margin:0!important;padding:7px!important;border:1px solid #d8e0ec;border-radius:9px;background:#fff;color:#405168;cursor:pointer}
+.probeStyleCard:hover{border-color:#9db8ea;background:#f8fbff}
+.probeStyleCard:has(input:checked){border-color:#3972dc;background:#edf4ff;color:#174ea6;box-shadow:0 0 0 2px rgba(36,87,197,.10)}
+.probeStyleCard input{position:absolute;left:7px;top:7px;width:auto!important;margin:0!important}
+.probeStylePreview{width:48px;height:62px;overflow:visible}
+.probeStyleName{font-size:11px;font-weight:900;text-align:center}
+.mobileProbeStyleGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.mobileProbeStyleGrid .probeStyleCard{min-height:108px!important}
+.measureAssistScanRadius{fill:rgba(32,196,255,.055);stroke:#20c4ff;stroke-opacity:.48;stroke-width:1.25;stroke-dasharray:5 4;vector-effect:non-scaling-stroke;pointer-events:none}
+.measureAssistBody{fill:#16263b;stroke:#20c4ff;stroke-width:1.8;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 2px rgba(0,0,0,.65));pointer-events:none}
+.measureAssistBodyDetail{fill:none;stroke:#9cecff;stroke-width:1.25;vector-effect:non-scaling-stroke;pointer-events:none}
+.measureAssistBodyJoint{fill:#edfaff;stroke:#20c4ff;stroke-width:1.5;vector-effect:non-scaling-stroke;pointer-events:none}
+.measureAssistScanCenter{fill:#102237;stroke:#72e6ff;stroke-width:1.5;vector-effect:non-scaling-stroke;pointer-events:none}
+.measureAssistCrosshair{fill:none;stroke:#ffd400;stroke-width:2;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 2px rgba(0,0,0,.9));pointer-events:none}
+
 .measureAssistRod{
   stroke:#20c4ff;
   stroke-width:3;
@@ -5190,6 +5208,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <label style="margin-top:8px!important">輔助棒長度（px）
 <input id="measureAssistRodLength" min="0" max="200" step="1" type="number" value="40"/>
 </label>
+<div class="probeStyleTitle">樣式</div><div class="probeStyleGrid"><label class="probeStyleCard"><input checked="" name="measureProbeStyle" type="radio" value="precision"/><svg class="probeStylePreview" viewBox="0 0 48 62" aria-hidden="true"><circle cx="24" cy="10" r="8" fill="none" stroke="#20c4ff" stroke-opacity=".38" stroke-dasharray="3 2"/><g stroke="#ffd400" stroke-width="1.5"><circle cx="29" cy="7" r="3" fill="none"/><path d="M24 7h10M29 2v10"/></g><rect x="20" y="18" width="8" height="31" rx="4" fill="#16263b" stroke="#20c4ff"/><rect x="16" y="45" width="16" height="10" rx="4" fill="#16263b" stroke="#20c4ff"/></svg><span class="probeStyleName">精密探針</span></label><label class="probeStyleCard"><input name="measureProbeStyle" type="radio" value="barrel"/><svg class="probeStylePreview" viewBox="0 0 48 62" aria-hidden="true"><circle cx="24" cy="10" r="8" fill="none" stroke="#20c4ff" stroke-opacity=".38" stroke-dasharray="3 2"/><g stroke="#ffd400" stroke-width="1.5"><circle cx="29" cy="7" r="3" fill="none"/><path d="M24 7h10M29 2v10"/></g><path d="M18 18h12l-2 27H20z" fill="#16263b" stroke="#20c4ff"/><rect x="16" y="25" width="16" height="6" rx="2" fill="#edfaff" stroke="#20c4ff"/><rect x="16" y="44" width="16" height="11" rx="4" fill="#16263b" stroke="#20c4ff"/></svg><span class="probeStyleName">科技槍管</span></label><label class="probeStyleCard"><input name="measureProbeStyle" type="radio" value="pen"/><svg class="probeStylePreview" viewBox="0 0 48 62" aria-hidden="true"><circle cx="24" cy="10" r="8" fill="none" stroke="#20c4ff" stroke-opacity=".38" stroke-dasharray="3 2"/><g stroke="#ffd400" stroke-width="1.5"><circle cx="29" cy="7" r="3" fill="none"/><path d="M24 7h10M29 2v10"/></g><path d="M20 18h8l2 31q-6 7-12 0z" fill="#16263b" stroke="#20c4ff"/><path d="M19 30h10M19 39h10" stroke="#9cecff"/><circle cx="24" cy="54" r="3" fill="#20c4ff"/></svg><span class="probeStyleName">工業量測筆</span></label><label class="probeStyleCard"><input name="measureProbeStyle" type="radio" value="arm"/><svg class="probeStylePreview" viewBox="0 0 48 62" aria-hidden="true"><circle cx="24" cy="10" r="8" fill="none" stroke="#20c4ff" stroke-opacity=".38" stroke-dasharray="3 2"/><g stroke="#ffd400" stroke-width="1.5"><circle cx="29" cy="7" r="3" fill="none"/><path d="M24 7h10M29 2v10"/></g><path d="M24 18v10l-7 7v11l7 7 7-7V35l-7-7" fill="none" stroke="#20c4ff" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="28" r="3" fill="#edfaff" stroke="#20c4ff"/><circle cx="24" cy="53" r="3" fill="#edfaff" stroke="#20c4ff"/></svg><span class="probeStyleName">機械臂</span></label></div>
 <label class="snapToggle" style="margin-top:8px!important"><input checked="" id="measureIgnoreSnapSettings" type="checkbox"/>量測模式忽略吸附點設置，保持磁吸輔助全開</label>
 <div class="hint">勾選時，量測不受上方吸附點開關影響；取消勾選後，量測會與拖曳模式使用相同的吸附點設置。</div>
 </div>
@@ -5645,6 +5664,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
 <label class="mobileSwitchRow"><input checked="" id="mobileMeasureConfirmOnRelease" type="checkbox"/><span>放開後確定測量點</span></label>
 <label class="mobileSwitchRow"><input id="mobileMeasureAssistRodEnabled" type="checkbox"/><span>使用量測輔助棒</span></label>
 <label class="mobileWideField"><span>輔助棒長度（px）</span><div class="mobileNumberControl"><button data-mobile-step="-1" data-mobile-step-target="mobileMeasureAssistRodLength" type="button">−</button><input id="mobileMeasureAssistRodLength" min="0" max="200" step="1" type="number" value="40"/><button data-mobile-step="1" data-mobile-step-target="mobileMeasureAssistRodLength" type="button">＋</button></div></label>
+<div class="mobileSectionTitle" style="margin-top:10px">樣式</div><div class="mobileProbeStyleGrid"><label class="probeStyleCard"><input checked="" name="mobileMeasureProbeStyle" type="radio" value="precision"/><svg class="probeStylePreview" viewBox="0 0 48 62" aria-hidden="true"><circle cx="24" cy="10" r="8" fill="none" stroke="#20c4ff" stroke-opacity=".38" stroke-dasharray="3 2"/><g stroke="#ffd400" stroke-width="1.5"><circle cx="29" cy="7" r="3" fill="none"/><path d="M24 7h10M29 2v10"/></g><rect x="20" y="18" width="8" height="31" rx="4" fill="#16263b" stroke="#20c4ff"/><rect x="16" y="45" width="16" height="10" rx="4" fill="#16263b" stroke="#20c4ff"/></svg><span class="probeStyleName">精密探針</span></label><label class="probeStyleCard"><input name="mobileMeasureProbeStyle" type="radio" value="barrel"/><svg class="probeStylePreview" viewBox="0 0 48 62" aria-hidden="true"><circle cx="24" cy="10" r="8" fill="none" stroke="#20c4ff" stroke-opacity=".38" stroke-dasharray="3 2"/><g stroke="#ffd400" stroke-width="1.5"><circle cx="29" cy="7" r="3" fill="none"/><path d="M24 7h10M29 2v10"/></g><path d="M18 18h12l-2 27H20z" fill="#16263b" stroke="#20c4ff"/><rect x="16" y="25" width="16" height="6" rx="2" fill="#edfaff" stroke="#20c4ff"/><rect x="16" y="44" width="16" height="11" rx="4" fill="#16263b" stroke="#20c4ff"/></svg><span class="probeStyleName">科技槍管</span></label><label class="probeStyleCard"><input name="mobileMeasureProbeStyle" type="radio" value="pen"/><svg class="probeStylePreview" viewBox="0 0 48 62" aria-hidden="true"><circle cx="24" cy="10" r="8" fill="none" stroke="#20c4ff" stroke-opacity=".38" stroke-dasharray="3 2"/><g stroke="#ffd400" stroke-width="1.5"><circle cx="29" cy="7" r="3" fill="none"/><path d="M24 7h10M29 2v10"/></g><path d="M20 18h8l2 31q-6 7-12 0z" fill="#16263b" stroke="#20c4ff"/><path d="M19 30h10M19 39h10" stroke="#9cecff"/><circle cx="24" cy="54" r="3" fill="#20c4ff"/></svg><span class="probeStyleName">工業量測筆</span></label><label class="probeStyleCard"><input name="mobileMeasureProbeStyle" type="radio" value="arm"/><svg class="probeStylePreview" viewBox="0 0 48 62" aria-hidden="true"><circle cx="24" cy="10" r="8" fill="none" stroke="#20c4ff" stroke-opacity=".38" stroke-dasharray="3 2"/><g stroke="#ffd400" stroke-width="1.5"><circle cx="29" cy="7" r="3" fill="none"/><path d="M24 7h10M29 2v10"/></g><path d="M24 18v10l-7 7v11l7 7 7-7V35l-7-7" fill="none" stroke="#20c4ff" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="28" r="3" fill="#edfaff" stroke="#20c4ff"/><circle cx="24" cy="53" r="3" fill="#edfaff" stroke="#20c4ff"/></svg><span class="probeStyleName">機械臂</span></label></div>
 <label class="mobileSwitchRow"><input checked="" id="mobileMeasureIgnoreSnapSettings" type="checkbox"/><span>忽略吸附點設置，保持磁吸輔助全開</span></label>
 <div class="mobilePanelHint">取消「放開後確定測量點」後，點一下就會立即取點；取消忽略吸附點後，量測會遵守上方吸附點設置。</div></div>
 </div>
@@ -5727,6 +5747,7 @@ const measureStatus=document.getElementById("measureStatus");
 const measureConfirmOnRelease=document.getElementById("measureConfirmOnRelease");
 const measureAssistRodEnabled=document.getElementById("measureAssistRodEnabled");
 const measureAssistRodLength=document.getElementById("measureAssistRodLength");
+const measureProbeStyleInputs=[...document.querySelectorAll('input[name="measureProbeStyle"]')];
 const measureIgnoreSnapSettings=document.getElementById("measureIgnoreSnapSettings");
 const snapEnabled=document.getElementById("snapEnabled");
 const headerMeasureToggle=document.getElementById("headerMeasureToggle");
@@ -5963,6 +5984,7 @@ const CONFIG_DEFAULTS=Object.freeze({
   MeasurementConfirmOnRelease:"false",
   MeasurementAssistRodEnabled:"false",
   MeasurementAssistRodLength:"40",
+  MeasurementAssistRodStyle:"precision",
   MeasurementIgnoreSnapSettings:"true",
   SnapStep:"15",
   SnapTrayCorners:"true",
@@ -6005,7 +6027,7 @@ const CONFIG_SECTION_KEYS=[
   },
   {
     title:"Editing, magnetic snap and analysis",
-    keys:["SnapEnabled","MeasurementConfirmOnRelease","MeasurementAssistRodEnabled","MeasurementAssistRodLength","MeasurementIgnoreSnapSettings","SnapStep","SnapTrayCorners","SnapTrayMidpoints","SnapTrayBoundary","SnapSafeCorners","SnapSafeMidpoints","SnapTypeBoundary","SnapRectCorners","SnapRectMidpoints","SnapRectEdges","SnapCircleCenter","SnapTypeQuadrant","SnapTypeSingleCircle","SnapTypeDoubleCircle","SnapTypeCircleRect","ShowSpaceLabels"]
+    keys:["SnapEnabled","MeasurementConfirmOnRelease","MeasurementAssistRodEnabled","MeasurementAssistRodLength","MeasurementAssistRodStyle","MeasurementIgnoreSnapSettings","SnapStep","SnapTrayCorners","SnapTrayMidpoints","SnapTrayBoundary","SnapSafeCorners","SnapSafeMidpoints","SnapTypeBoundary","SnapRectCorners","SnapRectMidpoints","SnapRectEdges","SnapCircleCenter","SnapTypeQuadrant","SnapTypeSingleCircle","SnapTypeDoubleCircle","SnapTypeCircleRect","ShowSpaceLabels"]
   },
   {
     title:"Independent numeric steps",
@@ -6089,6 +6111,7 @@ function getCurrentConfig(){
     MeasurementConfirmOnRelease:String(measureConfirmOnRelease.checked),
     MeasurementAssistRodEnabled:String(measureAssistRodEnabled.checked),
     MeasurementAssistRodLength:measureAssistRodLength.value,
+    MeasurementAssistRodStyle:measureProbeStyleInputs.find(input=>input.checked)?.value||"precision",
     MeasurementIgnoreSnapSettings:String(measureIgnoreSnapSettings.checked),
     SnapStep:snapStep.value,
     SnapTrayCorners:String(snapTrayCorners.checked),
@@ -6224,6 +6247,10 @@ function applyConfig(config){
   measureConfirmOnRelease.checked=parseConfigBoolean(config.MeasurementConfirmOnRelease,false);
   measureAssistRodEnabled.checked=parseConfigBoolean(config.MeasurementAssistRodEnabled,false);
   setNumericConfigValue(measureAssistRodLength,config.MeasurementAssistRodLength,CONFIG_DEFAULTS.MeasurementAssistRodLength);
+  {
+    const style=["precision","barrel","pen","arm"].includes(config.MeasurementAssistRodStyle)?config.MeasurementAssistRodStyle:"precision";
+    measureProbeStyleInputs.forEach(input=>input.checked=input.value===style);
+  }
   measureIgnoreSnapSettings.checked=parseConfigBoolean(config.MeasurementIgnoreSnapSettings,true);
   setNumericConfigValue(snapStep,config.SnapStep,CONFIG_DEFAULTS.SnapStep);
   snapTrayCorners.checked=parseConfigBoolean(config.SnapTrayCorners,true);
@@ -8200,25 +8227,43 @@ function getMeasureAssistGeometry(event){
 
 function drawMeasureAssistRod(){
   if(!measureMode||!measureAssistRodEnabled?.checked||!liveMeasureHandlePoint||!liveMeasurePoint)return;
-  create("line",{
-    x1:liveMeasureHandlePoint.x,
-    y1:liveMeasureHandlePoint.y,
-    x2:liveMeasurePoint.x,
-    y2:liveMeasurePoint.y,
-    class:"measureAssistRod"
-  });
-  create("circle",{
-    cx:liveMeasureHandlePoint.x,
-    cy:liveMeasureHandlePoint.y,
-    r:4.5,
-    class:"measureAssistHandle"
-  });
-  create("circle",{
-    cx:liveMeasurePoint.x,
-    cy:liveMeasurePoint.y,
-    r:4.5,
-    class:"measureAssistTip"
-  });
+  const rect=svg.getBoundingClientRect();
+  const viewBox=currentViewBox||baseViewBox||svg.viewBox?.baseVal;
+  const u=(viewBox&&rect.height>0)?viewBox.height/rect.height:1;
+  const lengthPx=Math.max(0,Math.min(200,Number(measureAssistRodLength?.value)||0));
+  const scanCenter={x:liveMeasureHandlePoint.x,y:liveMeasureHandlePoint.y-lengthPx*u};
+  const radius=Math.max(0,Number(snapStep.value)||0);
+  const style=measureProbeStyleInputs.find(input=>input.checked)?.value||"precision";
+  const x=liveMeasureHandlePoint.x, bottom=liveMeasureHandlePoint.y, top=scanCenter.y;
+  const bodyTop=top+10*u, bodyBottom=bottom-5*u;
+
+  create("circle",{cx:scanCenter.x,cy:scanCenter.y,r:radius,class:"measureAssistScanRadius"});
+  create("circle",{cx:scanCenter.x,cy:scanCenter.y,r:3.2*u,class:"measureAssistScanCenter"});
+
+  if(style==="barrel"){
+    create("path",{d:`M ${x-6*u} ${bodyTop} L ${x+6*u} ${bodyTop} L ${x+4*u} ${bodyBottom-12*u} L ${x-4*u} ${bodyBottom-12*u} Z`,class:"measureAssistBody"});
+    create("rect",{x:x-8*u,y:bodyTop+13*u,width:16*u,height:7*u,rx:2*u,class:"measureAssistBodyJoint"});
+    create("rect",{x:x-8*u,y:bodyBottom-14*u,width:16*u,height:14*u,rx:4*u,class:"measureAssistBody"});
+  }else if(style==="pen"){
+    create("path",{d:`M ${x-4.5*u} ${bodyTop} L ${x+4.5*u} ${bodyTop} L ${x+6*u} ${bodyBottom-8*u} Q ${x} ${bodyBottom+2*u} ${x-6*u} ${bodyBottom-8*u} Z`,class:"measureAssistBody"});
+    create("line",{x1:x-5*u,y1:bodyTop+18*u,x2:x+5*u,y2:bodyTop+18*u,class:"measureAssistBodyDetail"});
+    create("line",{x1:x-5.5*u,y1:bodyTop+31*u,x2:x+5.5*u,y2:bodyTop+31*u,class:"measureAssistBodyDetail"});
+    create("circle",{cx:x,cy:bottom,r:4.5*u,class:"measureAssistHandle"});
+  }else if(style==="arm"){
+    const mid1=bodyTop+(bodyBottom-bodyTop)*.34, mid2=bodyTop+(bodyBottom-bodyTop)*.70;
+    create("path",{d:`M ${x} ${bodyTop} L ${x} ${mid1} L ${x-7*u} ${mid1+8*u} L ${x-7*u} ${mid2} L ${x} ${bodyBottom} L ${x+7*u} ${mid2} L ${x+7*u} ${mid1+8*u} L ${x} ${mid1}`,class:"measureAssistBodyDetail","stroke-width":3});
+    create("circle",{cx:x,cy:mid1,r:4*u,class:"measureAssistBodyJoint"});
+    create("circle",{cx:x,cy:bodyBottom,r:4*u,class:"measureAssistBodyJoint"});
+  }else{
+    create("rect",{x:x-4.5*u,y:bodyTop,width:9*u,height:Math.max(1,bodyBottom-bodyTop-10*u),rx:4.5*u,class:"measureAssistBody"});
+    create("rect",{x:x-9*u,y:bodyBottom-15*u,width:18*u,height:15*u,rx:5*u,class:"measureAssistBody"});
+    create("line",{x1:x,y1:bodyTop+5*u,x2:x,y2:bodyBottom-18*u,class:"measureAssistBodyDetail"});
+  }
+
+  const cx=liveMeasurePoint.x, cy=liveMeasurePoint.y, r=5.5*u, arm=10*u;
+  create("circle",{cx,cy,r,class:"measureAssistCrosshair"});
+  create("line",{x1:cx-arm,y1:cy,x2:cx+arm,y2:cy,class:"measureAssistCrosshair"});
+  create("line",{x1:cx,y1:cy-arm,x2:cx,y2:cy+arm,class:"measureAssistCrosshair"});
 }
 
 function resolveMeasurePoint(event){
@@ -11137,6 +11182,7 @@ document.getElementById("resetBtn").addEventListener("click",()=>{
   snapStep.value=15;
   measureAssistRodEnabled.checked=false;
   measureAssistRodLength.value=40;
+  measureProbeStyleInputs.forEach(input=>input.checked=input.value==="precision");
 
   applySectionStep("traySettingsSection",1);
   applySectionStep("primarySettingsSection",1);
@@ -12460,6 +12506,7 @@ const mobileSystemPanel=document.getElementById("mobileSystemPanel");
 const mobileMeasureConfirmOnRelease=document.getElementById("mobileMeasureConfirmOnRelease");
 const mobileMeasureAssistRodEnabled=document.getElementById("mobileMeasureAssistRodEnabled");
 const mobileMeasureAssistRodLength=document.getElementById("mobileMeasureAssistRodLength");
+const mobileMeasureProbeStyleInputs=[...document.querySelectorAll('input[name="mobileMeasureProbeStyle"]')];
 const mobileMeasureIgnoreSnapSettings=document.getElementById("mobileMeasureIgnoreSnapSettings");
 const mobileSnapAssistMaster=document.getElementById("mobileSnapAssistMaster");
 const mobileSnapStepMirror=document.getElementById("mobileSnapStepMirror");
@@ -12473,6 +12520,8 @@ function syncExtendedMobilePanels(){
   if(mobileMeasureAssistRodLength&&document.activeElement!==mobileMeasureAssistRodLength){
     mobileMeasureAssistRodLength.value=measureAssistRodLength.value;
   }
+  const selectedStyle=measureProbeStyleInputs.find(input=>input.checked)?.value||"precision";
+  mobileMeasureProbeStyleInputs.forEach(input=>input.checked=input.value===selectedStyle);
   if(mobileMeasureIgnoreSnapSettings)mobileMeasureIgnoreSnapSettings.checked=measureIgnoreSnapSettings.checked;
   syncSnapAssistMasterState();
   const snapStepMain=document.getElementById("snapStep");
@@ -12580,6 +12629,19 @@ measureAssistRodLength?.addEventListener("input",()=>{
   syncExtendedMobilePanels();
   renderCurrent();
 });
+
+
+mobileMeasureProbeStyleInputs.forEach(input=>input.addEventListener("change",()=>{
+  if(!input.checked)return;
+  measureProbeStyleInputs.forEach(main=>main.checked=main.value===input.value);
+  renderCurrent();
+  syncExtendedMobilePanels();
+}));
+measureProbeStyleInputs.forEach(input=>input.addEventListener("change",()=>{
+  if(!input.checked)return;
+  renderCurrent();
+  syncExtendedMobilePanels();
+}));
 
 mobileMeasureIgnoreSnapSettings?.addEventListener("change",()=>{
   measureIgnoreSnapSettings.checked=mobileMeasureIgnoreSnapSettings.checked;

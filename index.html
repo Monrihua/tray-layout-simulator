@@ -13703,12 +13703,14 @@ requestAnimationFrame(()=>{
   applyStep(initial,mode);
 })();
 
-/* ===== V4.6.15：所有設定值自動記憶於瀏覽器 ===== */
+/* ===== V4.6.18：所有設定值自動記憶於瀏覽器（包含暫時停用欄位） ===== */
 (function enablePersistentSettings(){
   const STORAGE_PREFIX="traySimulator.setting.";
 
   function isPersistentControl(element){
-    if(!element||!element.id||element.disabled)return false;
+    if(!element||!element.id)return false;
+    // 即使欄位目前因模式切換而 disabled，也仍然必須保存與還原。
+    // 否則像追加工件、形狀專屬參數等暫時停用的欄位，重新開啟網頁後就會遺失最後設定。
     // 手機欄位多半只是桌面主欄位的鏡像，僅保存主欄位，避免兩份資料互相覆蓋。
     if(element.id.startsWith("mobile"))return false;
     if(element.matches('input[type="number"],input[type="range"],input[type="checkbox"],input[type="radio"],select'))return true;

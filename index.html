@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.6.15 Beta 吸力範圍與設定記憶</title>
+<title>智慧載盤物理模擬器｜V4.6.21 Beta 量測標註與陣列間距</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -874,30 +874,30 @@ body{padding:16px}
   gap:6px;
 }
 .measureLine{
-  stroke:#0d6efd;
-  stroke-width:1.6;
+  stroke:#ff2a3d;
+  stroke-width:1.35;
   pointer-events:none;
 }
 .measureGuide{
-  stroke:#0d6efd;
-  stroke-width:1;
+  stroke:#ff2a3d;
+  stroke-width:1.05;
   stroke-dasharray:5 4;
   pointer-events:none;
 }
 .measurePoint{
   fill:#fff;
-  stroke:#0d6efd;
-  stroke-width:2;
+  stroke:#ff2a3d;
+  stroke-width:1.8;
   pointer-events:none;
 }
 .measureLabelBg{
-  fill:rgba(255,255,255,.96);
-  stroke:#0d6efd;
-  stroke-width:.8;
+  fill:rgba(255,255,255,.90);
+  stroke:#ff2a3d;
+  stroke-width:.9;
   pointer-events:none;
 }
 .measureLabel{
-  fill:#0b4aa2;
+  fill:#ff2438;
   font-size:12px;
   font-weight:800;
   text-anchor:middle;
@@ -930,12 +930,33 @@ body{padding:16px}
 }
 .measurementAnnotation .measureDragHandle{
   fill:#fff;
-  stroke:#0d6efd;
+  stroke:#ff2a3d;
   stroke-width:1.5;
   pointer-events:none;
 }
 .measurementAnnotation.selected .measureDragHandle{
   stroke:#ff8a00;
+}
+.measureDimensionTick{
+  stroke:#ff2a3d;
+  stroke-width:1.35;
+  vector-effect:non-scaling-stroke;
+  pointer-events:none;
+}
+.measureDimensionText{
+  fill:#ff2438;
+  font-size:13px;
+  font-weight:900;
+  paint-order:stroke;
+  stroke:#fff;
+  stroke-width:3px;
+  stroke-linejoin:round;
+  text-anchor:middle;
+  pointer-events:none;
+}
+.measureDimensionSubText{
+  font-size:11px;
+  font-weight:800;
 }
 .measureModeCursor{
   cursor:crosshair!important;
@@ -1039,7 +1060,7 @@ body{padding:16px}
 .probeStyleName{font-size:11px;font-weight:900;text-align:center}
 .mobileProbeStyleGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
 .mobileProbeStyleGrid .probeStyleCard{min-height:108px!important}
-.measureAssistScanRadius{fill:rgba(32,196,255,.055);stroke:#20c4ff;stroke-opacity:.48;stroke-width:1.25;stroke-dasharray:5 4;vector-effect:non-scaling-stroke;pointer-events:none}
+.measureAssistScanRadius{fill:rgba(32,196,255,.18);stroke:#079bd3;stroke-opacity:.92;stroke-width:2;stroke-dasharray:6 4;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 2px rgba(7,155,211,.35));pointer-events:none}
 .measureAssistBody{fill:#16263b;stroke:#20c4ff;stroke-width:1.8;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 2px rgba(0,0,0,.65));pointer-events:none}
 .measureAssistBodyDetail{fill:none;stroke:#9cecff;stroke-width:1.25;vector-effect:non-scaling-stroke;pointer-events:none}
 .measureAssistBodyJoint{fill:#edfaff;stroke:#20c4ff;stroke-width:1.5;vector-effect:non-scaling-stroke;pointer-events:none}
@@ -4933,7 +4954,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.6.15 Beta · 吸力範圍與設定記憶</div>
+<div class="headerBadge">V4.6.21 Beta · 量測標註與陣列間距</div>
 </div>
 
 </div>
@@ -6653,6 +6674,21 @@ function drawEngineeringDimensions(TL,TW,SX,SY,UL,UW,plan,isCircle){
     }else{
       const b=plan.items.find(q=>Math.abs(q.cx-a.cx)<EPS&&q.cy>a.cy);
       if(b)shortGapV(a.cy+a.r,b.cy-b.r,Math.min(TL-16,a.cx+a.r+15),`Y 間隔 ${fmt(Math.max(0,b.cy-b.r-a.cy-a.r))}`);
+    }
+  }
+
+  // 方形陣列也顯示實際 X／Y 淨間距，樣式與蜂巢排列一致。
+  if(!isCircle && plan.items.length>1){
+    const a=plan.items[0];
+    const right=plan.items.find(q=>Math.abs(q.y-a.y)<EPS&&q.x>a.x);
+    const below=plan.items.find(q=>Math.abs(q.x-a.x)<EPS&&q.y>a.y);
+    if(right){
+      const gap=Math.max(0,right.x-(a.x+a.w));
+      shortGapH(a.x+a.w,right.x,Math.min(TW-16,a.y+a.h+15),`X 間隔 ${fmt(gap)}`);
+    }
+    if(below){
+      const gap=Math.max(0,below.y-(a.y+a.h));
+      shortGapV(a.y+a.h,below.y,Math.min(TL-16,a.x+a.w+15),`Y 間隔 ${fmt(gap)}`);
     }
   }
   text(TL/2,bottom+2,`安全範圍：${fmt(UL)} × ${fmt(UW)} mm`,"labelText");
@@ -8528,91 +8564,82 @@ function drawMeasurements(){
       ? measurement.angle
       : Math.atan2(-dy,dx)*180/Math.PI;
 
-    create("line",{
-      x1:start.x,y1:start.y,x2:end.x,y2:end.y,
-      class:"measureLine"
-    });
-    create("line",{
-      x1:start.x,y1:start.y,x2:end.x,y2:start.y,
-      class:"measureGuide"
-    });
-    create("line",{
-      x1:end.x,y1:start.y,x2:end.x,y2:end.y,
-      class:"measureGuide"
-    });
-
-    create("circle",{cx:start.x,cy:start.y,r:3.5,class:"measurePoint"});
-    create("circle",{cx:end.x,cy:end.y,r:3.5,class:"measurePoint"});
-
-    const baseX=(start.x+end.x)/2;
-    const baseY=(start.y+end.y)/2;
-    const labelX=baseX+(measurement.labelOffsetX||0);
-    const labelY=baseY+(measurement.labelOffsetY||0);
-
-    const signedX=`${dx>=0?"+":""}${fmt(dx)}`;
-    const signedY=`${dy>=0?"+":""}${fmt(dy)}`;
-    const primaryText=`距離 ${fmt(distance)} mm`;
-    const secondaryText=`X ${signedX}｜Y ${signedY}｜角度 ${fmt(angle)}°`;
-
     const group=create("g",{
       class:`measurementAnnotation${selectedMeasurementIndex===index?" selected":""}`,
       "data-measurement-index":index
     });
 
+    // 主尺寸線：使用與載盤工程標註相同的紅色尺寸語言。
     create("line",{
-      x1:baseX,y1:baseY,x2:labelX,y2:labelY,
-      class:"measureGuide",
-      parent:group
+      x1:start.x,y1:start.y,x2:end.x,y2:end.y,
+      class:"measureLine",parent:group
     });
 
-    const bg=create("rect",{
-      x:labelX-120,
-      y:labelY-24,
-      width:240,
-      height:48,
-      rx:7,
-      class:"measureLabelBg",
-      parent:group
+    // X／Y 投影線會隨端點、工件與邊界位置即時更新。
+    create("line",{
+      x1:start.x,y1:start.y,x2:end.x,y2:start.y,
+      class:"measureGuide",parent:group
+    });
+    create("line",{
+      x1:end.x,y1:start.y,x2:end.x,y2:end.y,
+      class:"measureGuide",parent:group
+    });
+
+    const length=Math.max(distance,EPS);
+    const nx=-dy/length, ny=dx/length;
+    const tickSize=5;
+    for(const point of [start,end]){
+      create("line",{
+        x1:point.x-nx*tickSize,y1:point.y-ny*tickSize,
+        x2:point.x+nx*tickSize,y2:point.y+ny*tickSize,
+        class:"measureDimensionTick",parent:group
+      });
+    }
+
+    create("circle",{cx:start.x,cy:start.y,r:3.2,class:"measurePoint",parent:group});
+    create("circle",{cx:end.x,cy:end.y,r:3.2,class:"measurePoint",parent:group});
+
+    const baseX=(start.x+end.x)/2;
+    const baseY=(start.y+end.y)/2;
+    const labelX=baseX+(measurement.labelOffsetX||0);
+    const labelY=baseY+(measurement.labelOffsetY||-18);
+    const signedX=`${dx>=0?"+":""}${fmt(dx)}`;
+    const signedY=`${dy>=0?"+":""}${fmt(dy)}`;
+
+    create("line",{
+      x1:baseX,y1:baseY,x2:labelX,y2:labelY,
+      class:"measureGuide",parent:group
     });
 
     const labelNode=create("text",{
-      x:labelX,
-      y:labelY-6,
-      class:"measureLabel",
-      parent:group
+      x:labelX,y:labelY,
+      class:"measureDimensionText",parent:group
     });
-
     const primary=document.createElementNS(NS,"tspan");
     primary.setAttribute("x",labelX);
-    primary.setAttribute("class","measureLabelPrimary");
-    primary.textContent=primaryText;
+    primary.textContent=`${fmt(distance)} mm`;
     labelNode.appendChild(primary);
 
     const secondary=document.createElementNS(NS,"tspan");
     secondary.setAttribute("x",labelX);
-    secondary.setAttribute("dy","17");
-    secondary.setAttribute("class","measureLabelSecondary");
-    secondary.textContent=secondaryText;
+    secondary.setAttribute("dy","16");
+    secondary.setAttribute("class","measureDimensionSubText");
+    secondary.textContent=`X ${signedX}｜Y ${signedY}｜${fmt(angle)}°`;
     labelNode.appendChild(secondary);
 
-    // 依實際文字尺寸設定框寬，避免文字超出或貼住邊框。
+    // 透明拖曳熱區保留可操作性，但不再顯示大型藍色資訊框。
     const textBox=labelNode.getBBox();
-    const paddingX=16;
-    const paddingY=8;
-    const boxWidth=Math.max(180,textBox.width+paddingX*2);
-    const boxHeight=Math.max(46,textBox.height+paddingY*2);
-
-    bg.setAttribute("x",labelX-boxWidth/2);
-    bg.setAttribute("y",labelY-boxHeight/2);
-    bg.setAttribute("width",boxWidth);
-    bg.setAttribute("height",boxHeight);
-
+    const hitWidth=Math.max(150,textBox.width+24);
+    const hitHeight=Math.max(38,textBox.height+14);
+    create("rect",{
+      x:labelX-hitWidth/2,y:labelY-hitHeight/2,
+      width:hitWidth,height:hitHeight,rx:5,
+      fill:"transparent",stroke:"transparent",
+      class:"measureLabelBg",parent:group
+    });
     create("circle",{
-      cx:labelX-boxWidth/2+11,
-      cy:labelY,
-      r:3.5,
-      class:"measureDragHandle",
-      parent:group
+      cx:labelX-hitWidth/2+9,cy:labelY,
+      r:3.2,class:"measureDragHandle",parent:group
     });
   }
 

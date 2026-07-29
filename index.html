@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.6.22 Beta 工程尺寸量測</title>
+<title>智慧載盤物理模擬器｜V4.6.23 Beta 量測標註修正</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -921,9 +921,11 @@ body{padding:16px}
   pointer-events:all;
 }
 .measurementAnnotation.selected .measureLabelBg{
-  stroke:#ff8a00;
-  stroke-width:2;
-  filter:drop-shadow(0 0 3px rgba(255,138,0,.35));
+  /* 僅作為拖曳／點選熱區，不顯示外框，避免遮住工程尺寸文字。 */
+  fill:transparent;
+  stroke:transparent;
+  stroke-width:0;
+  filter:none;
 }
 .measurementAnnotation.selected .measureLabel{
   fill:#a84d00;
@@ -4954,7 +4956,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.6.22 Beta · 工程尺寸量測</div>
+<div class="headerBadge">V4.6.23 Beta · 量測標註修正</div>
 </div>
 
 </div>
@@ -8652,7 +8654,7 @@ function drawMeasurements(){
     secondary.textContent=`X ${signedX}｜Y ${signedY}｜${fmt(angle)}°`;
     textNode.appendChild(secondary);
 
-    // 保留透明拖曳熱區，操作方式不變；視覺上不再顯示方框。
+    // 保留完全透明的拖曳熱區，操作方式不變；選取時也不顯示方框。
     let textBox;
     try{textBox=textNode.getBBox()}catch{textBox={x:labelX-75,y:labelY-18,width:150,height:36}}
     const pad=10;

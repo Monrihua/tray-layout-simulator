@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.6.23 Beta 量測標註修正</title>
+<title>智慧載盤物理模擬器｜V4.6.24 Beta 量測選取配色</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -927,17 +927,29 @@ body{padding:16px}
   stroke-width:0;
   filter:none;
 }
-.measurementAnnotation.selected .measureLabel{
-  fill:#a84d00;
+/* 量測標註：未選取維持紅色；選取後整組切換為藍色。 */
+.measurementAnnotation.selected .measureLine,
+.measurementAnnotation.selected .measureGuide,
+.measurementAnnotation.selected .measureDimensionTick{
+  stroke:#1677ff;
+}
+.measurementAnnotation.selected .measurePoint{
+  stroke:#1677ff;
+  fill:#fff;
+}
+.measurementAnnotation.selected .measureLabel,
+.measurementAnnotation.selected .measureDimensionText{
+  fill:#1677ff;
 }
 .measurementAnnotation .measureDragHandle{
-  fill:#fff;
-  stroke:#ff2a3d;
+  display:none;
+  fill:#1677ff;
+  stroke:#fff;
   stroke-width:1.5;
   pointer-events:none;
 }
 .measurementAnnotation.selected .measureDragHandle{
-  stroke:#ff8a00;
+  display:block;
 }
 .measureDimensionTick{
   stroke:#ff2a3d;
@@ -4956,7 +4968,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.6.23 Beta · 量測標註修正</div>
+<div class="headerBadge">V4.6.24 Beta · 量測選取配色</div>
 </div>
 
 </div>

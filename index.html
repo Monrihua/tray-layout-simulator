@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>智慧載盤物理模擬器｜V4.6.24 Beta 量測選取配色</title>
+<title>智慧載盤物理模擬器｜V4.6.25 Beta 量測選取簡化</title>
 <style>
 :root{
   --bg:#eef2f7;
@@ -918,10 +918,8 @@ body{padding:16px}
   cursor:grabbing;
 }
 .measurementAnnotation .measureLabelBg{
+  /* 保留不可見的點選／拖曳熱區，但任何狀態都不顯示方框。 */
   pointer-events:all;
-}
-.measurementAnnotation.selected .measureLabelBg{
-  /* 僅作為拖曳／點選熱區，不顯示外框，避免遮住工程尺寸文字。 */
   fill:transparent;
   stroke:transparent;
   stroke-width:0;
@@ -933,23 +931,18 @@ body{padding:16px}
 .measurementAnnotation.selected .measureDimensionTick{
   stroke:#1677ff;
 }
-.measurementAnnotation.selected .measurePoint{
-  stroke:#1677ff;
-  fill:#fff;
+.measurementAnnotation .measurePoint{
+  /* 量測端點只作為幾何定位，不顯示紅色或藍色圓點。 */
+  display:none;
 }
 .measurementAnnotation.selected .measureLabel,
 .measurementAnnotation.selected .measureDimensionText{
   fill:#1677ff;
 }
 .measurementAnnotation .measureDragHandle{
+  /* 不顯示額外控制點；選取狀態只以整組標註變藍呈現。 */
   display:none;
-  fill:#1677ff;
-  stroke:#fff;
-  stroke-width:1.5;
   pointer-events:none;
-}
-.measurementAnnotation.selected .measureDragHandle{
-  display:block;
 }
 .measureDimensionTick{
   stroke:#ff2a3d;
@@ -4968,7 +4961,7 @@ body.touchUiEnabled #mobileFreeDragBtn.active{
       </label>
 <span class="headerQuickHint">常用置中微調</span>
 </div>
-<div class="headerBadge">V4.6.24 Beta · 量測選取配色</div>
+<div class="headerBadge">V4.6.25 Beta · 量測選取簡化</div>
 </div>
 
 </div>
